@@ -6,3 +6,6 @@ class Movie(models.Model):
     release_date = models.DateField()
     genre = models.CharField(max_length=100)
     image_link = models.URLField()
+
+    def __str__(self):
+        return self.title

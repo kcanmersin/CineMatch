@@ -40,6 +40,8 @@ INSTALLED_APPS = [
     'rest_framework',
     'APImovie',
     'APIuser',
+    # 'APImovie.apps.ApimovieConfig',
+    # 'APIuser.apps.ApiuserConfig',
 ]
 
 MIDDLEWARE = [
@@ -93,6 +95,17 @@ DATABASES = {
         'HOST': 'localhost',
         'PORT': '5432'
     }
+}
+
+
+REST_FRAMEWORK = {
+    'DEFAULT_PERMISSION_CLASSES': (
+        'rest_framework.permissions.IsAuthenticated',
+    ),
+    'DEFAULT_AUTHENTICATION_CLASSES': (
+        'rest_framework.authentication.SessionAuthentication',
+        'rest_framework.authentication.BasicAuthentication',
+    ),
 }
 
 # Password validation
