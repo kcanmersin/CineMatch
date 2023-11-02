@@ -1,15 +1,50 @@
-html,body{
-  height: 100%;
-  width: 100%;
-  display: flex;
-  flex-direction: column;
+body{
+  height: 100vh;
+  width: 100vw;
+  padding: 0;
+  margin: 0;
 }
 
 #root{
+  height: 100%;
   width: 100%;
 }
 
+
+.background{
+  width: 100%;
+  height: 100%;
+  background-image: url("./assets/BackgroundImage1.jpg");
+  background-repeat: no-repeat;
+  background-size: cover;
+  position: relative;
+  z-index: 0;
+  
+}
+
 .navbar-container{
+  padding: 20px;
+  width: 100%;
+  max-width: 100%;
   display: flex;
   justify-content: space-between;
+  z-index: 1;
+  position: absolute;
+  align-items: center;
+  box-sizing: border-box; 
+  border-bottom: 2px solid #CECECE
+}
+
+.button-container{
+  width: 15%;
+  display: flex;
+  justify-content: space-between;
+}
+
+.sign-button{
+  border-radius: 10px;
+  border: 3px solid #CECECE;
+  padding: 5px;
+  background-color: transparent;
+  font-size: 1.2rem;
 }

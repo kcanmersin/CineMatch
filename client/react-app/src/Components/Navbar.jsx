@@ -1,14 +1,13 @@
 
-export function Navbar(){
+export default function Navbar(){
     return (
         <div className = "navbar-container">
             <div>
-                <h1>Logo</h1>
+                Logo
             </div>
-            <div>
-                <button>Sign In</button>
-                <button>Sign Up</button>
-         
+            <div className="button-container">
+                <button className="sign-button">Sign In</button>
+                <button className="sign-button">Sign Up</button>
             </div>
         </div>
     )
