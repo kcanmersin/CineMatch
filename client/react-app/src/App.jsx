@@ -1,11 +1,11 @@
 import "./App.css"
-import { Navbar } from "./Components/Navbar"
+import Background from "./Components/FirstPage/Background"
 
 function App() {
     return(
-      <div>
-        <Navbar/>
-      </div>
+      <>
+        <Background/>
+      </>
     )
 }
 
