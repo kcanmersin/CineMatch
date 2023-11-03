@@ -1,6 +1,5 @@
 import "./App.css"
-import Background from "./Components/Background"
-import Navbar from "./Components/Navbar"
+import Background from "./Components/FirstPage/Background"
 
 function App() {
     return(

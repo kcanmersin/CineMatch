@@ -14,7 +14,7 @@ body{
 .background{
   width: 100%;
   height: 100%;
-  background-image: url("./assets/BackgroundImage1.jpg");
+  background-image: linear-gradient(180deg, #000000 0%, rgba(0, 0, 0, 0.00) 60%),url("./assets/BackgroundImage1.jpg");
   background-repeat: no-repeat;
   background-size: cover;
   position: relative;
@@ -23,28 +23,61 @@ body{
 }
 
 .navbar-container{
-  padding: 20px;
+  padding: 1%;
   width: 100%;
   max-width: 100%;
   display: flex;
+  flex-direction: row;
   justify-content: space-between;
   z-index: 1;
   position: absolute;
   align-items: center;
   box-sizing: border-box; 
-  border-bottom: 2px solid #CECECE
+  border-bottom: 0.2vw solid #CECECE
 }
 
 .button-container{
-  width: 15%;
+  width: 20%;
   display: flex;
   justify-content: space-between;
+  padding-right: 1%;
+  
 }
 
 .sign-button{
-  border-radius: 10px;
-  border: 3px solid #CECECE;
-  padding: 5px;
+  color:#CECECE;
+  width: 100%;
+  border-radius: 10%;
+  border: 0.2vw solid #CECECE;
   background-color: transparent;
-  font-size: 1.2rem;
+  font-size: 1.3vw;
 }
+
+.sign-button:last-child{
+  margin-left: 30%;
+}
+
+.sign-button:hover{
+  color: #808080;
+  border: 0.2vw solid #808080;
+}
+
+.first-text{
+  position: absolute;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  top: 60%;
+  left: 57%
+}
+
+.first-text-big{
+  font:bold;
+  font-size: 3.5vw;
+}
+
+.first-text-small{
+  font-size: 1.2vw;
+  margin-top: 5%;
+}
+
