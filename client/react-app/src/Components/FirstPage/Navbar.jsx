@@ -1,3 +1,5 @@
+import { Link } from "react-router-dom"
+
 export default function Navbar(){
     return (
         <div className = "navbar-container">
@@ -6,7 +8,8 @@ export default function Navbar(){
             </div>
             <div className="button-container">
                 <button className="sign-button">Sign In</button>
-                <button className="sign-button">Sign Up</button>
+                <Link to="/signup"><button className="sign-button">Sign Up</button></Link>
+                
             </div>
         </div>
     )
