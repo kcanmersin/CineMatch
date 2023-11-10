@@ -1,0 +1,301 @@
+body {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+}
+
+#root {
+  margin: 0;
+  min-height: 100vh;
+}
+
+
+.navbar-container {
+  width: 100%;
+  margin: 0;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px; /* Add padding to the container */
+  background-color: #010B18;
+}
+
+.navbar-logo {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%; /* Make the logo oval */
+}
+
+.navbar-logo img {
+  width: 100%;
+  height: auto;
+}
+
+.navbar-search {
+  flex-grow: 1; /* Make the search bar take up the remaining space */
+  margin-left: 20px; /* Add left margin for spacing */
+  margin-right: 20px; /* Add right margin for spacing */
+  display: flex;
+  align-items: center;
+  position: relative; /* Create a positioning context for the button */
+  border-radius: 10px; /* Add rounded corners to the container */
+  overflow: hidden; /* Hide any overflowing content */
+}
+
+.navbar-search input {
+  width: 100%; /* Make the input take up the full width of the container */
+  padding: 5px; /* Add padding for better appearance */
+  border: none;
+  border-right: 1px solid #ccc; /* Add a border between the input and button */
+}
+
+.navbar-search button {
+  position: absolute; /* Position the button absolutely */
+  right: 0; /* Position the button at the right end of the container */
+  display: flex;
+  align-items: center; /* Vertically center the content */
+  padding: 5px 10px; /* Add padding to the button */
+  border: none;
+  background-color: white; /* Set background color to white */
+  color: black; /* Set text color to black */
+  cursor: pointer; /* Add a pointer cursor when hovering over the button */
+}
+
+
+.navbar-search button img {
+  width: 24px; /* Set the width of the compass icon */
+  height: 24px; /* Set the height of the compass icon */
+}
+
+
+.navbar-user {
+  width: 50px;
+  height: 50px;
+}
+
+.navbar-user .user-avatar {
+  width: 100%;
+  height: 100%;
+}
+
+.navbar-user .user-avatar img {
+  width: 100%;
+  border-radius: 50%;
+  height: auto;
+}
+
+
+.lists-page {
+  width: 100%;
+  background-color: #0A1421;
+}
+
+.lists-page .lists-page-person-header {
+  color: #00FF38;
+  margin: 2rem;
+}
+
+
+
+
+.list-card {
+  width: 100%; /* Make the card fill the width of the container */
+  display: flex; /* Use flexbox layout */
+  align-items: center; /* Vertically align the items in the center */
+  padding: 10px; /* Add some padding to the card */
+  border-top: 2px solid #00FF38;
+  border-bottom: 2px solid #00FF38;
+  
+
+}
+
+.list-image img {
+  width: 100px; /* Set a fixed width for the image */
+  height: auto; /* Maintain the aspect ratio of the image */
+  margin-right: 10px; /* Add some margin to the right of the image */
+}
+
+.list-details {
+  padding: 10px; /* Add some padding to the details container */
+  display: flex;
+  flex-direction: column;
+}
+
+.list-details h1 {
+  margin: 0 0 5px; /* Remove margin from the heading and add some space below */
+}
+
+.list-details p {
+  margin: 0 0 5px; /* Remove margin from the paragraphs and add some space below */
+}
+
+
+.watchlist-page-container {
+  background-color: #0A1421;
+  height: 100%;
+  width: 100%;
+  text-align: center;
+  min-height: 100vh;
+}
+
+
+.watchlist-movie-card {
+  display: flex;
+  flex-direction: column; /* Make the flex container vertical */
+  align-items: center; /* Center the child elements horizontally */
+  padding: 10px; /* Add some padding to the card */
+}
+
+.watchlist-movie-card img {
+  width: 100px; /* Set a fixed width for the image */
+  height: auto; /* Maintain the aspect ratio of the image */
+  margin-bottom: 10px; /* Add some margin below the image */
+}
+
+.watchlist-movie-card p {
+  margin: 0; /* Remove the margin from the paragraph */
+}
+
+
+
+.watchlist-movies-list {
+  display: flex;
+  flex-wrap: wrap; /* Allow items to wrap to the next line */
+  gap: 10px; /* Add some space between the items */
+  padding: 10px; /* Add some padding to the container */
+}
+
+
+
+.signup-page {
+  display: flex;
+  height: 100vh;
+}
+
+.sign-up-greeting,
+.signup-form-container {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  height: 100%;
+}
+
+.sign-up-greeting {
+  background: 
+    linear-gradient(
+      rgba(0, 0, 0, 0.5),
+      rgba(0, 0, 0, 0.5)
+    ),
+    url("../src/assets/sign-up-foto.jpg");
+  background-size: cover;
+  background-position: center;
+  position: relative;
+}
+
+.title {
+  color: white;
+  position: absolute;
+  bottom: 20%;
+  left: 10%;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+.title h1 {
+  font-size: 1.8rem;
+}
+
+
+.title a:hover {
+  text-decoration: underline;
+}
+
+
+.already-have-an-account-container {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 5px;
+  
+}
+
+.already-have-an-account-container p {
+  line-height: 1;
+  font-size: 0.8rem;
+}
+
+.already-have-an-account-container a {
+  color: white;
+  text-decoration: none;
+  line-height: 1;
+  font-size: 0.8rem;
+}
+
+
+
+
+
+.signup-form-container form div {
+  margin-bottom: 20px;
+  width: 100%;
+  
+}
+
+.signup-form-container form label {
+  display: block;
+  margin-bottom: 5px;
+}
+
+.signup-form-container form input {
+  width: 80%;
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+
+}
+
+.signup-form-container form button {
+  margin-top: 2rem;
+  padding: 0.5rem 1.5rem 0.5rem 1.5rem;
+  background-color: #00FF38;
+  color: #fff;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.signup-form-container form button:hover {
+  background-color: #0056b3;
+}
+
+
+.signup-form-container {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  background-color: #0A1421;
+}
+
+.signup-form-logo {
+  margin-bottom: 20px; /* Add margin to separate the logo from the form */
+}
+
+.signup-form-logo img {
+  width: 50px; /* Set a smaller fixed width for the logo */
+  height: auto; /* Maintain the aspect ratio of the logo */
+}
+
+form {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%; /* Set a fixed width for the form */
+}
