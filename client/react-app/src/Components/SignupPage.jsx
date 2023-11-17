@@ -50,12 +50,28 @@ export default function SignupPage() {
     setFormData({ ...formData, [name]: value });
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     if (isFormValid) {
-      // Submit the form data
-      // You can add your form submission logic here
-      console.log("Form submitted:", formData);
+      try {
+        const response = await fetch('http://127.0.0.1:8000/auth/users/', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(formData),
+        });
+    
+        if (response.ok) {
+          console.log("Form submitted:", formData);
+        } else {
+          // Handle signup errors, such as duplicate email or invalid data
+          const errorData = await response.json();
+          console.error('Signup failed:', errorData.message);
+        }
+      } catch (error) {
+        console.error('Signup failed:', error.message);
+      }
     } else {
       console.log("Form validation failed");
     }
