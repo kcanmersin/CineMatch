@@ -13,6 +13,22 @@ class UserAccountManager(BaseUserManager):
         user.save()
 
         return user
+    
+    def create_superuser(self, email, password, **extra_fields):
+        extra_fields.setdefault('is_superuser', True)
+        extra_fields.setdefault('is_staff', True)
+        extra_fields.setdefault('is_active', True)
+        
+        if extra_fields.get('is_superuser') is not True:
+            raise ValueError('Superuser must have is_superuser=True.')
+        
+        if extra_fields.get('is_staff') is not True:
+            raise ValueError('Superuser must have is_staff=True.')
+        
+        if extra_fields.get('is_active') is not True:
+            raise ValueError('Superuser must have is_active=True.')
+        
+        return self.create_user(email, password, **extra_fields)
 
 class UserAccount(AbstractBaseUser, PermissionsMixin):
     email = models.EmailField(max_length=255, unique=True)
@@ -21,6 +37,8 @@ class UserAccount(AbstractBaseUser, PermissionsMixin):
     #last_name = models.CharField(max_length=255)
     is_active = models.BooleanField(default=True)
     is_staff = models.BooleanField(default=False)
+    is_superuser = models.BooleanField(default=False)
+
 
     objects = UserAccountManager()
 
