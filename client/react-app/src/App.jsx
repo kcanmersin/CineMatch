@@ -1,6 +1,6 @@
 import "./App.css"
-import "./FirstPage.css"
-import FirstPage from "./Components/FirstPage/FirstPage"
+import 'bootstrap/dist/css/bootstrap.min.css';
+import FirstPage from "./Components/FirstPage"
 import {Routes, Route} from "react-router-dom"
 import SignupPage from "./Components/SignupPage"
 import MainPage from "./Components/MainPage"
