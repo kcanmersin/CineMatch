@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import Movie
+from .models import Movie, MovieList
 
 class MovieSerializer(serializers.ModelSerializer):
 
@@ -16,5 +16,8 @@ class MovieSerializer(serializers.ModelSerializer):
     def validate(self, data):
         return super().validate(data)
     
-    
+class MovieListSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = MovieList
+        fields = '__all__'
     

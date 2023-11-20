@@ -1,4 +1,14 @@
 from django.db import models
+from accounts.models import UserAccount
+
+class MovieList(models.Model):
+    id = models.IntegerField(primary_key=True, auto_created=True)
+    title = models.CharField(max_length=255, default='Untitled')
+    user = models.ForeignKey(UserAccount, on_delete=models.CASCADE, related_name='lists', null=True, blank=True)
+    is_public = models.BooleanField(default=True, null=True)
+    movies = models.ManyToManyField('Movie', related_name='lists', blank=True)
+    upvotes = models.PositiveIntegerField(default=0, null=True, blank=True)
+    downvotes = models.PositiveIntegerField(default=0, null=True, blank=True)
 
 class Collection(models.Model):
     id = models.IntegerField(primary_key=True)
