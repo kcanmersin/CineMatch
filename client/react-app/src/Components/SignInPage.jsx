@@ -1,6 +1,6 @@
 import { Link } from "react-router-dom"
 
-export default function SignInPage(){
+export default function SigninPage(){
 
     return(
         <>

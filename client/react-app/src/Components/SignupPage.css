@@ -1,0 +1,68 @@
+.container-fluid{
+  padding-right: 0;
+  padding-left: 0;
+}
+
+.signup-page {
+  display: flex;
+  height: 100vh;
+  width: 100vw;
+}
+
+.sign-up-greeting, .sign-up-form-container{
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  width: 50%;
+}
+
+.sign-up-form-container{
+  justify-content: center;
+  align-items: left;
+}
+
+.sign-up-greeting{
+  background: 
+  linear-gradient(
+    rgba(0, 0, 0, 0.4),
+    rgba(0, 0, 0, 0.4)
+  ),
+  url("../assets/sign-up-foto.jpg");
+  background-repeat: no-repeat;
+  background-size: cover;
+  background-position: center;
+  overflow: hidden;
+  position: relative;
+}
+
+
+.title {
+  color: #CECECE;
+  position: absolute;
+  bottom: 20%;
+  left: 10%;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+.welcome-text{
+  font-size: 2rem;
+  font-weight: 600;
+}
+
+.already-have-an-account{
+  font-weight: 350;
+  font-size: 1rem;
+}
+
+.title a:hover {
+  text-decoration: underline;
+}
+
+.sign-up-form-container{
+  background-color: #0A1421;
+}
+
+
