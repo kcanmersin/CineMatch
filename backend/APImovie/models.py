@@ -1,5 +1,7 @@
 from django.db import models
 from accounts.models import UserAccount
+from django.urls import reverse
+from django.utils.text import slugify
 
 class MovieList(models.Model):
     id = models.IntegerField(primary_key=True, auto_created=True)
@@ -22,9 +24,20 @@ class Collection(models.Model):
 class Genre(models.Model):
     id = models.IntegerField(primary_key=True)
     name = models.CharField(max_length=255)
+    slug = models.SlugField(null=False, unique=True)
 
     def __str__(self):
         return self.name
+
+    def save(self, *args, **kwargs):
+        if not self.slug:
+            self.title.replace(" ", "")
+            self.slug = slugify(self.title)
+        return super().save(*args, **kwargs)
+
+    def get_absolute_url(self):
+	    return reverse('genres', args=[self.slug])
+
 
 class ProductionCompany(models.Model):
     id = models.IntegerField(primary_key=True)
