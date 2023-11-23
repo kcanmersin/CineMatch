@@ -39,6 +39,9 @@ export default function SignupPage() {
       if (!formData.password) {
         newErrors.password = "Password is required";
         isValid = false;
+      } else if (formData.password.length < 8) {
+        newErrors.password = "Password must be at least 8 characters long";
+        isValid = false;
       }
 
       setErrors(newErrors);
@@ -99,7 +102,7 @@ export default function SignupPage() {
           <FormGroup className="mb-5">
             Logo
           </FormGroup>
-          <FormGroup className="mb-4 mx-5" controlId="formEmail">
+          <FormGroup className="mb-4 mx-5" /*controlId="formEmail"*/>
             <Form.Control
               type="email"
               id="email"
@@ -110,7 +113,7 @@ export default function SignupPage() {
             />
             {errors.email && <div className="" style={{color: "red"}}>{errors.email}</div>}
           </FormGroup>
-          <FormGroup className="mb-4 mx-5" controlId="formUsername">
+          <FormGroup className="mb-4 mx-5" /*controlId="formUsername"*/>
             <Form.Control
               type="text"
               id="username"
@@ -121,7 +124,7 @@ export default function SignupPage() {
             />
             {errors.username && <p className="error" style={{color: "red"}}>{errors.username}</p>}
           </FormGroup>
-          <FormGroup className="mb-4 mx-5" controlId="formPassword">
+          <FormGroup className="mb-4 mx-5" /*controlId="formPassword"*/>
             <Form.Control
                type="password"
                id="password"
