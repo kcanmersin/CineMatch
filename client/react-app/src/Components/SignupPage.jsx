@@ -5,7 +5,11 @@ import Form from 'react-bootstrap/Form';
 import FormGroup from "react-bootstrap/esm/FormGroup";
 import Button from "react-bootstrap/esm/Button";
 
+
 export default function SignupPage() {
+
+
+
   const [formData, setFormData] = useState({
     email: "",
     username: "",
@@ -73,6 +77,7 @@ export default function SignupPage() {
         if (response.ok) {
           console.log("Form submitted:", formData);
           setIsButtonValid(true);
+          alert("Check your email to verify your account");
         } else {
           // Handle signup errors, such as duplicate email or invalid data
           const errorData = await response.json();

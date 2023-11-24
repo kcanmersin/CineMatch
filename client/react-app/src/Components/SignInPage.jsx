@@ -1,15 +1,18 @@
 import { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import Form from "react-bootstrap/Form";
 import Button from "react-bootstrap/Button";
 
 export default function SigninPage() {
+  
+  // to redirect other pages
+  const navigate = useNavigate();
+
   const [formData, setFormData] = useState({
     email: "",
     password: "",
   });
   const [passwordError, setPasswordError] = useState("");
-  const [isButtonValid, setIsButtonValid] = useState(false);
   
 
   const handleForgotPasswordClick = () => {
@@ -51,16 +54,11 @@ export default function SigninPage() {
         
         if (response.ok) {
           const jsonData = await response.json(); // This line extracts the JSON body
-          console.log(jsonData.access);
-          console.log(jsonData.refresh);
+
+          // store the jwt access and refresh token in localStorage
           localStorage.setItem('jwtAccess', jsonData.access);
           localStorage.setItem('jwtRefresh', jsonData.refresh);
-          setIsButtonValid(true);
-
-        
-
-
-
+          navigate("/mainpage");
         
         } else {
           const errorData = await response.json();
@@ -100,17 +98,11 @@ export default function SigninPage() {
           )}
         </Form.Group>
         <div className="form-group">
-        
-
-          {isButtonValid
-            ? <Link to= "/mainpage">
+           <Link to= "/mainpage">
                 <Button variant="success" type="submit">
                   Sign In
                 </Button>
               </Link>
-              :<Button variant="success" type="submit">
-                Submit
-              </Button>}
         </div>
 
 
