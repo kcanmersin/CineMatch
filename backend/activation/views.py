@@ -1,5 +1,6 @@
 import requests
 from django.http import JsonResponse
+from django.shortcuts import redirect
 
 def activate_user(request, uid, token):
     # Assuming your Djoser activation endpoint is /auth/users/activation/
@@ -16,9 +17,11 @@ def activate_user(request, uid, token):
 
     # Check the response and return the result
     if response.status_code == 200:
-        return JsonResponse({'message': 'User activated successfully'})
+        return redirect('http://127.0.0.1:8000/auth/jwt/create/')
+        #return JsonResponse({'message': 'User activated successfully'})
     else:
-        return JsonResponse({'error': 'Failed to activate user'}, status=response.status_code)
+        return redirect('http://127.0.0.1:8000/auth/jwt/create/')
+#        return JsonResponse({'error': 'Failed to activate user'}, status=response.status_code)
     
 from django.views.decorators.csrf import csrf_exempt
 from django.shortcuts import render

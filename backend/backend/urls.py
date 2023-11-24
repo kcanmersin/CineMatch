@@ -24,5 +24,6 @@ urlpatterns = [
     path('auth/', include('djoser.urls.jwt')),
     path('auth/', include('djoser.social.urls')),
     path('activation/', include('activation.urls')),
+    path('messages/', include('APImessage.urls')),
     #path('auth/', include('djoser.urls.authtoken')),
 ]

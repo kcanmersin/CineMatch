@@ -31,25 +31,20 @@ class UserAccountManager(BaseUserManager):
         return self.create_user(email, password, **extra_fields)
 
 class UserAccount(AbstractBaseUser, PermissionsMixin):
+    id = models.AutoField(primary_key=True)
     email = models.EmailField(max_length=255, unique=True)
-    username =models.CharField(max_length=255)
-    #first_name = models.CharField(max_length=255)
-    #last_name = models.CharField(max_length=255)
+    username = models.CharField(max_length=255, unique=True)
     is_active = models.BooleanField(default=True)
     is_staff = models.BooleanField(default=False)
     is_superuser = models.BooleanField(default=False)
 
+    blocked_users = models.ManyToManyField('self', blank=True, symmetrical=False)
 
     objects = UserAccountManager()
 
     USERNAME_FIELD = 'email'
-    #REQUIRED_FIELDS = ['first_name', 'last_name']
     REQUIRED_FIELDS = ['username']
-    #def get_full_name(self):
-    #    return self.first_name
 
-    #def get_short_name(self):
-     #   return self.first_name
     def get_username(self):
         return self.username
 

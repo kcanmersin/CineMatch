@@ -41,6 +41,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'rest_framework',
     'djoser',
+    'APImessage',
     'accounts',
     'APImovie',
     'social_django',
