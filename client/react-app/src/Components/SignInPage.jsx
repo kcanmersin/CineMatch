@@ -5,11 +5,16 @@ import Button from "react-bootstrap/Button";
 
 export default function SigninPage() {
   const [formData, setFormData] = useState({
-    username: "",
+    email: "",
     password: "",
   });
-
   const [passwordError, setPasswordError] = useState("");
+  const [isButtonValid, setIsButtonValid] = useState(false);
+  
+
+  const handleForgotPasswordClick = () => {
+    alert('Check your email to reset your password');
+  };
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -24,7 +29,7 @@ export default function SigninPage() {
     setFormData({ ...formData, [name]: value });
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
 
     // Check password length before submitting
@@ -33,19 +38,50 @@ export default function SigninPage() {
       return;
     }
 
-    // Add your sign-in logic here
-    console.log("Form submitted:", formData);
+
+      try {
+        const response = await fetch('http://127.0.0.1:8000/auth/jwt/create', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(formData),
+        });
+
+        
+        if (response.ok) {
+          const jsonData = await response.json(); // This line extracts the JSON body
+          console.log(jsonData.access);
+          console.log(jsonData.refresh);
+          localStorage.setItem('jwtAccess', jsonData.access);
+          localStorage.setItem('jwtRefresh', jsonData.refresh);
+          setIsButtonValid(true);
+
+        
+
+
+
+        
+        } else {
+          const errorData = await response.json();
+          console.error('Signin failed:', errorData.message);
+        }
+      } catch (error) {
+        console.error('Signin failed:', error.message);
+      }
+
+    
   };
 
   return (
     <>
       <Form id="signInForm" onSubmit={handleSubmit}>
-        <Form.Group className="mb-3" controlId="username">
-          <Form.Label>Username:</Form.Label>
+        <Form.Group className="mb-3" controlId="email">
+          <Form.Label>Email:</Form.Label>
           <Form.Control
             type="text"
-            name="username"
-            value={formData.username}
+            name="email"
+            value={formData.email}
             onChange={handleInputChange}
             required
           />
@@ -64,10 +100,27 @@ export default function SigninPage() {
           )}
         </Form.Group>
         <div className="form-group">
-          <Button type="submit" className="btn">
-            Sign In
-          </Button>
+        
+
+          {isButtonValid
+            ? <Link to= "/mainpage">
+                <Button variant="success" type="submit">
+                  Sign In
+                </Button>
+              </Link>
+              :<Button variant="success" type="submit">
+                Submit
+              </Button>}
         </div>
+
+
+        <div>
+      <p>Forgot your password ? 
+        <span>
+          <a href="#" onClick={handleForgotPasswordClick}>Click here</a>
+        </span>
+      </p>
+    </div>
       </Form>
     </>
   );
