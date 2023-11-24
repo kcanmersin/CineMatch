@@ -104,6 +104,7 @@ export default function SignupPage() {
           </FormGroup>
           <FormGroup className="mb-4 mx-5" /*controlId="formEmail"*/>
             <Form.Control
+              size="lg"
               type="email"
               id="email"
               name="email"
@@ -115,6 +116,7 @@ export default function SignupPage() {
           </FormGroup>
           <FormGroup className="mb-4 mx-5" /*controlId="formUsername"*/>
             <Form.Control
+              size="lg"
               type="text"
               id="username"
               name="username"
@@ -126,6 +128,7 @@ export default function SignupPage() {
           </FormGroup>
           <FormGroup className="mb-4 mx-5" /*controlId="formPassword"*/>
             <Form.Control
+               size="lg"
                type="password"
                id="password"
                name="password"
