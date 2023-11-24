@@ -1,7 +1,15 @@
+import "./SignupPage.css"
+import { Link } from "react-router-dom"
 import { useState, useEffect } from "react";
-import logo from "../assets/logo.jpg";
+import Form from 'react-bootstrap/Form';
+import FormGroup from "react-bootstrap/esm/FormGroup";
+import Button from "react-bootstrap/esm/Button";
+
 
 export default function SignupPage() {
+
+
+
   const [formData, setFormData] = useState({
     email: "",
     username: "",
@@ -10,6 +18,7 @@ export default function SignupPage() {
 
   const [errors, setErrors] = useState({});
   const [isFormValid, setIsFormValid] = useState(false);
+  const [isButtonValid, setIsButtonValid] = useState(false);
 
   useEffect(() => {
     // Validation function to check if the form data is valid
@@ -35,6 +44,9 @@ export default function SignupPage() {
       // Check password
       if (!formData.password) {
         newErrors.password = "Password is required";
+        isValid = false;
+      } else if (formData.password.length < 8) {
+        newErrors.password = "Password must be at least 8 characters long";
         isValid = false;
       }
 
@@ -64,6 +76,8 @@ export default function SignupPage() {
     
         if (response.ok) {
           console.log("Form submitted:", formData);
+          setIsButtonValid(true);
+          alert("Check your email to verify your account");
         } else {
           // Handle signup errors, such as duplicate email or invalid data
           const errorData = await response.json();
@@ -78,61 +92,82 @@ export default function SignupPage() {
   };
 
   return (
-    <div className="signup-page">
+    <div className="container-fluid signup-page">
+
       <div className="sign-up-greeting">
         <div className="title">
-          <h1>Welcome to CineMatch</h1>
-          <div className="already-have-an-account-container">
-            <p>Already have an account?</p>
-            <a href="">Click Here!</a>
+          <div className="welcome-text">
+            Welcome to CineMatch
+          </div>
+          <div className="already-have-an-account">
+            Already have an account? <Link to ="/signin">Click Here!</Link>
           </div>
         </div>
       </div>
 
-      <div className="signup-form-container">
-        <div className="signup-form-logo">
-          <img src={logo} alt="logo" />
-        </div>
-
-        <form onSubmit={handleSubmit}>
-          <div>
-            <label htmlFor="email">Email</label>
-            <input
-              type="text"
+      <div className= "sign-up-form-container">
+        <Form className= "sign-up-form"onSubmit={handleSubmit}> 
+          <FormGroup className="mb-5">
+            Logo
+          </FormGroup>
+          <FormGroup className="mb-4 mx-5" /*controlId="formEmail"*/>
+            <Form.Control
+              size="lg"
+              type="email"
               id="email"
               name="email"
+              placeholder="Email"
               value={formData.email}
               onChange={handleInputChange}
             />
-            {errors.email && <p className="error" style={{color: "red"}}>{errors.email}</p>}
-          </div>
-          <div>
-            <label htmlFor="username">Username</label>
-            <input
+            {errors.email && <div className="" style={{color: "red"}}>{errors.email}</div>}
+          </FormGroup>
+          <FormGroup className="mb-4 mx-5" /*controlId="formUsername"*/>
+            <Form.Control
+              size="lg"
               type="text"
               id="username"
               name="username"
+              placeholder="Username"
               value={formData.username}
               onChange={handleInputChange}
             />
             {errors.username && <p className="error" style={{color: "red"}}>{errors.username}</p>}
-          </div>
-          <div>
-            <label htmlFor="password">Password</label>
-            <input
-              type="password"
-              id="password"
-              name="password"
-              value={formData.password}
-              onChange={handleInputChange}
-            />
+          </FormGroup>
+          <FormGroup className="mb-4 mx-5" /*controlId="formPassword"*/>
+            <Form.Control
+               size="lg"
+               type="password"
+               id="password"
+               name="password"
+               placeholder="Password"
+               value={formData.password}
+               onChange={handleInputChange}
+             />
             {errors.password && <p className="error" style={{color: "red"}}>{errors.password}</p>}
-          </div>
+          </FormGroup>
           <div>
-            <button type="submit">Sign Up</button>
+            {isButtonValid
+            ? <Link to= "/mainpage">
+                <Button variant="success" type="submit">
+                  Submit
+                </Button>
+              </Link>
+              :<Button variant="success" type="submit">
+                Submit
+              </Button>}
           </div>
-        </form>
-      </div>
+        </Form>
+        <div className="phone-title">
+            <div className="phone-welcome-text">
+              Welcome to CineMatch
+            </div>
+            <div className="phone-already-have-an-account">
+              Already have an account? <Link to ="/signin">Click Here!</Link>
+            </div>
+          </div>
+        </div>
+
     </div>
   );
 }

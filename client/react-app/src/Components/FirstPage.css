@@ -53,15 +53,22 @@
 @media (max-width: 767px) {
 
   .first-text{
-    left: 30%;
+    left: 20%;
   }
   
   .first-text-big {
-    font-size: 5vw; 
+    font-size: 5.5vw; 
   }
 
   .first-text-small {
-    font-size: 2vw; 
+    font-size: 3vw; 
+  }
+
+  @media (max-height: 300px){
+    .first-text{
+      display: none;
+    }
+
   }
 }
 
