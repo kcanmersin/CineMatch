@@ -1,4 +1,5 @@
 import "./SignupPage.css"
+import { Link } from "react-router-dom"
 import { useState, useEffect } from "react";
 import Form from 'react-bootstrap/Form';
 import FormGroup from "react-bootstrap/esm/FormGroup";
@@ -13,6 +14,7 @@ export default function SignupPage() {
 
   const [errors, setErrors] = useState({});
   const [isFormValid, setIsFormValid] = useState(false);
+  const [isButtonValid, setIsButtonValid] = useState(false);
 
   useEffect(() => {
     // Validation function to check if the form data is valid
@@ -70,6 +72,7 @@ export default function SignupPage() {
     
         if (response.ok) {
           console.log("Form submitted:", formData);
+          setIsButtonValid(true);
         } else {
           // Handle signup errors, such as duplicate email or invalid data
           const errorData = await response.json();
@@ -92,13 +95,13 @@ export default function SignupPage() {
             Welcome to CineMatch
           </div>
           <div className="already-have-an-account">
-            Already have an account? <a href="">Click Here!</a>
+            Already have an account? <Link to ="/signin">Click Here!</Link>
           </div>
         </div>
       </div>
 
       <div className= "sign-up-form-container">
-        <Form onSubmit={handleSubmit}> 
+        <Form className= "sign-up-form"onSubmit={handleSubmit}> 
           <FormGroup className="mb-5">
             Logo
           </FormGroup>
@@ -138,11 +141,28 @@ export default function SignupPage() {
              />
             {errors.password && <p className="error" style={{color: "red"}}>{errors.password}</p>}
           </FormGroup>
-          <Button variant="success" type="submit">
-            Submit
-          </Button>
+          <div>
+            {isButtonValid
+            ? <Link to= "/mainpage">
+                <Button variant="success" type="submit">
+                  Submit
+                </Button>
+              </Link>
+              :<Button variant="success" type="submit">
+                Submit
+              </Button>}
+          </div>
         </Form>
+        <div className="phone-title">
+            <div className="phone-welcome-text">
+              Welcome to CineMatch
+            </div>
+            <div className="phone-already-have-an-account">
+              Already have an account? <Link to ="/signin">Click Here!</Link>
+            </div>
+          </div>
         </div>
+
     </div>
   );
 }
