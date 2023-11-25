@@ -8,7 +8,15 @@ import Button from "react-bootstrap/esm/Button";
 
 export default function SignupPage() {
 
-
+  function capitalizeFirstLetter(str) {
+    if (typeof str === 'string' && str !== null && str !== undefined) {
+      // Capitalize the first letter
+      return str.charAt(0).toUpperCase() + str.slice(1);
+    } else {
+      // If str is not a string, return an empty string or handle it as needed
+      return '';
+    }
+  }
 
   const [formData, setFormData] = useState({
     email: "",
@@ -18,7 +26,7 @@ export default function SignupPage() {
 
   const [errors, setErrors] = useState({});
   const [isFormValid, setIsFormValid] = useState(false);
-  const [isButtonValid, setIsButtonValid] = useState(false);
+  const [errorMessage, setErrorMessage] = useState("");
 
   useEffect(() => {
     // Validation function to check if the form data is valid
@@ -52,6 +60,7 @@ export default function SignupPage() {
 
       setErrors(newErrors);
       setIsFormValid(isValid);
+      setErrorMessage("");
     };
 
     validateForm();
@@ -76,11 +85,14 @@ export default function SignupPage() {
     
         if (response.ok) {
           console.log("Form submitted:", formData);
-          setIsButtonValid(true);
           alert("Check your email to verify your account");
         } else {
           // Handle signup errors, such as duplicate email or invalid data
           const errorData = await response.json();
+          let errorMessage = (errorData.password || errorData.email || 'An unknown error occurred');
+          errorMessage = capitalizeFirstLetter(String(errorMessage));
+          setErrorMessage(errorMessage);
+          
           console.error('Signup failed:', errorData.message);
         }
       } catch (error) {
@@ -120,7 +132,7 @@ export default function SignupPage() {
               value={formData.email}
               onChange={handleInputChange}
             />
-            {errors.email && <div className="" style={{color: "red"}}>{errors.email}</div>}
+            {errors.email && <div className="error" style={{color: "red"}}>{errors.email}</div>}
           </FormGroup>
           <FormGroup className="mb-4 mx-5" /*controlId="formUsername"*/>
             <Form.Control
@@ -147,16 +159,11 @@ export default function SignupPage() {
             {errors.password && <p className="error" style={{color: "red"}}>{errors.password}</p>}
           </FormGroup>
           <div>
-            {isButtonValid
-            ? <Link to= "/mainpage">
-                <Button variant="success" type="submit">
-                  Submit
-                </Button>
-              </Link>
-              :<Button variant="success" type="submit">
+              <Button variant="success" type="submit">
                 Submit
-              </Button>}
+              </Button>
           </div>
+          {errorMessage && <p style={{ color: "red" }}>{errorMessage}</p>}
         </Form>
         <div className="phone-title">
             <div className="phone-welcome-text">
