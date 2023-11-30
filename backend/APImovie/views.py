@@ -1,6 +1,6 @@
 from rest_framework import viewsets, generics
-from .models import Movie, MovieList
-from .serializers import MovieSerializer, MovieListSerializer
+from .models import Movie, MovieList, Vote
+from .serializers import MovieSerializer, MovieListSerializer, VoteSerializer
 from rest_framework.response import Response
 from rest_framework.decorators import action
 
@@ -8,38 +8,38 @@ class MovieViewSet(viewsets.ModelViewSet):
     queryset = Movie.objects.all()
     serializer_class = MovieSerializer
 
-class MovieListCreateView(generics.ListCreateAPIView):
+class MovieListViewSet(viewsets.ModelViewSet):
     queryset = MovieList.objects.all()
     serializer_class = MovieListSerializer
+
+from rest_framework.permissions import IsAuthenticated
+class MovieListCreateView(generics.CreateAPIView):
+    queryset = MovieList.objects.all()
+    serializer_class = MovieListSerializer
+    permission_classes = [IsAuthenticated]
+
+    def perform_create(self, serializer):
+        serializer.save(user=self.request.user)
 
 class MovieListDetailView(generics.RetrieveUpdateDestroyAPIView):
     queryset = MovieList.objects.all()
     serializer_class = MovieListSerializer
 
-class VoteView(viewsets.ViewSet):
-    queryset = MovieList.objects.all()
-    serializer_class = MovieListSerializer
 
-    @action(detail=True, methods=['post'])
-    def upvote(self, request, pk=None):
-        movie_list = self.get_object()
-        movie_list.upvotes += 1
-        movie_list.save()
-        return Response({'status': 'Upvoted'})
+from rest_framework import status
+class VoteView(viewsets.ModelViewSet):
+    queryset = Vote.objects.all()
+    serializer_class = VoteSerializer
+    permission_classes = [IsAuthenticated]
 
-    @action(detail=True, methods=['get'])
-    def get_upvotes(self, request, pk=None):
-        movie_list = self.get_object()
-        return Response({'upvotes': movie_list.upvotes})
+    def post(self, request, *args, **kwargs):
+        serializer = VoteSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        serializer.save(user=request.user)
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
 
-    @action(detail=True, methods=['post'])
-    def downvote(self, request, pk=None):
-        movie_list = self.get_object()
-        movie_list.downvotes += 1
-        movie_list.save()
-        return Response({'status': 'Downvoted'})
-    
-    @action(detail=True, methods=['get'])
-    def get_downvotes(self, request, pk=None):
-        movie_list = self.get_object()
-        return Response({'downvotes': movie_list.downvotes})
+    def create(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        self.perform_create(serializer)
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
