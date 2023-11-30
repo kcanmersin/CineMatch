@@ -5,7 +5,7 @@ import SignupPage from "./Components/SignupPage"
 import SigninPage from "./Components/SigninPage"
 import MainPage from "./Components/MainPage"
 import MoviePage from "./Components/MoviePage"
-import WatchListPage from "./Components/WatchListPage"
+import ListsPage from './Components/ListsPage';
 
 function App() {
     return(
@@ -15,7 +15,8 @@ function App() {
         <Route path="/signin" element={<SigninPage />} />
         <Route path="/mainpage" element={<MainPage/>} />
         <Route path="/moviepagegodfather" element={<MoviePage/>} />
-        <Route path="/movielist" element={<WatchListPage/>} />
+        <Route path="/mylist" element={<ListsPage/>} />
+      
       </Routes>
 
     )
