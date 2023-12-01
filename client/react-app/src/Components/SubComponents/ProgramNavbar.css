@@ -1,31 +1,92 @@
-.navbar {
-    position: sticky;
-    top: 0;
+.main-navbar{
+    background-color: #010B18;
+    height: 3rem;
 }
-
 .navbar-search-bar{
     border-radius: var(--bs-border-radius) 0rem 0rem var(--bs-border-radius);
+    border: var(--bs-border-width) solid #CECECE;
+    background-color: #4d545d;
 }
 
 .navbar-button{
     border-radius: 0 var(--bs-btn-border-radius) var(--bs-btn-border-radius) 0;
+    border: var(--bs-border-width) solid #CECECE;
+    color: #CECECE;
+}
+
+.navbar-search-bar::placeholder {
+    color: #CECECE;
+  }
+  
+.navbar-button:hover{
+    background-color: #CECECE;
+    border: var(--bs-border-width) solid #CECECE;
+    color: #010B18;
 }
 
 .side-menu-button {
+    color: #CECECE;
     padding: var(--bs-navbar-toggler-padding-y) var(--bs-navbar-toggler-padding-x);
-    font-size: var(--bs-navbar-toggler-font-size);
+    font-size: 0.9rem;
     line-height: 1;
     color: var(--bs-navbar-color);
     background-color: transparent;
-    border: var(--bs-border-width) solid var(--bs-navbar-toggler-border-color);
+    border: var(--bs-border-width) solid #CECECE;
     border-radius: var(--bs-navbar-toggler-border-radius);
     transition: var(--bs-navbar-toggler-transition);
 }
 
-.profile-photo{
-    content: url("../../assets/pp.jpg");
+.side-menu-button:hover{
+    border-color:  #808080;
+  }
+  
+
+.profile-photo{ 
     width: 2rem;
     height: 2rem;
     border-radius: 25rem;
     border: 0.1rem solid #CECECE;
+}
+
+.side-menu-button .navbar-toggler-icon {
+    background-image: url("data:image/svg+xml,<svg viewBox='0 0 30 30' xmlns='http://www.w3.org/2000/svg'><path stroke='rgba(206,206,206, 1)' stroke-width='2' stroke-linecap='round' stroke-miterlimit='10' d='M4 7h22M4 15h22M4 23h22'/></svg>");
+}
+
+.side-bar{
+    position: absolute;
+    top: 3rem;
+    right: 0;
+    opacity: 1;
+    visibility: hidden;
+    transition: opacity 0.3s ease-out 0s, visibility 0.3s ease-out 0s;
+    background-color: rgb(0, 0, 15);
+    width: 300px;
+    z-index: 10;
+}
+
+.link-on-sidebar{
+    font-size: 30px;
+    justify-content: center;
+    border: 1px solid #CECECE;
+    color: #CECECE;
+    padding-top: 10px;
+    padding-bottom: 10px;
+}
+
+@media(max-width: 690px){
+    .navbar-username{
+        display: none;
+    }
+}
+
+@media(max-width: 555px){
+    .profile-photo{
+        display: none;
+    }
+}
+
+@media(max-width: 488px){
+    .navbar-logo{
+        display: none;
+    }
 }
