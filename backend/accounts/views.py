@@ -8,42 +8,47 @@ from .serializers import FollowerSerializer
 from rest_framework import generics, mixins, permissions
 from django.views.decorators.csrf import csrf_exempt
 
-@csrf_exempt
-@login_required
-def follow(request, pk):
-    user = get_object_or_404(User, pk = pk)
-    already_followed = Follower.objects.filter(user = user, is_followed_by = request.user).first()
-    if not already_followed:
-        new_follower = Follower(user = user, is_followed_by = request.user)
-        new_follower.save()
-        follower_count = Follower.objects.filter(user = user).count()
-        return JsonResponse({'status': 'Following', 'count': follower_count})
-    else:
-        already_followed.delete()
-        follower_count = Follower.objects.filter(user = user).count()
-        return JsonResponse({'status': 'Not following', 'count': follower_count})
-    return redirect('/')
-
-
 # @csrf_exempt
 # #@login_required
 # def follow(request, pk):
-#     # if not request.user.is_authenticated:
-#     #     return JsonResponse({'error': 'User not authenticated'}, status=401)
+#     user_to_follow = get_object_or_404(User, pk=pk)
 
-#     user = get_object_or_404(User, pk=pk)
-#     already_followed = Follower.objects.filter(user=user, is_followed_by=request.user).first()
+#     # Check if the user is trying to follow itself
+#     if user_to_follow == request.user:
+#         return JsonResponse({'error': 'Cannot follow yourself'}, status=400)
 
-#     if not already_followed:
-#         # new_follower = Follower(user=user, is_followed_by=request.user)
-#         new_follower = Follower(user_id=int(request.user.id), is_followed_by=request.user)
-#         new_follower.save()
-#         follower_count = Follower.objects.filter(user=user).count()
-#         return JsonResponse({'status': 'Following', 'count': follower_count})
-#     else:
+#     # Check if the user is already being followed
+#     already_followed = Follower.objects.filter(user=user_to_follow, is_followed_by=request.user).first()
+#     if already_followed:
 #         already_followed.delete()
-#         follower_count = Follower.objects.filter(user=user).count()
+#         follower_count = Follower.objects.filter(user=user_to_follow).count()
 #         return JsonResponse({'status': 'Not following', 'count': follower_count})
+
+#     # Create a new follower
+#     new_follower = Follower(user=user_to_follow, is_followed_by=request.user)
+#     new_follower.save()
+#     follower_count = Follower.objects.filter(user=user_to_follow).count()
+#     return JsonResponse({'status': 'Following', 'count': follower_count})
+
+@csrf_exempt
+#@login_required
+def follow(request, pk):
+    # if not request.user.is_authenticated:
+    #     return JsonResponse({'error': 'User not authenticated'}, status=401)
+
+    user = get_object_or_404(User, pk=pk)
+    already_followed = Follower.objects.filter(user=user, is_followed_by=request.user).first()
+
+    if not already_followed:
+        # new_follower = Follower(user=user, is_followed_by=request.user)
+        new_follower = Follower(user_id=int(request.user.id), is_followed_by=request.user)
+        new_follower.save()
+        follower_count = Follower.objects.filter(user=user).count()
+        return JsonResponse({'status': 'Following', 'count': follower_count})
+    else:
+        already_followed.delete()
+        follower_count = Follower.objects.filter(user=user).count()
+        return JsonResponse({'status': 'Not following', 'count': follower_count})
 
 
 class Following(generics.ListCreateAPIView):
