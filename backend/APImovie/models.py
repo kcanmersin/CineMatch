@@ -11,6 +11,8 @@ class MovieList(models.Model):
     movies = models.ManyToManyField('Movie', related_name='lists', blank=True)
     upvotes = models.PositiveIntegerField(default=0, null=True, blank=True)
     downvotes = models.PositiveIntegerField(default=0, null=True, blank=True)
+    created_at = models.DateTimeField(auto_now_add=True, null=True, blank=True)
+    total_time_of_movies = models.PositiveIntegerField(default=0, null=True, blank=True)
 
     class Meta:
         ordering = ['-upvotes']  # Optional: Order lists by upvotes in descending order
