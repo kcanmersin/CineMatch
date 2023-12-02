@@ -111,3 +111,12 @@ class Movie(models.Model):
 
     def __str__(self):
         return self.title
+class Rate(models.Model):
+    id = models.AutoField(primary_key=True)
+    user = models.ForeignKey(UserAccount, on_delete=models.CASCADE, related_name='rates')
+    movie = models.ForeignKey('Movie', on_delete=models.CASCADE, null=True, blank=True)
+    rate_point = models.FloatField(null=True, blank=True)
+
+    def __str__(self):
+        return f"{self.user.username} rates {self.movie.title} with {self.rate_point} points"
+
