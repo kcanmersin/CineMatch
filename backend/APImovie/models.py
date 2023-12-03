@@ -119,4 +119,15 @@ class Rate(models.Model):
 
     def __str__(self):
         return f"{self.user.username} rates {self.movie.title} with {self.rate_point} points"
+class Comment(models.Model):
+    user = models.ForeignKey(UserAccount, on_delete=models.CASCADE, related_name='comments')
+    text = models.TextField()
+    created_at = models.DateTimeField(auto_now_add=True)
+    parent_comment = models.ForeignKey('self', on_delete=models.CASCADE, null=True, blank=True, related_name='replies')
+    movie = models.ForeignKey('Movie', on_delete=models.CASCADE, related_name='comments')
+
+    def __str__(self):
+        return f"{self.user.username} - {self.text[:50]}"
+    
+
 
