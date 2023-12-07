@@ -1,12 +1,16 @@
 import "./SignInPage.css"
 import { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import Form from "react-bootstrap/Form";
 import Button from "react-bootstrap/Button";
 import Container from "react-bootstrap/Container";
 import FormGroup from "react-bootstrap/esm/FormGroup"
+import { AuthContext } from "../auth/AuthContext";
+import  { useContext } from 'react';
 
 export default function SigninPage() {
+
+  const { setIsAuthenticated } = useContext(AuthContext);
   
   // to redirect other pages
   const navigate = useNavigate();
@@ -82,6 +86,8 @@ export default function SigninPage() {
           // store the jwt access and refresh token in localStorage
           localStorage.setItem('jwtAccess', jsonData.access);
           localStorage.setItem('jwtRefresh', jsonData.refresh);
+          localStorage.setItem('isAuthenticated', 'true');
+          setIsAuthenticated(true);
           navigate("/mainpage");
         
         } else {
@@ -142,3 +148,5 @@ export default function SigninPage() {
     </div>
   );
 }
+
+

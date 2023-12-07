@@ -42,8 +42,10 @@ export default function ListsPage() {
 
   const fetchListImages = (lists) => {
     lists.forEach((list) => {
-      const listMovies = list.movies.slice(0, 2);
-      Promise.all(listMovies.map((movieId) => 
+      // Assuming each movie in list.movies is an object with an 'id' property
+      const listMovieIds = list.movies.slice(0, 2).map(movie => movie.id);
+  
+      Promise.all(listMovieIds.map((movieId) => 
         fetch(`http://127.0.0.1:8000/movie/movie/movies/${movieId}`, {
           method: 'GET',
           headers: {
@@ -67,6 +69,7 @@ export default function ListsPage() {
       });
     });
   };
+  
 
   if (isLoading) {
     return <div>Loading...</div>;
