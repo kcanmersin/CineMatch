@@ -10,6 +10,9 @@ import Image from 'react-bootstrap/Image';
 import Container from 'react-bootstrap/Container';
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
+import { AuthContext } from "../../auth/AuthContext";
+import  { useContext } from 'react';
+
 
 export default function ProgramNavbar() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
@@ -19,6 +22,13 @@ export default function ProgramNavbar() {
     if(sidebarOpen) document.getElementById('sidebar').style.visibility = 'visible';
     else document.getElementById('sidebar').style.visibility = 'hidden';
   };
+
+  const { logout } = useContext(AuthContext);
+
+  const handleLogout = () => {
+      logout();
+  };
+
 
   
 
@@ -69,8 +79,8 @@ export default function ProgramNavbar() {
           <Row className= "link-on-sidebar">
             LIGHT MODE
           </Row>
-          <Row className= "link-on-sidebar">
-            SETTINGS
+          <Row className= "link-on-sidebar" onClick={handleLogout} >
+            LOG OUT
           </Row>
         </Container>
       </div>

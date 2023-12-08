@@ -2,6 +2,7 @@
     background-color: #010B18;
     height: 3rem;
 }
+
 .navbar-search-bar{
     border-radius: var(--bs-border-radius) 0rem 0rem var(--bs-border-radius);
     border: var(--bs-border-width) solid #CECECE;

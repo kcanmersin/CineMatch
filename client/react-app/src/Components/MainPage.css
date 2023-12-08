@@ -1,4 +1,119 @@
 .main-page{
     width: 100vw;
-    height: 100vh;
+    height: 100%;
+    top: 0;
+    position:absolute;
+    overflow-y: auto;
+    padding-left: 0;
+    padding-right: 0;
+    max-width: 100%;
+    background-color: #0A1421;
+}
+
+.best-match-movie{
+    padding-left: 0;
+    padding-right: 0;
+    margin-left: 0;
+    margin-left: 0;
+    max-width: none;
+    display: flex;
+}
+
+
+.best-match-movie-poster-image{
+    width: 25vw;
+    height: 37.5vw;
+    object-fit: cover;
+}
+
+.best-match-movie-scene{
+    width: 75vw;
+    height: 37.5vw;
+    background: no-repeat;
+}
+
+
+.descriptive-text{
+    position: relative;
+    top: 55%;
+    margin-left: 3%;
+    color: #cecece;
+    text-align: left;
+    width: 60%;  
+}
+
+.best-match-text{
+    color: #00FF38;
+    margin-bottom: 4%;
+    font-size: 1vw;
+}
+
+.best-match-movie-name{
+    font-weight: bolder;
+    margin-bottom: 2%;
+    font-size: 1.8vw;
+}
+
+.best-match-movie-desc{
+    font-size: 1.1vw;
+}
+
+.best-match-movie-points{
+    position: relative;
+    top: 33%;
+    left: 80%;
+    width: min-content;
+    height: min-content;
+    color: #cecece;
+    font-size: 1.1vw;
+}
+
+.true-points{
+    font-weight: bolder;
+}
+
+.star{
+    position:relative;
+    width: min-content;
+    height: min-content;
+    top: 28.1%;
+    left: 86%;
+    margin-right: 12%;
+    font-size: 1vw;
+}
+
+@media (max-width: 767px) {
+
+    .descriptive-text{
+        position: relative;
+        top: 50%;
+        margin-left: 3%;
+        width: 60%;  
+    }
+    
+    .best-match-text{
+        font-size: 1.5vw;
+    }
+    
+    .best-match-movie-name{
+        margin-bottom: 2%;
+        font-size: 2.7vw;
+    }
+    
+    .best-match-movie-desc{
+        font-size: 1.65vw;
+    }
+    
+    .best-match-movie-points{
+        top: 13%;
+        left: 80%;
+        font-size: 1.65vw;
+    }
+    
+    
+    .star{
+        top: 7.3%;
+        left: 88%;
+        margin-right: 12%;
+    }
 }
