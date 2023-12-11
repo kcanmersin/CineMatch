@@ -1,6 +1,6 @@
 import "./ProgramNavbar.css"
 import React, { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import Navbar from "react-bootstrap/Navbar";
 import Nav from "react-bootstrap/Nav";
 import FormControl from "react-bootstrap/FormControl";
@@ -16,6 +16,7 @@ import  { useContext } from 'react';
 
 export default function ProgramNavbar() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const navigate = useNavigate();
 
   const toggleSidebar = () => {
     setSidebarOpen(!sidebarOpen);
@@ -29,8 +30,9 @@ export default function ProgramNavbar() {
       logout();
   };
 
-
-  
+  const handleMyListsClick = () => {
+    navigate('/mylist');
+  };
 
   const UserName= "Michael Corleone";
   const ppLink= "src/assets/pp.jpg";
@@ -70,7 +72,7 @@ export default function ProgramNavbar() {
           <Row className= "link-on-sidebar">
             PROFILE
           </Row>
-          <Row className= "link-on-sidebar">
+          <Row className= "link-on-sidebar" onClick={handleMyListsClick}>
             MY LISTS
           </Row>
           <Row className= "link-on-sidebar">

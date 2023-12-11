@@ -5,13 +5,11 @@ export default function ListsPage() {
   const [moviesData, setMoviesData] = useState({});
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
-
-  // get jwt token in order to authorize
+  const [showCreateForm, setShowCreateForm] = useState(false);
   const jwtAccess = localStorage.getItem('jwtAccess');
-  
 
   useEffect(() => {
-    const apiUrl = 'http://127.0.0.1:8000/movie/lists';
+    const apiUrl = 'http://127.0.0.1:8000/movie/lists/';
     setIsLoading(true);
 
     fetch(apiUrl, {
@@ -69,6 +67,44 @@ export default function ListsPage() {
       });
     });
   };
+
+  const handleCreateButtonClick = () => {
+    setShowCreateForm(!showCreateForm);
+  };
+
+  const handleCreateList = (event) => {
+    event.preventDefault();
+    const listName = event.target.listName.value;
+    setIsLoading(true);
+  
+    fetch('http://127.0.0.1:8000/movie/lists/create/', {
+      method: 'POST',
+      headers: {
+        'Authorization': `JWT ${jwtAccess}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ title: listName }), // Using "title" as the key for the list name
+    })
+    .then((response) => {
+      if (!response.ok) {
+        throw new Error('Network response was not ok');
+      }
+      return response.json();
+    })
+    .then((newList) => {
+      setLists(currentLists => [...currentLists, newList]);
+      setShowCreateForm(false);
+    })
+    .catch((error) => {
+      console.error('Error creating list:', error);
+      setError(error.toString());
+    })
+    .finally(() => {
+      setIsLoading(false);
+    });
+  };
+  
+  
   
 
   if (isLoading) {
@@ -82,7 +118,18 @@ export default function ListsPage() {
   return (
     <div className="lists-page">
       <h1>Movie Lists</h1>
-      {/* display the each list */}
+      <button onClick={handleCreateButtonClick}>
+        {showCreateForm ? 'Cancel' : 'Create List'}
+      </button>
+      {showCreateForm && (
+        <form onSubmit={handleCreateList}>
+          <label>
+            List Name:
+            <input type="text" name="listName" required />
+          </label>
+          <button type="submit">Create</button>
+        </form>
+      )}
       <ul>
         {lists.map((list, index) => (
           <li key={index}>
@@ -99,3 +146,19 @@ export default function ListsPage() {
     </div>
   );
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
