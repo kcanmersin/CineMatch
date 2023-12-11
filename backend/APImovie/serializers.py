@@ -1,7 +1,17 @@
 from rest_framework import serializers
-from .models import Movie, MovieList, Vote, Genre
+from .models import Movie, MovieList, Vote, Genre,Comment,Rate
 
-
+class RateSerializer(serializers.ModelSerializer):
+    movie = serializers.StringRelatedField(read_only=True)
+    class Meta:
+        model = Rate
+        fields = '__all__'
+class CommentSerializer(serializers.ModelSerializer):
+    movie = serializers.StringRelatedField(read_only=True) # user yorum yaparken başka bir user olarak ve ya başka bir filme yorum yapmasın diye
+    user = serializers.ReadOnlyField(source='user.username')
+    class Meta:
+        model = Comment
+        fields = '__all__'
 class GenreSerializer(serializers.ModelSerializer):
     class Meta:
         model = Genre
