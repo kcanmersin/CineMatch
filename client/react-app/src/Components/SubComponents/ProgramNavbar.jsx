@@ -67,21 +67,26 @@ export default function ProgramNavbar() {
 
       <div className="side-bar" id="sidebar" >
         <Container className="sidebar-content">
-          <Row className= "link-on-sidebar">
+          <Link to = "/myprofile"><Row className= "link-on-sidebar">
             PROFILE
           </Row>
-          <Row className= "link-on-sidebar">
+          </Link>
+          <Link to = "/mylists"><Row className= "link-on-sidebar">
             MY LISTS
           </Row>
-          <Row className= "link-on-sidebar">
+          </Link>
+          <Link to = "/mainpage"><Row className= "link-on-sidebar">
             STATS
           </Row>
-          <Row className= "link-on-sidebar">
+          </Link>
+          <Link to = "/mainpage"><Row className= "link-on-sidebar">
             LIGHT MODE
           </Row>
-          <Row className= "link-on-sidebar" onClick={handleLogout} >
+          </Link>
+          <Link to = "/mainpage"><Row className= "link-on-sidebar" onClick={handleLogout} >
             LOG OUT
           </Row>
+          </Link>
         </Container>
       </div>
     </div>
