@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 
-export default function ListsPage() {
+export default function MyListsPage() {
   const [lists, setLists] = useState([]);
   const [moviesData, setMoviesData] = useState({});
   const [isLoading, setIsLoading] = useState(false);

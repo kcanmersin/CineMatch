@@ -1,0 +1,29 @@
+.profile-page-content{
+    height: 50vw;
+    width: 98.7vw;
+}
+
+.user-profile{
+    position: relative;
+    top: 60%;
+    left: 5%;
+    width: 40%;
+    display: flex;
+}
+
+.user-profile-image{
+    border-radius: 50%;
+    object-fit: cover;
+    height: 10vw;
+    width: 10vw;
+}
+
+.user-name{
+    position: relative;
+    color: #cecece;
+    font-weight: bolder;
+    left: 8%;
+    top: 2em;
+    font-size: 2vw;
+}
+

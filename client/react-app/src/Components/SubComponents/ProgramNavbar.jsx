@@ -1,6 +1,6 @@
 import "./ProgramNavbar.css"
 import React, { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 import Navbar from "react-bootstrap/Navbar";
 import Nav from "react-bootstrap/Nav";
 import FormControl from "react-bootstrap/FormControl";
@@ -16,7 +16,6 @@ import  { useContext } from 'react';
 
 export default function ProgramNavbar() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
-  const navigate = useNavigate();
 
   const toggleSidebar = () => {
     setSidebarOpen(!sidebarOpen);
@@ -28,10 +27,6 @@ export default function ProgramNavbar() {
 
   const handleLogout = () => {
       logout();
-  };
-
-  const handleMyListsClick = () => {
-    navigate('/mylist');
   };
 
   const UserName= "Michael Corleone";
@@ -69,21 +64,26 @@ export default function ProgramNavbar() {
 
       <div className="side-bar" id="sidebar" >
         <Container className="sidebar-content">
-          <Row className= "link-on-sidebar">
+          <Link to = "/myprofile"><Row className= "link-on-sidebar">
             PROFILE
           </Row>
-          <Row className= "link-on-sidebar" onClick={handleMyListsClick}>
+          </Link>
+          <Link to = "/mylists"><Row className= "link-on-sidebar">
             MY LISTS
           </Row>
-          <Row className= "link-on-sidebar">
+          </Link>
+          <Link to = "/mainpage"><Row className= "link-on-sidebar">
             STATS
           </Row>
-          <Row className= "link-on-sidebar">
+          </Link>
+          <Link to = "/mainpage"><Row className= "link-on-sidebar">
             LIGHT MODE
           </Row>
-          <Row className= "link-on-sidebar" onClick={handleLogout} >
+          </Link>
+          <Link to = "/mainpage"><Row className= "link-on-sidebar" onClick={handleLogout} >
             LOG OUT
           </Row>
+          </Link>
         </Container>
       </div>
     </div>
