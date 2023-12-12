@@ -7,7 +7,7 @@ from django.contrib.postgres.fields import ArrayField
 
 class MovieList(models.Model):
     id = models.AutoField(primary_key=True)
-    title = models.CharField(max_length=255, unique=True, blank=False, null= False)
+    title = models.CharField(max_length=255, blank=False, null= False)
 #    title = models.CharField(max_length=255, default='Untitled')
     user = models.ForeignKey(UserAccount, on_delete=models.CASCADE, related_name='lists', null=True, blank=True)
     is_public = models.BooleanField(default=True, null=True)
@@ -47,11 +47,11 @@ class Movie(models.Model):
     original_language = models.CharField(max_length=20)
     original_title = models.CharField(max_length=255)
     overview = models.TextField()
-    release_date = models.CharField(max_length=255)
-    runtime = models.IntegerField()  # Updated to DecimalField
-    vote_average = models.CharField(max_length=255)  # Updated to DecimalField
+    release_date = models.IntegerField()
+    runtime = models.FloatField()  
+    vote_average = models.FloatField(max_length=255)  # Updated to DecimalField
     vote_count = models.IntegerField()
-    popularity = models.CharField(max_length=255)  # Updated to DecimalField
+    popularity = models.FloatField(max_length=255)  # Updated to DecimalField
 
     def __str__(self):
         return self.title

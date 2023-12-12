@@ -4,12 +4,16 @@ from .forms import CommentForm
 from rest_framework import viewsets, generics,status
 from .models import Comment, Movie, MovieList, Vote
 from django.views.generic import ListView, DetailView, CreateView
-from .serializers import CommentSerializer, MovieSerializer, MovieListSerializer, VoteSerializer
+from .serializers import CommentSerializer, MovieSerializer, MovieListSerializer, VoteSerializer,RateSerializer
 from rest_framework.response import Response
 from rest_framework.decorators import action
 from django.shortcuts import render, get_object_or_404
-from .models import Movie, Movie_Genre, Genre, Cast, Actor, Character, Crew, MovieCrew
+from .models import Movie, Movie_Genre, Genre, Cast, Actor, Character, Crew, MovieCrew,Rate
 from rest_framework.permissions import AllowAny
+
+from django.db.models import F
+from rest_framework import filters
+from django_filters.rest_framework import DjangoFilterBackend
 
 def movie_list(request):
     # Get all movies
@@ -58,8 +62,16 @@ def movie_detail(request, movie_id):
     )
 
 class MovieViewSet(viewsets.ModelViewSet):
+    permission_classes = [AllowAny]
     queryset = Movie.objects.all()
     serializer_class = MovieSerializer
+class MovieFilterListCreateView(generics.ListCreateAPIView):
+    permission_classes = [AllowAny]
+    queryset = Movie.objects.all()
+    serializer_class = MovieSerializer
+    filter_backends = [DjangoFilterBackend, filters.SearchFilter]
+
+    search_fields = ['$title']
 
 
 class MovieListViewSet(viewsets.ModelViewSet):
@@ -155,16 +167,7 @@ class MovieCommentListCreateView(generics.ListCreateAPIView):
     
 
         
-# class MovieCommentDetailView(generics.RetrieveUpdateDestroyAPIView):
-#     queryset = Comment.objects.all()
-#     serializer_class = CommentSerializer
-#     permission_classes = [AllowAny] 
-#     def get_object(self):
-#         comment_id = self.kwargs.get('comment_id')
-#         if comment.movie.id != movie_id:
-#             raise serilizers.ValidationError({"Message":"This comment not related to the this movie"})
-#         comment = get_object_or_404(Comment, id=comment_id)
-#         return comment
+
 class MovieCommentDetailView(generics.RetrieveUpdateDestroyAPIView):
     queryset = Comment.objects.all()
     serializer_class = CommentSerializer
@@ -180,3 +183,69 @@ class MovieCommentDetailView(generics.RetrieveUpdateDestroyAPIView):
         instance = self.get_object()
         self.perform_destroy(instance)
         return Response({'status': 'Comment deleted'}, status=status.HTTP_204_NO_CONTENT)
+
+class MovieRateListCreateView(generics.ListCreateAPIView):
+    queryset = Rate.objects.all()
+    serializer_class = RateSerializer
+    permission_classes = [AllowAny]  
+
+    def get_queryset(self):
+        movie_id = self.kwargs.get('movie_id')
+        return Rate.objects.filter(movie_id=movie_id)
+
+    def perform_create(self, serializer):
+        movie_id = self.kwargs.get('movie_id')
+        movie = get_object_or_404(Movie, id=movie_id)
+        user = self.request.user if self.request.user.is_authenticated else get_user_model().objects.get_or_create(username='anonymous_user')[0]  
+        # Save the rate
+        serializer.save(user=user, movie=movie)
+
+        movie.vote_count = F('vote_count') + 1
+        movie.vote_average = (F('vote_average') * F('vote_count') + serializer.validated_data['rate_point']) / F('vote_count')
+        movie.save()
+    
+class MovieRateDetailView(generics.RetrieveUpdateDestroyAPIView):
+    queryset = Rate.objects.all()
+    serializer_class = RateSerializer
+    permission_classes = [AllowAny]
+
+    def get_object(self):
+        rate_id = self.kwargs.get('rate_id')
+        movie_id = self.kwargs.get('movie_id')
+
+        rate = get_object_or_404(Rate, id=rate_id, movie_id=movie_id)
+        return rate
+    def destroy(self, request, *args, **kwargs):
+        instance = self.get_object()
+
+        movie = instance.movie
+        movie.vote_count = F('vote_count') - 1
+        if movie.vote_count > 0:
+            movie.vote_average = (F('vote_average') * F('vote_count') - instance.rate_point) / F('vote_count')
+        else:
+            movie.vote_average = 0  # Or any default value if vote_count becomes 0
+        movie.save()
+
+        self.perform_destroy(instance)
+
+        return Response({'status': 'Rate deleted'}, status=status.HTTP_204_NO_CONTENT)
+    def perform_update(self, serializer):
+        movie_id = self.kwargs.get('movie_id')
+        user = self.request.user if self.request.user.is_authenticated else get_user_model().objects.get_or_create(username='anonymous_user')[0]
+        current_rate = get_object_or_404(Rate, user=user, movie_id=movie_id)
+
+        # Update the rate
+        serializer.save(user=user, movie=current_rate.movie)
+
+        # Update movie vote count and average
+        current_movie = current_rate.movie
+        current_movie.vote_average = (F('vote_average') * F('vote_count') - current_rate.rate_point + serializer.validated_data['rate_point']) / F('vote_count')
+        current_movie.save()
+
+    def update(self, request, *args, **kwargs):
+        partial = kwargs.pop('partial', False)
+        instance = self.get_object()
+        serializer = self.get_serializer(instance, data=request.data, partial=partial)
+        serializer.is_valid(raise_exception=True)
+        self.perform_update(serializer)
+        return Response(serializer.data)

@@ -51,6 +51,7 @@ INSTALLED_APPS = [
     'import_export',
     'activation',
     'corsheaders',
+    "django_filters" 
 ]
 
 MIDDLEWARE = [
@@ -244,3 +245,7 @@ SOCIAL_AUTH_FACEBOOK_PROFILE_EXTRA_PARAMS = {
 }
 
 AUTH_USER_MODEL = 'accounts.UserAccount'
+
+
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+MEDIA_URL = '/media/'

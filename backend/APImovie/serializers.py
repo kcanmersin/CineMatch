@@ -1,12 +1,38 @@
 from rest_framework import serializers
-from .models import Movie, MovieList, Genre, Comment, Vote
+from .models import  MovieList, Genre, Comment, Vote,Actor, Cast, Character, Crew,  Movie, Movie_Genre, MovieCrew,Rate
 from django.urls import reverse
 
-class CommentSerializer(serializers.ModelSerializer):
-    movie = serializers.StringRelatedField(read_only=True) # user yorum yaparken başka bir user olarak ve ya başka bir filme yorum yapmasın diye
-    #user = serializers.ReadOnlyField(source='user.username')
+
+
+
+class CrewSerializer(serializers.ModelSerializer):
     class Meta:
-        model = Comment
+        model = Crew
+        fields = '__all__'
+
+
+class MovieCrewSerializer(serializers.ModelSerializer):
+    crew = CrewSerializer()
+
+    class Meta:
+        model = MovieCrew
+        fields = '__all__'
+class ActorSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Actor
+        fields = '__all__'
+
+class CharacterSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Character
+        fields = '__all__'
+
+class CastSerializer(serializers.ModelSerializer):
+    actor_id = ActorSerializer()  # Assuming you have an ActorSerializer
+    character_id = CharacterSerializer()  # Assuming you have a CharacterSerializer
+
+    class Meta:
+        model = Cast
         fields = '__all__'
 
 class GenreSerializer(serializers.ModelSerializer):
@@ -14,11 +40,38 @@ class GenreSerializer(serializers.ModelSerializer):
         model = Genre
         fields = '__all__'
 
+class MovieGenreSerializer(serializers.ModelSerializer):
+    genre = GenreSerializer()
+
+    class Meta:
+        model = Movie_Genre
+        fields = '__all__'
+class RateSerializer(serializers.ModelSerializer):
+    movie = serializers.StringRelatedField(read_only=True)
+    class Meta:
+        model = Rate
+        fields = '__all__'
+class CommentSerializer(serializers.ModelSerializer):
+    movie = serializers.StringRelatedField(read_only=True) # user yorum yaparken başka bir user olarak ve ya başka bir filme yorum yapmasın diye
+    user = serializers.ReadOnlyField(source='user.username')
+    class Meta:
+        model = Comment
+        fields = '__all__'
+
+
+
+
+
+
+
+
+
 class MovieSerializer(serializers.ModelSerializer):
-
     comments = serializers.SerializerMethodField()
-    genres = GenreSerializer(many=True, read_only=True)
-
+    rates = serializers.SerializerMethodField()
+    genres = serializers.SerializerMethodField()
+    cast = serializers.SerializerMethodField()
+    crew = serializers.SerializerMethodField()  # Add this line for crew
     class Meta:
         model = Movie
         fields = '__all__'
@@ -31,15 +84,34 @@ class MovieSerializer(serializers.ModelSerializer):
     
     def validate(self, data):
         return super().validate(data)
-    
     def get_comments(self,obj):
-        comments = Comment.objects.filter(movie=obj)[:3]
+        comments = Comment.objects.filter(movie=obj)[:1] # json olarak gönderilecek yorum sayısını belirtir
         request = self.context.get('request')
         return{
             "comments" : CommentSerializer(comments,many=True).data,
             "all_comment_link":request.build_absolute_uri(reverse('movie_comment_list',kwargs={'movie_id':obj.id}))
-    }
-    
+        }
+    def get_rates(self, obj):
+        rates = Rate.objects.filter(movie=obj)[:3]
+        request = self.context.get('request')
+        return {
+            "rates": RateSerializer(rates, many=True).data,
+            "all_rate_link": request.build_absolute_uri(reverse('movie_rate_list_create', kwargs={'movie_id': obj.id}))
+        }
+    def get_genres(self, obj):
+        # Retrieve all genres associated with the movie
+        movie_genres = Movie_Genre.objects.filter(movie=obj)
+        genre_names = [movie_genre.genre.genre_name for movie_genre in movie_genres]
+        return genre_names
+    def get_cast(self, obj):
+        # Retrieve all cast members associated with the movie
+        movie_cast = Cast.objects.filter(movie_id=obj)
+        return CastSerializer(movie_cast, many=True).data
+    def get_crew(self, obj):
+        # Retrieve all crew members associated with the movie
+        movie_crew = MovieCrew.objects.filter(movie=obj)
+        return MovieCrewSerializer(movie_crew, many=True).data
+
 
 class MovieListAddSerializer(serializers.ModelSerializer):
     movie_id = serializers.IntegerField(write_only=True)
