@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import Movie, MovieList, Vote, Genre, Comment
+from .models import Movie, MovieList, Genre, Comment, Vote
 from django.urls import reverse
 
 class CommentSerializer(serializers.ModelSerializer):

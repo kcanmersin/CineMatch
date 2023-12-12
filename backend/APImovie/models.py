@@ -4,16 +4,38 @@ from django.urls import reverse
 from django.utils.text import slugify
 from django.contrib.postgres.fields import ArrayField
 
+
 class MovieList(models.Model):
-    title = models.CharField(max_length=255, default='Untitled')
+    id = models.AutoField(primary_key=True)
+    title = models.CharField(max_length=255, unique=True, blank=False, null= False)
+#    title = models.CharField(max_length=255, default='Untitled')
     user = models.ForeignKey(UserAccount, on_delete=models.CASCADE, related_name='lists', null=True, blank=True)
     is_public = models.BooleanField(default=True, null=True)
+    movies = models.ManyToManyField('Movie', related_name='lists', blank=True)
     upvotes = models.PositiveIntegerField(default=0, null=True, blank=True)
     downvotes = models.PositiveIntegerField(default=0, null=True, blank=True)
+    created_at = models.DateTimeField(auto_now_add=True, null=True, blank=True)
+    total_time_of_movies = models.PositiveIntegerField(default=0, null=True, blank=True)
 
+    class Meta:
+        ordering = ['-upvotes']  # Optional: Order lists by upvotes in descending order
+
+    def get_upvotes(self):
+        return self.votes.filter(is_upvote=True).count()
+    
+    def get_downvotes(self):
+        return self.votes.filter(is_upvote=False).count()
+    
     def __str__(self):
         return self.title
 
+class Vote(models.Model):
+    user = models.ForeignKey(UserAccount, on_delete=models.CASCADE)
+    movie_list = models.ForeignKey(MovieList, on_delete=models.CASCADE, related_name='votes')
+    is_upvote = models.BooleanField()
+
+    class Meta:
+        unique_together = ('user', 'movie_list')
 
 
 class Movie(models.Model):
