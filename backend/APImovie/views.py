@@ -1,81 +1,142 @@
-from rest_framework import viewsets, generics
-from .models import Movie, MovieList, Vote
-from .serializers import MovieSerializer, MovieListSerializer, VoteSerializer, MovieListAddSerializer
+from django.urls import reverse
+from django.contrib.auth import get_user_model
+from .forms import CommentForm
+from rest_framework import viewsets, generics,status
+from .models import Comment, Movie, MovieList
+from django.views.generic import ListView, DetailView, CreateView
+from .serializers import CommentSerializer, MovieSerializer, MovieListSerializer
 from rest_framework.response import Response
 from rest_framework.decorators import action
+from django.shortcuts import render, get_object_or_404
+from .models import Movie, Movie_Genre, Genre, Cast, Actor, Character, Crew, MovieCrew
+from rest_framework.permissions import AllowAny
+
+def movie_list(request):
+    # Get all movies
+    movieurl = 'http://127.0.0.1:8000/movie/movies/'
+
+    movies = Movie.objects.all()
+    render(request, 'movie_list.html')
+    # Render the template with the list of movies
+    return render(request, 'movie_list.html', {'movies': movies})
+
+def movie_detail(request, movie_id):
+    # Get the movie by its ID
+    movie = get_object_or_404(Movie, id=movie_id)
+
+    # Get genres associated with the movie
+    genres = Genre.objects.filter(movie_genre__movie=movie)
+
+    # Get cast and crew for the movie
+    cast = Cast.objects.filter(movie_id=movie)
+    actors = Actor.objects.filter(id__in=cast.values('actor_id'))
+    characters = Character.objects.filter(id__in=cast.values('character_id'))
+
+    crew = MovieCrew.objects.filter(movie=movie)
+    crew_members = Crew.objects.filter(id__in=crew.values('crew_id'))
+
+    # Combine actors and characters into a list of dictionaries
+    actors_characters = [
+        {'actor': actor, 'character': character}
+        for actor, character in zip(actors, characters)
+    ]
+
+    # Get comments for the movie
+    comments = Comment.objects.filter(movie=movie)
+
+    # Render the template with the movie data and comments
+    return render(
+        request,
+        'movie_detail.html',
+        {
+            'movie': movie,
+            'genres': genres,
+            'actors_characters': actors_characters,
+            'crew_members': crew_members,
+            'comments': comments,  # Pass comments to the template
+        }
+    )
 
 class MovieViewSet(viewsets.ModelViewSet):
     queryset = Movie.objects.all()
     serializer_class = MovieSerializer
 
-class MovieListViewSet(viewsets.ModelViewSet):
+class MovieListCreateView(generics.ListCreateAPIView):
     queryset = MovieList.objects.all()
     serializer_class = MovieListSerializer
-
-from rest_framework.permissions import IsAuthenticated
-class MovieListCreateView(generics.CreateAPIView):
-    queryset = MovieList.objects.all()
-    serializer_class = MovieListSerializer
-    permission_classes = [IsAuthenticated]
-
-    def perform_create(self, serializer):
-        serializer.save(user=self.request.user)
 
 class MovieListDetailView(generics.RetrieveUpdateDestroyAPIView):
     queryset = MovieList.objects.all()
     serializer_class = MovieListSerializer
 
+class VoteView(viewsets.ViewSet):
+    queryset = MovieList.objects.all()
+    serializer_class = MovieListSerializer
 
-from rest_framework import status
-class VoteView(viewsets.ModelViewSet):
-    queryset = Vote.objects.all()
-    serializer_class = VoteSerializer
-    permission_classes = [IsAuthenticated]
+    @action(detail=True, methods=['post'])
+    def upvote(self, request, pk=None):
+        movie_list = self.get_object()
+        movie_list.upvotes += 1
+        movie_list.save()
+        return Response({'status': 'Upvoted'})
 
-    def post(self, request, *args, **kwargs):
-        serializer = VoteSerializer(data=request.data)
-        serializer.is_valid(raise_exception=True)
-        serializer.save(user=request.user)
-        return Response(serializer.data, status=status.HTTP_201_CREATED)
+    @action(detail=True, methods=['get'])
+    def get_upvotes(self, request, pk=None):
+        movie_list = self.get_object()
+        return Response({'upvotes': movie_list.upvotes})
 
-    def create(self, request, *args, **kwargs):
-        serializer = self.get_serializer(data=request.data)
-        serializer.is_valid(raise_exception=True)
-        self.perform_create(serializer)
-        return Response(serializer.data, status=status.HTTP_201_CREATED)
+    @action(detail=True, methods=['post'])
+    def downvote(self, request, pk=None):
+        movie_list = self.get_object()
+        movie_list.downvotes += 1
+        movie_list.save()
+        return Response({'status': 'Downvoted'})
+    
+    @action(detail=True, methods=['get'])
+    def get_downvotes(self, request, pk=None):
+        movie_list = self.get_object()
+        return Response({'downvotes': movie_list.downvotes})
+    
+class MovieCommentListCreateView(generics.ListCreateAPIView):
+    queryset = Comment.objects.all()
+    serializer_class = CommentSerializer
+    permission_classes = [AllowAny]
+    def get_queryset(self):
+        movie_id = self.kwargs.get('movie_id')
+        return Comment.objects.filter(movie_id=movie_id)
+    def perform_create(self, serializer):
+        movie_id = self.kwargs.get('movie_id')
+        movie = get_object_or_404(Movie, id=movie_id)
+        
+        # Use the authenticated user or create an anonymous user
+        user = self.request.user if self.request.user.is_authenticated else get_user_model().objects.get_or_create(username='anonymous_user')[0]
+
+        serializer.save(user=user, movie=movie)
     
 
-from rest_framework.generics import ListAPIView
-class GenreMovieListView(ListAPIView):
-    serializer_class = MovieSerializer
+        
+# class MovieCommentDetailView(generics.RetrieveUpdateDestroyAPIView):
+#     queryset = Comment.objects.all()
+#     serializer_class = CommentSerializer
+#     permission_classes = [AllowAny] 
+#     def get_object(self):
+#         comment_id = self.kwargs.get('comment_id')
+#         if comment.movie.id != movie_id:
+#             raise serilizers.ValidationError({"Message":"This comment not related to the this movie"})
+#         comment = get_object_or_404(Comment, id=comment_id)
+#         return comment
+class MovieCommentDetailView(generics.RetrieveUpdateDestroyAPIView):
+    queryset = Comment.objects.all()
+    serializer_class = CommentSerializer
+    permission_classes = [AllowAny]
 
-    def get_queryset(self):
-        genre_slug = self.kwargs['genre_slug']
-        # Assuming you have a 'genres' field in your Movie model
-        return Movie.objects.filter(genres__slug=genre_slug)
+    def get_object(self):
+        comment_id = self.kwargs.get('comment_id')
+        movie_id = self.kwargs.get('movie_id')
 
-from rest_framework.views import APIView
-class MovieListRetrieveAddView(APIView):
-    permission_classes = [IsAuthenticated]
-
-    def get(self, request, *args, **kwargs):
-        movie_lists = MovieList.objects.filter(user=request.user)
-        serializer = MovieListSerializer(movie_lists, many=True)
-        return Response(serializer.data)
-
-    def post(self, request, *args, **kwargs):
-        movie_list_id = request.data.get('movie_list_id')
-        movie_id = request.data.get('movie_id')
-
-        try:
-            movie_list = MovieList.objects.get(id=movie_list_id, user=request.user)
-            movie = Movie.objects.get(id=movie_id)
-            movie_list.movies.add(movie)
-            movie_list.total_time_of_movies += movie.runtime
-            movie_list.save()
-        except MovieList.DoesNotExist:
-            return Response({"error": "Movie list does not exist."}, status=status.HTTP_400_BAD_REQUEST)
-        except Movie.DoesNotExist:
-            return Response({"error": "Movie does not exist."}, status=status.HTTP_400_BAD_REQUEST)
-
-        return Response(status=status.HTTP_204_NO_CONTENT)
+        comment = get_object_or_404(Comment, id=comment_id, movie_id=movie_id)
+        return comment
+    def destroy(self, request, *args, **kwargs):
+        instance = self.get_object()
+        self.perform_destroy(instance)
+        return Response({'status': 'Comment deleted'}, status=status.HTTP_204_NO_CONTENT)
