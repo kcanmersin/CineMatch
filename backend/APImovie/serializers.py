@@ -179,3 +179,12 @@ class MovieListSerializer(serializers.ModelSerializer):
             movie = Movie.objects.create(**movie_data)
             movie_list.movies.add(movie)
         return movie_list
+
+from rest_framework import serializers
+
+
+class MovieListFilterSerializer(serializers.Serializer):
+    list_id = serializers.IntegerField()
+    start_date = serializers.IntegerField(allow_null=True)
+    end_date = serializers.IntegerField(allow_null=True)
+    genres = serializers.ListField(child=serializers.CharField(), allow_empty=True)

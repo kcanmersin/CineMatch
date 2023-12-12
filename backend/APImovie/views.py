@@ -4,7 +4,7 @@ from .forms import CommentForm
 from rest_framework import viewsets, generics,status
 from .models import Comment, Movie, MovieList, Vote
 from django.views.generic import ListView, DetailView, CreateView
-from .serializers import CommentSerializer, MovieSerializer, MovieListSerializer, VoteSerializer,RateSerializer
+from .serializers import CommentSerializer, MovieSerializer, MovieListSerializer, VoteSerializer,RateSerializer, MovieListFilterSerializer
 from rest_framework.response import Response
 from rest_framework.decorators import action
 from django.shortcuts import render, get_object_or_404
@@ -249,3 +249,57 @@ class MovieRateDetailView(generics.RetrieveUpdateDestroyAPIView):
         serializer.is_valid(raise_exception=True)
         self.perform_update(serializer)
         return Response(serializer.data)
+
+
+from rest_framework.views import APIView
+from rest_framework.response import Response
+from rest_framework import status
+from .models import Movie, Movie_Genre
+
+class MovieListFilterView(APIView):
+    def post(self, request, list_id, *args, **kwargs):
+        try:
+            movie_list = Movie.objects.get(id=list_id)
+
+            start_date = request.data.get('start_date')
+            end_date = request.data.get('end_date')
+            genres = request.data.get('genres')
+
+            # Your existing logic for filtering movies based on start_date, end_date, etc.
+            movies = Movie.objects.filter(release_date__gte=start_date, release_date__lte=end_date)
+
+            #print ("movies: " , movies)
+            #print ("genres: " , genres)
+            # Filter movies based on genres using Movie_Genre model
+            if genres:
+                genre_ids = Movie_Genre.objects.filter(genre__genre_name__in=genres).values_list('movie_id', flat=True)
+                #print ("genre_ids: " , genre_ids)
+                movies = movies.filter(id__in=genre_ids)
+                #print ("movies: " , movies)
+
+            # Manually construct the response data
+            response_data = []
+            for movie in movies:
+                movie_data = {
+                    'id': movie.id,
+                    'imdb_id': movie.imdb_id,
+                    'title': movie.title,
+                    'poster_path': movie.poster_path,
+                    'background_path': movie.background_path,
+                    'original_language': movie.original_language,
+                    'original_title': movie.original_title,
+                    'overview': movie.overview,
+                    'release_date': movie.release_date,
+                    'runtime': movie.runtime,
+                    'vote_average': movie.vote_average,
+                    'vote_count': movie.vote_count,
+                    'popularity': movie.popularity,
+                }
+                response_data.append(movie_data)
+
+            return Response(response_data, status=status.HTTP_200_OK)
+
+        except Movie.DoesNotExist:
+            return Response({'detail': 'Movie list not found.'}, status=status.HTTP_404_NOT_FOUND)
+        except Exception as e:
+            return Response({'detail': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
