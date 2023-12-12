@@ -1,5 +1,9 @@
+from collections.abc import Iterable
 from django.db import models
 from django.contrib.auth.models import AbstractBaseUser, PermissionsMixin, BaseUserManager
+
+def person_to_person_rate(user_id_1, user_id_2):
+    return 90.0
 
 class UserAccountManager(BaseUserManager):
     def create_user(self, email, password=None, **extra_fields):
@@ -37,6 +41,9 @@ class UserAccount(AbstractBaseUser, PermissionsMixin):
     is_active = models.BooleanField(default=True)
     is_staff = models.BooleanField(default=False)
     is_superuser = models.BooleanField(default=False)
+    sign_up_date = models.DateTimeField(auto_now_add=True, null=True, blank=True)
+
+    user_profile = models.ForeignKey('UserProfile', on_delete=models.CASCADE, related_name='user_account', null=True)
 
     blocked_users = models.ManyToManyField('self', blank=True, symmetrical=False)
 
@@ -45,9 +52,21 @@ class UserAccount(AbstractBaseUser, PermissionsMixin):
     USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = ['username']
 
+    def save(self, *args, **kwargs):
+        created = not self.pk
+        super(UserAccount, self).save(*args, **kwargs)
+
+        # Create a UserProfile if it's a new user and set it to the user_profile field
+        if created:
+            UserProfile.objects.create(user=self)
+
+            from APImovie.models import MovieList
+            MovieList.objects.create(title="watchlist", user=self)
+            MovieList.objects.create(title="watched_movies", user=self)
+
     def get_username(self):
         return self.username
-
+    
     def __str__(self):
         return self.email
 
@@ -74,7 +93,42 @@ class Follower(models.Model):
 
     def get_followers_count(self, user):
         return Follower.objects.filter(user=user).count()
-        
+    
     def __str__(self):
         return str(self.user) + " follows " + str(self.is_followed_by)
         #return str(self) #+ " follows " )#+ str(self.is_followed_by))
+
+
+class UserProfile(models.Model):
+    id = models.AutoField(primary_key=True)
+    user = models.ForeignKey(UserAccount, on_delete=models.CASCADE, related_name='profile')
+    profile_picture = models.ImageField(upload_to='profile_pictures', blank=True, default='profile_pictures/default.png')
+
+    def save(self, *args, **kwargs):
+        created = not self.pk
+        super(UserProfile, self).save(*args, **kwargs)
+
+        if created:
+            UserAccount.objects.filter(pk=self.user.pk).update(user_profile=self) 
+
+    def get_user_info(self):
+        user_dict = vars(self.user)
+        return {"id": user_dict["id"], "username": user_dict["username"]}
+
+    def get_following(self, user):
+        return Follower.objects.filter(is_followed_by=user)
+
+    def get_followers(self, user):
+        return Follower.objects.filter(user=user).exclude(is_followed_by=user)
+
+    def get_following_count(self, user):
+        return Follower.objects.filter(is_followed_by=user).count()
+
+    def get_followers_count(self, user):
+        return Follower.objects.filter(user=user).count()
+    
+    def calculate_match_rate(self, other_user_profile):
+        return person_to_person_rate(self.user.id, other_user_profile.user.id)
+
+    def __str__(self):
+        return str(self.user) + "'s profile"
