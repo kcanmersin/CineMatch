@@ -47,66 +47,6 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='Movie',
             fields=[
-                ('id', models.IntegerField(primary_key=True, serialize=False)),
-                ('imdb_id', models.CharField(max_length=255)),
-                ('title', models.CharField(max_length=255)),
-                ('poster_path', models.CharField(max_length=255)),
-                ('background_path', models.CharField(max_length=255)),
-                ('original_language', models.CharField(max_length=20)),
-                ('original_title', models.CharField(max_length=255)),
-                ('overview', models.TextField()),
-                ('release_date', models.IntegerField()),
-                ('runtime', models.FloatField()),
-                ('vote_average', models.FloatField(max_length=255)),
-                ('vote_count', models.IntegerField()),
-                ('popularity', models.FloatField(max_length=255)),
-            ],
-        ),
-        migrations.CreateModel(
-            name='MovieList',
-            fields=[
-                ('id', models.AutoField(primary_key=True, serialize=False)),
-                ('title', models.CharField(max_length=255, unique=True)),
-                ('is_public', models.BooleanField(default=True, null=True)),
-                ('upvotes', models.PositiveIntegerField(blank=True, default=0, null=True)),
-                ('downvotes', models.PositiveIntegerField(blank=True, default=0, null=True)),
-                ('created_at', models.DateTimeField(auto_now_add=True, null=True)),
-                ('total_time_of_movies', models.PositiveIntegerField(blank=True, default=0, null=True)),
-                ('movies', models.ManyToManyField(blank=True, related_name='lists', to='APImovie.movie')),
-                ('user', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.CASCADE, related_name='lists', to=settings.AUTH_USER_MODEL)),
-            ],
-            options={
-                'ordering': ['-upvotes'],
-            },
-        ),
-        migrations.CreateModel(
-            name='Rate',
-            fields=[
-                ('id', models.AutoField(primary_key=True, serialize=False)),
-                ('rate_point', models.FloatField(blank=True, null=True)),
-                ('movie', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='APImovie.movie')),
-                ('user', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='rates', to=settings.AUTH_USER_MODEL)),
-            ],
-        ),
-        migrations.CreateModel(
-            name='MovieCrew',
-            fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('crew', models.ForeignKey(null=True, on_delete=django.db.models.deletion.CASCADE, to='APImovie.crew')),
-                ('movie', models.ForeignKey(null=True, on_delete=django.db.models.deletion.CASCADE, to='APImovie.movie')),
-            ],
-        ),
-        migrations.CreateModel(
-            name='Movie_Genre',
-            fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('genre', models.ForeignKey(null=True, on_delete=django.db.models.deletion.CASCADE, to='APImovie.genre')),
-                ('movie', models.ForeignKey(null=True, on_delete=django.db.models.deletion.CASCADE, to='APImovie.movie')),
-            ],
-        ),
-        migrations.CreateModel(
-            name='Comment',
-            fields=[
                 ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
                 ('text', models.TextField()),
                 ('created_at', models.DateTimeField(auto_now_add=True)),

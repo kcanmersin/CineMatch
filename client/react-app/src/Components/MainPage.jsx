@@ -1,4 +1,5 @@
 import "./MainPage.css"
+import { useEffect } from "react";
 import { Link} from "react-router-dom";
 import ProgramNavbar from "./SubComponents/ProgramNavbar";
 import Container from "react-bootstrap/Container";
@@ -23,6 +24,60 @@ export default function MainPage(){
         e gitsin
         --movie card mekanizmasını chat reis yaptı movie card file ında logic yok
     */
+
+    /*const [bestMatchMovie, setBestMatchMovie] = useState({});
+    const [movieCardsMostPopular, setMovieCardsMostPopular] = useState([]);
+    const [movieCardsBestRated, setMovieCardsBestRated] = useState([]);
+    const [movieCardsForYou, setMovieCardsForYou] = useState([]);
+    const [userCards, setUserCards] = useState([]);
+    const [isLoading, setIsLoading] = useState(true);
+    const [error, setError] = useState(null);
+
+    useEffect(() => {
+        setIsLoading(true);
+        // Replace these URLs with your actual backend endpoints
+        Promise.all([
+            fetch('your-backend-url/best-match-movie'),
+            fetch('your-backend-url/most-popular'),
+            fetch('your-backend-url/best-rated'),
+            fetch('your-backend-url/for-you'),
+            fetch('your-backend-url/matched-people')
+        ])
+        .then(async ([resBestMatch, resMostPopular, resBestRated, resForYou, resMatchedPeople]) => {
+            const bestMatch = await resBestMatch.json();
+            const mostPopular = await resMostPopular.json();
+            const bestRated = await resBestRated.json();
+            const forYou = await resForYou.json();
+            const matchedPeople = await resMatchedPeople.json();
+            setBestMatchMovie(bestMatch);
+            setMovieCardsMostPopular(mostPopular);
+            setMovieCardsBestRated(bestRated);
+            setMovieCardsForYou(forYou);
+            setUserCards(matchedPeople);
+        })
+        .catch(error => {
+            console.error('Error fetching data:', error);
+            setError(error.toString());
+        })
+        .finally(() => {
+            setIsLoading(false);
+        });
+    }, []);
+
+    if (isLoading) {
+        return <div>Loading...</div>;
+    }
+
+    if (error) {
+        return <div>Error: {error}</div>;
+    }*/
+
+    // We will use this substitue for this  ---> <MovieCard key={movie.id} {...movie} />
+    /* <Link to={`/movie/${movie.id}`} key={movie.id}>
+                <MovieCard {...movie} />
+        </Link> */ 
+    
+
 
     const bestMatchMoviePoster= "src/assets/dummyPoster.jpg";
     const bestMatchMovieScene= "src/assets/dummy1.jpg";
@@ -86,6 +141,11 @@ export default function MainPage(){
                 <div className= "descriptive-text">
                     <div className= "best-match-text">BEST MATCH</div>
                     <div className= "best-match-movie-name">{bestMatchMovieName} ({bestMatchMovieYear})</div>
+                    {/*<Link to={`/movie/${bestMatchMovieId}`} className="best-match-movie-name-link">
+                        <div className="best-match-movie-name">
+                            {bestMatchMovieName} ({bestMatchMovieYear})
+                        </div>
+                    </Link>*/}
                     <div className= "best-match-movie-desc">{bestMatchMovieDesc}</div>
                 </div>
                 <div className= "best-match-movie-points"><span className="true-points">{bestMatchMoivePoints}</span>/10</div>
@@ -100,7 +160,7 @@ export default function MainPage(){
                     <Container className="movie-cards-container">
                             <div className="movie-cards">
                                 {movieCardsMostPopular.map((movie) => (
-                                <MovieCard key={movie.id} {...movie} />
+                                    <MovieCard key={movie.id} {...movie} />
                                 ))}
                             </div>
                     </Container>
@@ -112,7 +172,7 @@ export default function MainPage(){
                     <Container className="movie-cards-container">
                             <div className="movie-cards">
                                 {movieCardsBestRated.map((movie) => (
-                                <MovieCard key={movie.id} {...movie} />
+                                    <MovieCard key={movie.id} {...movie} />
                                 ))}
                             </div>
                     </Container>
@@ -124,7 +184,7 @@ export default function MainPage(){
                     <Container className="movie-cards-container">
                             <div className="movie-cards">
                                 {movieCardsForYou.map((movie) => (
-                                <MovieCard key={movie.id} {...movie} />
+                                    <MovieCard key={movie.id} {...movie} />
                                 ))}
                             </div>
                     </Container>
