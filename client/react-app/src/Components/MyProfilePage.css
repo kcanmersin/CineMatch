@@ -27,3 +27,134 @@
     font-size: 2vw;
 }
 
+.follow-stats{
+    position: relative;
+    color: #cecece;
+    top: 45%;
+    left: 80%;
+    width: 20%;
+    text-align: left;
+    font-size: 1.5vw;
+    overflow: hidden;        
+}
+
+.rest-myprofile-page{
+    display: flex;
+    flex-wrap: wrap;
+    margin-top: 10vh;
+}
+
+.profile-buttons-container{
+    display: flex;
+    flex-direction: column;
+    width: fit-content; 
+}
+
+.profile-button{
+    margin-top: 10%;
+    font-size: 2vw;
+    color: #cecece;
+    width: 15vw;
+    border-radius: 0 0.375rem 0.375rem 0;
+}
+
+.watched-movies-card-container{
+    margin-top: 4%;
+    padding-right: 0;
+    padding-left: 0;
+    max-width: none;
+}
+
+.watched-movies{
+    margin-left: 5vw;
+    width: 70vw;
+    justify-content: center;
+}
+
+.watched-movies-text{
+    color: #00FF38;
+    display: inline-block;
+    border-bottom: 0.2vw solid #00FF38;
+    font-size: 30px;
+    padding-bottom: 1%;
+    text-align: left;
+    display: flex;
+    justify-content: left;
+}
+
+.movie-card {
+    margin-right: 30px;
+    margin-bottom: 12px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    width: 200px;
+    color: #cecece;
+    font-weight: bold;
+    flex-shrink: 0;
+    align-self: flex-start;
+}
+
+@media (max-width: 950px){
+    .movie-card{
+        width: 175px;
+        margin-right: 26.25px;
+        margin-bottom: 10.5px;
+    }
+
+    .watched-movies-text{
+        font-size: 26.25px;
+    }
+}
+
+@media (max-width: 830px){
+    .movie-card{
+        width: 150px;
+        margin-right: 22.5px;
+        margin-bottom: 9px;
+    }
+
+    .watched-movies-text{
+        font-size: 22.5px;
+    }
+}
+
+@media (max-width: 700px){
+    .movie-card{
+        width: 125px;
+        margin-right: 18.75px;
+        margin-bottom: 7.5px;
+    }
+
+    .watched-movies-text{
+        font-size: 18.75px;
+    }
+}
+
+@media (max-width: 581px){
+    .movie-card{
+        width: 100px;
+        margin-right: 15px;
+        margin-bottom: 6px;
+    }
+
+    .watched-movies-text{
+        font-size: 15px;
+    }
+
+    .rest-myprofile-page{
+        margin-top: 8vh;
+    }
+}
+
+@media (max-width: 450px){
+    .movie-card{
+        width: 75px;
+        margin-right: 11.25px;
+        margin-bottom: 4.5px;
+    }
+
+    .watched-movies-text{
+        font-size: 11.25px;
+    }
+}

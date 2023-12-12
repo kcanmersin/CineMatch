@@ -16,7 +16,6 @@ export default function MainPage(){
         --------------------------------------------------------------------------
         LAN DİYAR YAPILACAKLARI BURAYA YAZIYORUM
 
-        --şu aşağıdaki constları backende bağla
         --bestMatchMovieName a tıklandığında o filmin pageine gitmeli onu ayarla
         ben link to yazmadım html in içinde tam nasıl yapılacağını bilmedğimden sen
         yaz
@@ -88,7 +87,7 @@ export default function MainPage(){
 
 
     const movieCardsMostPopular = [
-        { id: 1, name: "The Shdsadasdasining", image: "src/assets/dummyPoster.jpg", date: "1980" },
+        { id: 1, name: "The Curious Case of Benjamin Button", image: "src/assets/dummyPoster.jpg", date: "1980" },
         { id: 2, name: "The Shining", image: "src/assets/dummyPoster.jpg", date: "1980" },
         { id: 3, name: "The Shining", image: "src/assets/dummyPoster.jpg", date: "1980" },
         { id: 4, name: "The Shining", image: "src/assets/dummyPoster.jpg", date: "1980" },

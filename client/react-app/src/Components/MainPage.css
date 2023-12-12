@@ -103,20 +103,15 @@
     padding-bottom: 1%;
 }
 
-.invisible-text{
-    visibility: hidden;
-}
-
 .movie-cards {
     display: flex;
+    flex-direction: row;
+    font-size: 1rem;
 }
 
 .movie-cards-container{
-   
     margin-top: 2%;
     margin-bottom: 5%;
-    justify-content: flex-start; /* Adjust as needed */
-    flex-wrap: wrap;
 }
 
 .movie-card {
@@ -128,6 +123,7 @@
     color: #cecece;
     font-weight: bold;
     flex-shrink: 0;
+    align-self: flex-start;
 }
 
 .movie-card-body{
@@ -161,6 +157,7 @@
   
 .user-card-body {
     text-align: center;
+    color: #cecece;
 }
   
 .user-card-username {
@@ -169,7 +166,6 @@
 }
   
 .user-card-number {
-    color: #555; /* Adjust the color as needed */
     margin-top: 5px;
 }
   
@@ -208,7 +204,15 @@
         margin-right: 12%;
     }
 
-    .invisible-text{
-        display: none;
+    .main-page-list-text{
+        font-size: 2rem;
+    }
+
+    .movie-card{
+        font-size: 0.5rem;
+    }
+
+    .rest-of-the-page{
+        margin-left: 2%;
     }
 }
