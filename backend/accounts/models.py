@@ -31,27 +31,50 @@ class UserAccountManager(BaseUserManager):
         return self.create_user(email, password, **extra_fields)
 
 class UserAccount(AbstractBaseUser, PermissionsMixin):
+    id = models.AutoField(primary_key=True)
     email = models.EmailField(max_length=255, unique=True)
-    username =models.CharField(max_length=255)
-    #first_name = models.CharField(max_length=255)
-    #last_name = models.CharField(max_length=255)
+    username = models.CharField(max_length=255, unique=True)
     is_active = models.BooleanField(default=True)
     is_staff = models.BooleanField(default=False)
     is_superuser = models.BooleanField(default=False)
 
+    blocked_users = models.ManyToManyField('self', blank=True, symmetrical=False)
 
     objects = UserAccountManager()
 
     USERNAME_FIELD = 'email'
-    #REQUIRED_FIELDS = ['first_name', 'last_name']
     REQUIRED_FIELDS = ['username']
-    #def get_full_name(self):
-    #    return self.first_name
 
-    #def get_short_name(self):
-     #   return self.first_name
     def get_username(self):
         return self.username
 
     def __str__(self):
         return self.email
+
+class Follower(models.Model): 
+    user = models.ForeignKey(UserAccount, on_delete=models.CASCADE, related_name='user')
+    is_followed_by = models.ForeignKey(UserAccount, on_delete=models.CASCADE, related_name='is_followed_by')
+
+    def get_user_info(self):
+        user_dict = vars(self.user)
+        return {"id": user_dict["id"], "username": user_dict["username"]}
+
+    def get_is_followed_by_info(self):
+        user_dict = vars(self.is_followed_by)
+        return {"id": user_dict["id"], "username": user_dict["username"]}
+        
+    def get_following(self, user):
+        return Follower.objects.filter(is_followed_by=user)
+
+    def get_followers(self, user):
+        return Follower.objects.filter(user=user).exclude(is_followed_by=user)
+
+    def get_following_count(self, user):
+        return Follower.objects.filter(is_followed_by=user).count()
+
+    def get_followers_count(self, user):
+        return Follower.objects.filter(user=user).count()
+        
+    def __str__(self):
+        return str(self.user) + " follows " + str(self.is_followed_by)
+        #return str(self) #+ " follows " )#+ str(self.is_followed_by))

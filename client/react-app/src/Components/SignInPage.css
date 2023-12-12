@@ -1,0 +1,36 @@
+.page{
+    height: 100vh;
+    background-image: url("../assets/Inception.gif");
+    background-repeat: no-repeat;
+    background-size: cover;
+    background-position: center;
+    overflow: hidden;
+    position: relative;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    overflow-y: auto; /* Enable vertical scrolling if the content overflows */
+}
+
+.container-sm{
+    padding-right: calc(var(--bs-gutter-x) * 2);
+    padding-left: calc(var(--bs-gutter-x) * 2);
+}
+
+.form-label{
+    color: #CECECE;
+}
+
+.form-control{
+    opacity: 0.6;
+}
+
+.forgot-password{
+    color: #CECECE;
+}
+
+@media (min-width: 767px){
+    .container-sm{
+        max-width: 800px;
+    }
+}

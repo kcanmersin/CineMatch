@@ -2,14 +2,12 @@ import "./FirstPage.css"
 import { Link } from "react-router-dom"
 import Navbar from 'react-bootstrap/Navbar';
 import Nav from 'react-bootstrap/Nav';
-import Container from 'react-bootstrap/Container';
-
 
 export default function FirstPage(){
     return (
         <div className = "background-firstpage">
             <Navbar bg="transparent" expand="sm">
-                <Navbar.Brand className="mx-3 firstpage-color">Logo</Navbar.Brand>
+                <div className="mx-3 firstpage-color">Logo</div>
                 <Navbar.Toggle aria-controls="basic-navbar-nav"/>
                 <Navbar.Collapse id="basic-navbar-nav" className="justify-content-end">
                     <Nav>

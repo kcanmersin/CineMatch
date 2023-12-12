@@ -1,9 +1,18 @@
 from djoser.serializers import UserCreateSerializer
-from django.contrib.auth import get_user_model
-User = get_user_model()
+from rest_framework import serializers
+from .models import Follower
 
-class UserCreateSerializer(UserCreateSerializer):
-    class Meta(UserCreateSerializer.Meta):
-        model = User
-        #fields = ('id', 'email', 'first_name', 'last_name', 'password')
-        fields = ('id', 'email', 'username', 'password')
+class FollowerSerializer(serializers.ModelSerializer):
+    user = serializers.DictField(child=serializers.CharField(), source='get_user_info', read_only=True)
+    is_followed_by = serializers.DictField(child=serializers.CharField(), source='get_is_followed_by_info', read_only=True)
+
+    class Meta:
+        model = Follower
+        fields = ('user', 'is_followed_by')
+        read_only_fields = ('user', 'is_followed_by')
+
+    def to_representation(self, instance):
+        data = super().to_representation(instance)
+        if data.get('user') and data.get('is_followed_by'):
+            return data
+        return None
