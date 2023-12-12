@@ -115,7 +115,9 @@ class GenreMovieListView(ListAPIView):
     def get_queryset(self):
         genre_slug = self.kwargs['genre_slug']
         # Assuming you have a 'genres' field in your Movie model
-        return Movie.objects.filter(genres__slug=genre_slug)
+        return Movie.objects.filter(movie_genre__genre__genre_name=genre_slug)
+
+
 from rest_framework.views import APIView
 class MovieListRetrieveAddView(APIView):
     permission_classes = [IsAuthenticated]
