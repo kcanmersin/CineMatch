@@ -39,7 +39,7 @@ class Vote(models.Model):
 
 
 class Movie(models.Model):
-    tmdb_id = models.IntegerField(primary_key=True)
+    id = models.IntegerField(primary_key=True)
     imdb_id = models.CharField(max_length=255)
     title = models.CharField(max_length=255)
     poster_path = models.CharField(max_length=255)
@@ -47,11 +47,11 @@ class Movie(models.Model):
     original_language = models.CharField(max_length=20)
     original_title = models.CharField(max_length=255)
     overview = models.TextField()
-    release_date = models.CharField(max_length=255)
-    runtime = models.IntegerField()  # Updated to DecimalField
-    vote_average = models.CharField(max_length=255)  # Updated to DecimalField
+    release_date = models.IntegerField(max_length=255)
+    runtime = models.FloatField()  
+    vote_average = models.FloatField(max_length=255)  # Updated to DecimalField
     vote_count = models.IntegerField()
-    popularity = models.CharField(max_length=255)  # Updated to DecimalField
+    popularity = models.FloatField(max_length=255)  # Updated to DecimalField
 
     def __str__(self):
         return self.title
