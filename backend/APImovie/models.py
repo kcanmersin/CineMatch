@@ -39,7 +39,7 @@ class Vote(models.Model):
 
 
 class Movie(models.Model):
-    tmdb_id = models.IntegerField(primary_key=True)
+    id = models.IntegerField(primary_key=True)
     imdb_id = models.CharField(max_length=255)
     title = models.CharField(max_length=255)
     poster_path = models.CharField(max_length=255)
