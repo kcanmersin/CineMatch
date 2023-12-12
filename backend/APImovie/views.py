@@ -1,8 +1,8 @@
 from rest_framework import viewsets, generics
-from .models import Movie, MovieList, Vote
-from .serializers import MovieSerializer, MovieListSerializer, VoteSerializer, MovieListAddSerializer
+from .models import Movie, MovieList, Vote, Genre, Comment
+from .serializers import MovieSerializer, MovieListSerializer, VoteSerializer, MovieListAddSerializer, CommentSerializer
 from rest_framework.response import Response
-from rest_framework.decorators import action
+from django.shortcuts import get_object_or_404
 
 class MovieViewSet(viewsets.ModelViewSet):
     queryset = Movie.objects.all()
@@ -79,3 +79,43 @@ class MovieListRetrieveAddView(APIView):
             return Response({"error": "Movie does not exist."}, status=status.HTTP_400_BAD_REQUEST)
 
         return Response(status=status.HTTP_204_NO_CONTENT)
+    
+class UsersMovieListView(generics.ListAPIView):
+    serializer_class = MovieListSerializer
+
+    def get_queryset(self):
+        user_id = self.kwargs['user_id']
+        return MovieList.objects.filter(user=user_id)
+    
+    
+class MovieCommentListCreateView(generics.ListCreateAPIView):
+    queryset = Comment.objects.all()
+    serializer_class = CommentSerializer
+    #permission_classes = [AllowAny]
+    def get_queryset(self):
+        movie_id = self.kwargs.get('movie_id')
+        return Comment.objects.filter(movie_id=movie_id)
+    def perform_create(self, serializer):
+        movie_id = self.kwargs.get('movie_id')
+        movie = get_object_or_404(Movie, id=movie_id)
+        
+        # Use the authenticated user or create an anonymous user
+        #user = self.request.user if self.request.user.is_authenticated else get_user_model().objects.get_or_create(username='anonymous_user')[0]
+        user = self.request.user
+
+        serializer.save(user=user, movie=movie)
+    
+class MovieCommentDetailView(generics.RetrieveUpdateDestroyAPIView):
+    queryset = Comment.objects.all()
+    serializer_class = CommentSerializer
+
+    def get_object(self):
+        comment_id = self.kwargs.get('comment_id')
+        movie_id = self.kwargs.get('movie_id')
+
+        comment = get_object_or_404(Comment, id=comment_id, movie_id=movie_id)
+        return comment
+    def destroy(self, request, *args, **kwargs):
+        instance = self.get_object()
+        self.perform_destroy(instance)
+        return Response({'status': 'Comment deleted'}, status=status.HTTP_204_NO_CONTENT)

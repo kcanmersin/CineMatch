@@ -1,3 +1,7 @@
 db.sqlite3
 __pycache__/
 data/
+Can2.12/
+backend/media/
+backend/APImovie/migrations/
+backend/accounts/migrations/

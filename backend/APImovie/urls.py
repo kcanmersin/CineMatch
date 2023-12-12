@@ -15,7 +15,7 @@
 # ]
 
 from rest_framework.routers import DefaultRouter
-from .views import MovieViewSet, VoteView, MovieListCreateView, MovieListDetailView, MovieListViewSet, MovieListRetrieveAddView, GenreMovieListView
+from .views import MovieViewSet, VoteView, MovieListCreateView, MovieListDetailView, MovieListViewSet, MovieListRetrieveAddView, GenreMovieListView, MovieCommentListCreateView, MovieCommentDetailView, UsersMovieListView
 from django.urls import path, include
 
 movie_router = DefaultRouter()
@@ -31,6 +31,9 @@ urlpatterns = [
     path('lists/create/', MovieListCreateView.as_view(), name='movie-list-create'),
     path('votes/', VoteView.as_view({'post': 'create'}), name='vote-create'),
     path('movie-lists/', MovieListRetrieveAddView.as_view(), name='movie-list-retrieve-add'),
+    path('<int:user_id>/lists/', UsersMovieListView.as_view(), name='users-movie-list'),
     path('genres/<slug:genre_slug>/', GenreMovieListView.as_view(), name='genre-movie-list'),
+    path('comment_list/<int:movie_id>/', MovieCommentListCreateView.as_view(), name='movie_comment_list'),
+    path('comment_detail/movie/<int:movie_id>/comment/<int:comment_id>/', MovieCommentDetailView.as_view(), name='movie_comment_detail'),
 
 ]

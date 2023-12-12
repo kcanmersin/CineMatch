@@ -1,6 +1,13 @@
 from rest_framework import serializers
-from .models import Movie, MovieList, Vote, Genre
+from .models import Movie, MovieList, Vote, Genre, Comment
+from django.urls import reverse
 
+class CommentSerializer(serializers.ModelSerializer):
+    movie = serializers.StringRelatedField(read_only=True) # user yorum yaparken başka bir user olarak ve ya başka bir filme yorum yapmasın diye
+    #user = serializers.ReadOnlyField(source='user.username')
+    class Meta:
+        model = Comment
+        fields = '__all__'
 
 class GenreSerializer(serializers.ModelSerializer):
     class Meta:
@@ -9,6 +16,7 @@ class GenreSerializer(serializers.ModelSerializer):
 
 class MovieSerializer(serializers.ModelSerializer):
 
+    comments = serializers.SerializerMethodField()
     genres = GenreSerializer(many=True, read_only=True)
 
     class Meta:
@@ -23,6 +31,15 @@ class MovieSerializer(serializers.ModelSerializer):
     
     def validate(self, data):
         return super().validate(data)
+    
+    def get_comments(self,obj):
+        comments = Comment.objects.filter(movie=obj)[:3]
+        request = self.context.get('request')
+        return{
+            "comments" : CommentSerializer(comments,many=True).data,
+            "all_comment_link":request.build_absolute_uri(reverse('movie_comment_list',kwargs={'movie_id':obj.id}))
+    }
+    
 
 class MovieListAddSerializer(serializers.ModelSerializer):
     movie_id = serializers.IntegerField(write_only=True)
