@@ -8,22 +8,6 @@ from .models import Comment, Movie, MovieList, Genre, Movie_Genre ,Actor, Charac
 class MovieResource(resources.ModelResource):
     class Meta:
         model = Movie
-        skip_unchanged = True
-        report_skipped = False
-    id = fields.Field(column_name='id', attribute='id')
-    tmdb_id = fields.Field(column_name='tmdb_id', attribute='tmdb_id')
-    imdb_id = fields.Field(column_name='imdb_id', attribute='imdb_id')
-    title = fields.Field(column_name='title', attribute='title')
-    poster_path = fields.Field(column_name='poster_path', attribute='poster_path')
-    background_path = fields.Field(column_name='background_path', attribute='background_path')
-    original_language = fields.Field(column_name='original_language', attribute='original_language')
-    original_title = fields.Field(column_name='original_title', attribute='original_title')
-    overview = fields.Field(column_name='overview', attribute='overview')
-    release_date = fields.Field(column_name='release_date', attribute='release_date', widget=widgets.DateWidget(format='%Y%m%d'))
-    runtime = fields.Field(column_name='runtime', attribute='runtime')
-    vote_average = fields.Field(column_name='vote_average', attribute='vote_average')
-    vote_count = fields.Field(column_name='vote_count', attribute='vote_count')
-    popularity = fields.Field(column_name='popularity', attribute='popularity')
 
 class MovieAdmin(ImportExportModelAdmin):
     resource_class = MovieResource
