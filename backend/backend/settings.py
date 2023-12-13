@@ -27,7 +27,7 @@ SECRET_KEY = 'django-insecure-s$-u$m*y=7417^3jl1p-ld5i(2x7z9577%-)!k*$732g4t5%8s
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['*'] #for deploy
 
 
 # Application definition
@@ -51,7 +51,8 @@ INSTALLED_APPS = [
     'import_export',
     'activation',
     'corsheaders',
-    "django_filters" 
+    "django_filters",
+    'whitenoise.runserver_nostatic', #Make sure to add this for deploy
 ]
 
 MIDDLEWARE = [
@@ -65,6 +66,7 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'corsheaders.middleware.CorsMiddleware',
     'django.middleware.common.CommonMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware', #for deploy
 ]
 
 ROOT_URLCONF = 'backend.urls'
@@ -74,7 +76,7 @@ ROOT_URLCONF = 'backend.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [os.path.join(BASE_DIR, 'build')],
+        'DIRS': [os.path.join(BASE_DIR, 'templates')], #deploy için değiştirdim
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -201,7 +203,10 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/4.2/howto/static-files/
 
-STATIC_URL = 'static/'
+STATIC_URL = '/static/'
+STATIC_ROOT = os.path.join(BASE_DIR, 'statics')
+MEDIA_URLS ='/media/'
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field
@@ -247,5 +252,5 @@ SOCIAL_AUTH_FACEBOOK_PROFILE_EXTRA_PARAMS = {
 AUTH_USER_MODEL = 'accounts.UserAccount'
 
 
-MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
-MEDIA_URL = '/media/'
+#MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+#MEDIA_URL = '/media/'
