@@ -30,25 +30,39 @@ from django.views.decorators.csrf import csrf_exempt
 #     follower_count = Follower.objects.filter(user=user_to_follow).count()
 #     return JsonResponse({'status': 'Following', 'count': follower_count})
 
-@csrf_exempt
-#@login_required
-def follow(request, pk):
-    # if not request.user.is_authenticated:
-    #     return JsonResponse({'error': 'User not authenticated'}, status=401)
+from django.shortcuts import get_object_or_404
+from rest_framework import status
+from rest_framework.decorators import api_view, permission_classes
+from rest_framework.response import Response
+from rest_framework.permissions import IsAuthenticated
 
-    user = get_object_or_404(User, pk=pk)
-    already_followed = Follower.objects.filter(user=user, is_followed_by=request.user).first()
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+def follow(request):
+    follower_id = request.data.get('follower_id')
+    following_id = request.data.get('following_id')
 
-    if not already_followed:
-        # new_follower = Follower(user=user, is_followed_by=request.user)
-        new_follower = Follower(user_id=int(request.user.id), is_followed_by=request.user)
-        new_follower.save()
-        follower_count = Follower.objects.filter(user=user).count()
-        return JsonResponse({'status': 'Following', 'count': follower_count})
+    if follower_id == following_id:
+        return Response({'error': 'Cannot follow yourself'}, status=status.HTTP_400_BAD_REQUEST)
+
+    if not follower_id or not following_id:
+        return Response({'error': 'follower_id and following_id are required'}, status=status.HTTP_400_BAD_REQUEST)
+
+    follower = get_object_or_404(User, id=follower_id)
+    following = get_object_or_404(User, id=following_id)
+
+    print (follower)
+    print (following)
+
+    if Follower.objects.filter(user=follower, is_followed_by=following).exists():
+        # If the relationship already exists, delete it
+        Follower.objects.filter(user=follower, is_followed_by=following).delete()
+        return Response({'status': 'Not following'}, status=status.HTTP_200_OK)
     else:
-        already_followed.delete()
-        follower_count = Follower.objects.filter(user=user).count()
-        return JsonResponse({'status': 'Not following', 'count': follower_count})
+        # If the relationship does not exist, create it
+        Follower.objects.create(user=follower, is_followed_by=following)
+        return Response({'status': 'Following'}, status=status.HTTP_201_CREATED)
+
 
 
 class Following(generics.ListCreateAPIView):

@@ -24,14 +24,24 @@ class UserProfileSerializer(serializers.ModelSerializer):
     follower_count = serializers.SerializerMethodField()
     following_count = serializers.SerializerMethodField()
     profile_picture_url = serializers.SerializerMethodField()
+    best_matched_movie_poster = serializers.SerializerMethodField()
 
 
     class Meta:
         model = UserProfile
         fields = '__all__'
 
-    def get_match_rate(self, obj):
-        current_user_profile = self.context['request'].user.profile.first()  # Get the first profile
+    def get_best_matched_movie_poster(self, obj):
+        current_user_profile = self.context['request'].user.profile.first()
+        if current_user_profile:
+            return current_user_profile.best_matched_movie_poster(obj.user)
+        return None
+
+    def get_match_rate(self, obj): # That is looking through user profile
+        current_user_profile = self.context['request'].user.profile.first()  # Get the first profile 
+        #print(current_user_profile)
+        #print(" self.context['request']: " , self.context['request'].user.profile.first())
+        #print("obj: ", obj)
         if current_user_profile:
             return current_user_profile.calculate_match_rate(obj)
     

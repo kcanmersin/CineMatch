@@ -5,6 +5,18 @@ from django.contrib.auth.models import AbstractBaseUser, PermissionsMixin, BaseU
 def person_to_person_rate(user_id_1, user_id_2):
     return 90.0
 
+def person_to_movie_rate(user_id, movie_id):
+    return 90.0
+
+def person_to_movies(user_id):
+    a_list = [1, 2, 3, 4, 5]
+    return a_list
+
+def movie_to_movie_rate(movie_id_1, movie_id_2):
+    a_list = [1, 2, 3, 4, 5]
+    return a_list
+
+
 class UserAccountManager(BaseUserManager):
     def create_user(self, email, password=None, **extra_fields):
         if not email:
@@ -129,6 +141,11 @@ class UserProfile(models.Model):
     
     def calculate_match_rate(self, other_user_profile):
         return person_to_person_rate(self.user.id, other_user_profile.user.id)
+    
+    def best_matched_movie_poster(self, other_user):
+        return "https://image.tmdb.org/t/p/w500/6CoRTJTmijhBLJTUNoVSUNxZMEI.jpg"
+
+        
 
     def __str__(self):
         return str(self.user) + "'s profile"
