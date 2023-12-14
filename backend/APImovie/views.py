@@ -85,6 +85,15 @@ class MovieListCreateView(generics.CreateAPIView):
     permission_classes = [IsAuthenticated]
 
     def perform_create(self, serializer):
+        # Check if the movie list name is restricted
+        restricted_names = ["watchlist", "watched_movies"]
+        list_name = serializer.validated_data.get("title", "").lower()
+        
+        if list_name in restricted_names:
+            from rest_framework.exceptions import ValidationError
+            raise ValidationError({"title": "This list name is not allowed."})
+
+        # Proceed with creating the movie list
         serializer.save(user=self.request.user)
 
 class MovieListDetailView(generics.RetrieveUpdateDestroyAPIView):
@@ -134,15 +143,27 @@ class MovieListRetrieveAddView(APIView):
         try:
             movie_list = MovieList.objects.get(id=movie_list_id, user=request.user)
             movie = Movie.objects.get(id=movie_id)
-            movie_list.movies.add(movie)
-            movie_list.total_time_of_movies += movie.runtime
-            movie_list.save()
+
+            # Check if the movie is already in the list
+            if movie in movie_list.movies.all():
+                movie_list.movies.remove(movie)
+                movie_list.total_time_of_movies -= movie.runtime
+                movie_list.save()
+                return Response(status=status.HTTP_204_NO_CONTENT)
+            else:
+                movie_list.movies.add(movie)
+                movie_list.total_time_of_movies += movie.runtime
+                movie_list.save()
+                return Response(status=status.HTTP_201_CREATED)
+            
         except MovieList.DoesNotExist:
             return Response({"error": "Movie list does not exist."}, status=status.HTTP_400_BAD_REQUEST)
         except Movie.DoesNotExist:
             return Response({"error": "Movie does not exist."}, status=status.HTTP_400_BAD_REQUEST)
 
         return Response(status=status.HTTP_204_NO_CONTENT)    
+    
+
 class UsersMovieListView(generics.ListAPIView):
     serializer_class = MovieListSerializer
 
@@ -331,6 +352,20 @@ class MovieListFilterView(APIView):
             return Response(response_data, status=status.HTTP_200_OK)
 
         except Movie.DoesNotExist:
+            return Response({'detail': 'Movie list not found.'}, status=status.HTTP_404_NOT_FOUND)
+        except Exception as e:
+            return Response({'detail': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+class MovieListDeleteView(APIView):
+    def delete(self, request, list_id, *args, **kwargs):
+        try:
+            movie_list = get_object_or_404(MovieList, id=list_id)
+            if movie_list.user != request.user:
+                return Response({'detail': 'You do not have permission to delete this movie list.'}, status=status.HTTP_403_FORBIDDEN)
+            movie_list.delete()
+            return Response({'detail': 'Movie list deleted successfully.'}, status=status.HTTP_200_OK)
+
+        except MovieList.DoesNotExist:
             return Response({'detail': 'Movie list not found.'}, status=status.HTTP_404_NOT_FOUND)
         except Exception as e:
             return Response({'detail': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
