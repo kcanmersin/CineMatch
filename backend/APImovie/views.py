@@ -266,6 +266,10 @@ class MovieListFilterView(APIView):
             start_date = request.data.get('start_date')
             end_date = request.data.get('end_date')
             genres = request.data.get('genres')
+            actors = request.data.get('actors')
+            crews = request.data.get('crews')
+            sort_by = request.data.get('sort_by', 'popularity')  # Default sorting by popularity
+
 
             # Your existing logic for filtering movies based on start_date, end_date, etc.
             movies = Movie.objects.filter(release_date__gte=start_date, release_date__lte=end_date)
@@ -278,6 +282,31 @@ class MovieListFilterView(APIView):
                 #print ("genre_ids: " , genre_ids)
                 movies = movies.filter(id__in=genre_ids)
                 #print ("movies: " , movies)
+
+            if actors:
+                actor_ids = Actor.objects.filter(actor_name__in=actors).values_list('id', flat=True)
+                cast_movie_ids = Cast.objects.filter(actor_id__in=actor_ids).values_list('movie_id', flat=True)
+                movies = movies.filter(id__in=cast_movie_ids)
+
+            if crews:
+                crew_ids = Crew.objects.filter(name__in=crews).values_list('id', flat=True)
+                movie_crew_movie_ids = MovieCrew.objects.filter(crew_id__in=crew_ids).values_list('movie_id', flat=True)
+                movies = movies.filter(id__in=movie_crew_movie_ids) 
+
+
+            if sort_by == 'popularity':
+                movies = movies.order_by('-popularity')
+            elif sort_by == 'alphabetic':
+                movies = movies.order_by('title')
+            elif sort_by == 'rating':
+                movies = movies.order_by('-vote_average')
+            elif sort_by == 'user_rating':
+                # Implement your logic for sorting by user rating
+                pass
+            elif sort_by == 'length':
+                movies = movies.order_by('runtime')
+            elif sort_by == 'release_date':
+                movies = movies.order_by('-release_date')
 
             # Manually construct the response data
             response_data = []

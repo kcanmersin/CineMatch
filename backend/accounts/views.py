@@ -103,9 +103,9 @@ def serve_profile_picture(request, filename):
 
 import datetime
 from rest_framework.views import APIView
-from APImovie.models import  MovieList, Rate
+from APImovie.models import  MovieList, Rate, Movie_Genre
 from rest_framework.response import Response
-from django.db.models import Avg
+from django.db.models import Avg, Count
 
 class UserProfileStatsView(APIView):
     def get(self, request, user__username, *args, **kwargs):
@@ -113,7 +113,7 @@ class UserProfileStatsView(APIView):
 
         profile_photo_url = request.build_absolute_uri(user_profile.profile_picture.url) if user_profile.profile_picture else None
 
-        movie_list = MovieList.objects.filter(user=user_profile.user, title="watched_movies").first()
+        movie_list = MovieList.objects.filter(user=user_profile.user, title="watchlist").first()
         if movie_list:
             watched_movie_count = movie_list.movies.count()
         else:
@@ -131,14 +131,25 @@ class UserProfileStatsView(APIView):
         total_hours_watched = sum([movie.runtime for movie in movie_list.movies.all()]) / 60.0
         average_time_per_movie = total_hours_watched / watched_movie_count if watched_movie_count > 0 else 0
 
-        # Favourite genre, average rating to films, all movie ratings
-        #favourite_genre = ""  # Implement logic to find the favourite genre
         all_movie_ratings = Rate.objects.filter(user=user_profile.user).values('movie__title', 'rate_point', 'movie__release_date')
         average_rating = Rate.objects.filter(user=user_profile.user).aggregate(Avg('rate_point'))['rate_point__avg'] if all_movie_ratings.count() > 0 else 0
-        # Genre breakdown graph and movies per year graph
-        # Implement logic for genre breakdown graph
-        #genre_breakdown = 
-        #movies_per_year =  # Implement logic for movies per year graph
+        
+                # Calculate favourite genre
+        favorite_genre = Movie_Genre.objects.filter(movie__in=movie_list.movies.all()) \
+            .values('genre__genre_name') \
+            .annotate(genre_count=Count('genre__genre_name')) \
+            .order_by('-genre_count') \
+            .first()
+
+        # Calculate movies per year
+        movies_per_year = movie_list.movies.values('release_date') \
+            .annotate(movie_count=Count('id')) \
+            .order_by('release_date')
+
+        # Calculate genre breakdown
+        genre_breakdown = Movie_Genre.objects.filter(movie__in=movie_list.movies.all()) \
+            .values('genre__genre_name') \
+            .annotate(genre_count=Count('genre__genre_name'))
 
         # Prepare the response data
         response_data = {
@@ -151,11 +162,11 @@ class UserProfileStatsView(APIView):
             "last_login": last_login,
             "total_hours_watched": total_hours_watched,
             "average_time_per_movie": average_time_per_movie,
-            # "favourite_genre": favourite_genre,
             "average_rating": average_rating,
+            "favorite_genre": favorite_genre,
             "all_movie_ratings": all_movie_ratings,
-            # "genre_breakdown": genre_breakdown,
-            # "movies_per_year": movies_per_year,
+            "genre_breakdown": genre_breakdown,
+            "movies_per_year": movies_per_year,
         }
 
         return Response(response_data)

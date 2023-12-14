@@ -79,6 +79,10 @@ class UserAccount(AbstractBaseUser, PermissionsMixin):
     def get_username(self):
         return self.username
     
+    def get_movie_list(self, title):
+        from APImovie.models import MovieList
+        return MovieList.objects.filter(user=self, title=title).first()
+    
     def __str__(self):
         return self.email
 
@@ -123,6 +127,9 @@ class UserProfile(models.Model):
         if created:
             UserAccount.objects.filter(pk=self.user.pk).update(user_profile=self) 
 
+    def get_watched_movie_count(self):
+        return self.user.get_movie_list("watchlist").movies.count()
+
     def get_user_info(self):
         user_dict = vars(self.user)
         return {"id": user_dict["id"], "username": user_dict["username"]}
@@ -144,8 +151,6 @@ class UserProfile(models.Model):
     
     def best_matched_movie_poster(self, other_user):
         return "https://image.tmdb.org/t/p/w500/6CoRTJTmijhBLJTUNoVSUNxZMEI.jpg"
-
-        
 
     def __str__(self):
         return str(self.user) + "'s profile"
