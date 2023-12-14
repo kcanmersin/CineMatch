@@ -51,8 +51,8 @@ def follow(request):
     follower = get_object_or_404(User, id=follower_id)
     following = get_object_or_404(User, id=following_id)
 
-    print (follower)
-    print (following)
+    #print (follower)
+    #print (following)
 
     if Follower.objects.filter(user=follower, is_followed_by=following).exists():
         # If the relationship already exists, delete it

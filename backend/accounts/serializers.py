@@ -26,11 +26,18 @@ class UserProfileSerializer(serializers.ModelSerializer):
     profile_picture_url = serializers.SerializerMethodField()
     best_matched_movie_poster = serializers.SerializerMethodField()
     watched_movie_count = serializers.SerializerMethodField()
+    follow_status = serializers.SerializerMethodField()
 
 
     class Meta:
         model = UserProfile
         fields = '__all__'
+
+    def get_follow_status(self, obj):
+        current_user_profile = self.context['request'].user.profile.first()
+        if current_user_profile:
+            return current_user_profile.get_follow_status(obj.user)
+        return False
 
     def get_watched_movie_count(self, obj):
         current_user_profile = self.context['request'].user.profile.first()
