@@ -9,6 +9,8 @@ import SigninPage from './Components/SigninPage';
 import MainPage from './Components/MainPage';
 import MyListsPage from './Components/MyListsPage';
 import MyProfilePage from './Components/MyProfilePage';
+import UserPage from './Components/UserPage';
+import ListsPage from './Components/ListsPage';
 import PrivateRoute from './auth/PrivateRoute';
 
 export default function App() {
@@ -23,6 +25,10 @@ export default function App() {
             <Route path="/mainpage" element={<PrivateRoute isAuthenticated={isAuthenticated}><MainPage /></PrivateRoute>} />
             <Route path="/mylists" element={<PrivateRoute isAuthenticated={isAuthenticated}><MyListsPage /></PrivateRoute>} />
             <Route path="/myprofile" element={<PrivateRoute isAuthenticated={isAuthenticated}><MyProfilePage /></PrivateRoute>} />
+            <Route path="/user/:username" element={<PrivateRoute isAuthenticated={isAuthenticated}><UserPage /></PrivateRoute>} />
+            <Route path="/user/:username/lists" element={<PrivateRoute isAuthenticated={isAuthenticated}><ListsPage /></PrivateRoute>} />
+
+
         </Routes>
       
     );

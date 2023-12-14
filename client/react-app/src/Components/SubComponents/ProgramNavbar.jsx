@@ -17,6 +17,7 @@ import { useEffect } from "react";
 
 export default function ProgramNavbar() {
   const [username, setUsername] = useState("Loading...");
+  const [profilePictureUrl, setProfilePictureUrl] = useState('');
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const jwtAccess = localStorage.getItem('jwtAccess');
 
@@ -32,8 +33,9 @@ export default function ProgramNavbar() {
       logout();
   };
 
-  // retrieve the username
+  // get the username and profile picture
   useEffect(() => {
+    // Fetch username data
     fetch('http://127.0.0.1:8000/auth/users/me', {
         method: 'GET',
         headers: {
@@ -48,13 +50,31 @@ export default function ProgramNavbar() {
         throw new Error('Network response was not ok.');
     })
     .then(data => {
-        setUsername(data.username); // Set the fetched username
-    })
-    .catch(error => console.error('There has been a problem with your fetch operation:', error));
-}, [jwtAccess]);
+        setUsername(data.username);
+        const fetchedUsername = data.username;
 
-  const UserName= "Michael Corleone";
-  const ppLink= "src/assets/pp.jpg";
+        // Fetch profile picture data using the fetched username
+        return fetch(`http://127.0.0.1:8000/accounts/profile/${fetchedUsername}`, {
+            method: 'GET',
+            headers: {
+                'Authorization': `JWT ${jwtAccess}`,
+                'Content-Type': 'application/json',
+            },
+        });
+    })
+    .then(response => {
+        if(response.ok) {
+            return response.json();
+        }
+        throw new Error('Network response was not ok.');
+    })
+    .then(profileInfo => {
+        // Update state with profile picture URL
+        setProfilePictureUrl(profileInfo.profile_picture_url);
+    })
+    .catch(error => console.error('There has been a problem with your fetch operations:', error));
+  }, [jwtAccess]);
+
 
 
   return (
@@ -74,7 +94,7 @@ export default function ProgramNavbar() {
         <Nav.Link as={Link} to="/myprofile">
           <Image 
           className="mx-3 profile-photo"
-          src={ppLink}
+          src={profilePictureUrl}
           />
         </Nav.Link>
         <Nav.Link as={Link} to="/myprofile" className="mx-1 navbar-username">

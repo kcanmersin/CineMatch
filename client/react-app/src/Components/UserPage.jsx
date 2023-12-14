@@ -1,6 +1,6 @@
 import "./MyProfilePage.css"
 import { useState, useEffect } from "react";
-import { Link} from "react-router-dom";
+import { Link, useParams } from "react-router-dom";
 import ProgramNavbar from "./SubComponents/ProgramNavbar";
 import Button from "react-bootstrap/esm/Button";
 import Container from "react-bootstrap/esm/Container";
@@ -8,8 +8,10 @@ import MovieCard from "./SubComponents/MovieCard";
 import Row from "react-bootstrap/Row";
 
 
-export default function MyProfilePage(){
+export default function UserPage(){
+    const { username } = useParams();
     const [profileData, setProfileData] = useState({
+        id: null,
         username: "Loading...",
         matchRate: 0,
         followerCount: 0,
@@ -30,44 +32,27 @@ export default function MyProfilePage(){
     */
 
     useEffect(() => {
-        // Fetch username data
-        fetch('http://127.0.0.1:8000/auth/users/me', {
+        // Fetch profile data using the provided username
+        fetch(`http://127.0.0.1:8000/accounts/profile/${username}/`, {
             method: 'GET',
             headers: {
-                'Authorization': `JWT ${jwtAccess}`,
-                'Content-Type': 'application/json',
+            'Authorization': `JWT ${jwtAccess}`,
+            'Content-Type': 'application/json',
             },
         })
-        .then(response => {
-            if(response.ok) {
+            .then(response => {
+            if (response.ok) {
                 return response.json();
             }
             throw new Error('Network response was not ok.');
-        })
-        .then(data => {
-            // Set username in profile data
-            const fetchedUsername = data.username;
-            setProfileData(prevData => ({ ...prevData, username: fetchedUsername }));
-
-            // Fetch profile data using the fetched username
-            return fetch(`http://127.0.0.1:8000/accounts/profile/${fetchedUsername}`, {
-                method: 'GET',
-                headers: {
-                    'Authorization': `JWT ${jwtAccess}`,
-                    'Content-Type': 'application/json',
-                },
-            });
-        })
-        .then(response => {
-            if(response.ok) {
-                return response.json();
-            }
-            throw new Error('Network response was not ok.');
-        })
-        .then(profileInfo => {
+            })
+            .then(profileInfo => {
             // Update state with profile information
+            console.log(profileInfo);
             setProfileData(prevData => ({
                 ...prevData,
+                id: profileInfo.id,
+                username: username,
                 matchRate: profileInfo.match_rate,
                 followerCount: profileInfo.follower_count,
                 followingCount: profileInfo.following_count,
@@ -75,12 +60,12 @@ export default function MyProfilePage(){
                 watchedMovieCount: profileInfo.watched_movie_count,
                 bestMatchMoviePoster: profileInfo.best_match_movie_poster
             }));
-        })
-        .catch(error => console.error('There has been a problem with your fetch operations:', error));
-    }, [jwtAccess]);
+            })
+            .catch(error => console.error('There has been a problem with your fetch operations:', error));
+        }, [jwtAccess, username]);
     
     //const MyProfileBgImage= "src/assets/dummy1.jpg";
-    //const ppLink= "src/assets/pp.jpg";
+
     //const username="Michael Corleone";
 
     
@@ -89,7 +74,7 @@ export default function MyProfilePage(){
     //const followingsCount= "1923"
 
     // Dummy movie data
-    const movieData = [
+    /*const movieData = [
         { id: 1, name: "Movie 1", image: "src/assets/dummyPoster.jpg", date: "2022" },
         { id: 2, name: "Modsdddsdasdasda dasdasd dasdddddfsdvie 2", image: "src/assets/dummyPoster.jpg", date: "2021" },
         { id: 3, name: "Movie 3", image: "src/assets/dummyPoster.jpg", date: "2020" },
@@ -100,7 +85,7 @@ export default function MyProfilePage(){
         { id: 8, name: "Movie 3", image: "src/assets/dummyPoster.jpg", date: "2020" },
         { id: 9, name: "Movie 3", image: "src/assets/dummyPoster.jpg", date: "2020" },
         { id: 10, name: "Movie 3", image: "src/assets/dummyPoster.jpg", date: "2020" },
-    ];
+    ];*/
 
 
 
@@ -129,12 +114,13 @@ export default function MyProfilePage(){
             </div>
             <div className="rest-myprofile-page">
                 <div className="profile-buttons-container">
-                    <Link to="/mylists">
+                    <Link to={`/user/${username}/lists`}>
                         <Button variant="success profile-button">LISTS</Button>
                     </Link>
                     <Button variant="success profile-button">STATS</Button>
+                    <Button variant="success profile-button">FOLLOW</Button>
                 </div>
-                <div className= "watched-movies">
+                {/*<div className= "watched-movies">
                     <div className="watched-movies-text">
                         WATCHED MOVIES
                     </div>
@@ -145,7 +131,7 @@ export default function MyProfilePage(){
                             ))}
                         </Row>
                     </Container>
-                </div>
+                </div> */}
             </div>
         </div>
     )

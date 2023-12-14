@@ -112,8 +112,8 @@ export default function MainPage(){
       ];
 
       const userCards = [
-        { id: 1, username: "User1", percentage: 123, image: "src/assets/pp.jpg" },
-        { id: 2, username: "User3", percentage: 456, image: "src/assets/pp.jpg" },
+        { id: 1, username: "kenan", percentage: 123, image: "src/assets/pp.jpg" },
+        { id: 2, username: "diko", percentage: 456, image: "src/assets/pp.jpg" },
         { id: 3, username: "User4", percentage: 456, image: "src/assets/pp.jpg" },
         { id: 4, username: "User5", percentage: 456, image: "src/assets/pp.jpg" },
         { id: 5, username: "User6", percentage: 456, image: "src/assets/pp.jpg" },
@@ -195,7 +195,9 @@ export default function MainPage(){
                     <Container className="movie-cards-container">
                             <div className="movie-cards">
                                 {userCards.map((user) => (
-                                <UserCard key={user.id} {...user} />
+                                    <Link to={`/user/${user.username}`} key={user.id}>
+                                        <UserCard {...user} />
+                                    </Link>
                                 ))}
                             </div>
                     </Container>

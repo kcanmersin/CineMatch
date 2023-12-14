@@ -1,26 +1,33 @@
 import { useState, useEffect } from 'react';
+import { useParams } from 'react-router-dom';
 
-export default function ListsPage({ userId }) {
+export default function ListsPage() {
+  const { username } = useParams();
+  const [userId, setUserId] = useState(null);
   const [lists, setLists] = useState([]);
   const [moviesData, setMoviesData] = useState({});
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
   const jwtAccess = localStorage.getItem('jwtAccess');
 
-  // get the list of a specified user --> userId
+  // Fetch the user's ID based on the username
   useEffect(() => {
     setIsLoading(true);
-    fetch(`http://127.0.0.1:8000/movie/${userId}/lists/`, {
+    fetch(`http://127.0.0.1:8000/accounts/profile/${username}/`, {
       method: 'GET',
       headers: {
         'Authorization': `JWT ${jwtAccess}`,
         'Content-Type': 'application/json',
       },
     })
-    .then(response => response.json())
-    .then(data => {
-      setLists(data);
-      fetchListImages(data);
+    .then(response => {
+      if (response.ok) {
+        return response.json();
+      }
+      throw new Error('Network response was not ok.');
+    })
+    .then(profileInfo => {
+      setUserId(profileInfo.id); // Store the user's ID
     })
     .catch(error => {
       console.error('Error:', error);
@@ -29,7 +36,37 @@ export default function ListsPage({ userId }) {
     .finally(() => {
       setIsLoading(false);
     });
-  }, [userId]);
+  }, [jwtAccess, username]);
+
+
+  // get the list of a specified user --> userId
+  // UseEffect to fetch the user's lists only when userId is not null
+  useEffect(() => {
+    // Check if userId is not null before making the request
+    if (userId !== null) {
+      setIsLoading(true);
+      fetch(`http://127.0.0.1:8000/movie/${userId}/lists/`, {
+        method: 'GET',
+        headers: {
+          'Authorization': `JWT ${jwtAccess}`,
+          'Content-Type': 'application/json',
+        },
+      })
+      .then(response => response.json())
+      .then(data => {
+        setLists(data);
+        fetchListImages(data);
+      })
+      .catch(error => {
+        console.error('Error:', error);
+        setError(error.toString());
+      })
+      .finally(() => {
+        setIsLoading(false);
+      });
+    }
+  }, [userId, jwtAccess]);
+
 
   const fetchListImages = (lists) => {
     lists.forEach((list) => {
