@@ -153,12 +153,12 @@ class MovieListSerializer(serializers.ModelSerializer):
     movies = MovieSerializer(many=True, read_only=True)
     votes = VoteSerializer(many=True, read_only=True)  # Include votes in the response
     total_time_of_movies = serializers.IntegerField(read_only=True)
-    number_of_movies = serializers.SerializerMethodField()
+    movies = serializers.ListField(child=serializers.IntegerField(), write_only=True)
 
 
     class Meta:
         model = MovieList
-        fields = ('id', 'title', 'user', 'is_public', 'movies', 'upvotes', 'downvotes', 'votes', 'total_time_of_movies', 'number_of_movies') # votes eklendi
+        fields = ('id', 'title', 'user', 'is_public', 'movies', 'upvotes', 'downvotes', 'votes', 'total_time_of_movies', 'movies') # votes eklendi
 
     
     def get_number_of_movies(self, obj):
@@ -172,12 +172,16 @@ class MovieListSerializer(serializers.ModelSerializer):
 
     def create(self, validated_data):
         user = self.context['request'].user
-        movies_data = validated_data.pop('movies', [])  # remove movies from validated_data
-        validated_data.pop('user', None)  # remove user from validated_data
+        movie_ids = validated_data.pop('movies', [])
+        validated_data.pop('user', None)
         movie_list = MovieList.objects.create(user=user, **validated_data)
-        for movie_data in movies_data:
-            movie = Movie.objects.create(**movie_data)
-            movie_list.movies.add(movie)
+        for movie_id in movie_ids:
+            try:
+                movie = Movie.objects.get(id=movie_id)
+                movie_list.movies.add(movie)
+                movie_list.total_time_of_movies += movie.runtime
+            except Movie.DoesNotExist:
+                pass
         return movie_list
 
 from rest_framework import serializers

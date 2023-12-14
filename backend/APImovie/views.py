@@ -92,6 +92,7 @@ class MovieListCreateView(generics.CreateAPIView):
         if list_name in restricted_names:
             from rest_framework.exceptions import ValidationError
             raise ValidationError({"title": "This list name is not allowed."})
+        
 
         # Proceed with creating the movie list
         serializer.save(user=self.request.user)
