@@ -14,7 +14,9 @@ export default function MyProfilePage(){
         matchRate: 0,
         followerCount: 0,
         followingCount: 0,
-        profilePictureUrl: ''
+        profilePictureUrl: '',
+        watchedMovieCount: 0,
+        bestMatchMoviePoster: ''
     });
 
     const jwtAccess = localStorage.getItem('jwtAccess');
@@ -69,7 +71,9 @@ export default function MyProfilePage(){
                 matchRate: profileInfo.match_rate,
                 followerCount: profileInfo.follower_count,
                 followingCount: profileInfo.following_count,
-                profilePictureUrl: profileInfo.profile_picture_url
+                profilePictureUrl: profileInfo.profile_picture_url,
+                watchedMovieCount: profileInfo.watched_movie_count,
+                bestMatchMoviePoster: profileInfo.best_match_movie_poster
             }));
         })
         .catch(error => console.error('There has been a problem with your fetch operations:', error));
@@ -105,7 +109,7 @@ export default function MyProfilePage(){
             <ProgramNavbar/>
             <div className="profile-page-content"
               style={{
-              backgroundImage: `linear-gradient(0deg, rgba(10, 20, 33, 0.4) 0%, rgba(10, 20, 33, 0.4) 100%), linear-gradient(0deg, #0A1421 0%, rgba(0, 0, 0, 0.00) 100%), url(${MyProfileBgImage})`,
+              backgroundImage: `linear-gradient(0deg, rgba(10, 20, 33, 0.4) 0%, rgba(10, 20, 33, 0.4) 100%), linear-gradient(0deg, #0A1421 0%, rgba(0, 0, 0, 0.00) 100%), url(${profileData.bestMatchMoviePoster})`,
               backgroundPosition: 'center center',
               backgroundSize: 'cover',
               backgroundRepeat: 'no-repeat',
@@ -113,12 +117,12 @@ export default function MyProfilePage(){
                 <div className= "user-profile">
                     <img
                         className="user-profile-image"
-                        src={ppLink}
+                        src={profileData.profilePictureUrl}
                     />
                     <div className="user-name">{profileData.username}</div>
                 </div>
                 <div className="follow-stats">
-                    <div><span style={{fontWeight: 'bold'}}>{movieCount}</span> MOVIES</div>
+                    <div><span style={{fontWeight: 'bold'}}>{profileData.watchedMovieCount}</span> MOVIES</div>
                     <div><span style={{fontWeight: 'bold'}}>{profileData.followerCount}</span> FOLLOWERS</div>
                     <div><span style={{fontWeight: 'bold'}}>{profileData.followingCount}</span> FOLLOWINGS</div>
                 </div>

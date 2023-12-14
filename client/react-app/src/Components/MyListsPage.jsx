@@ -6,8 +6,10 @@ export default function MyListsPage() {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
   const [showCreateForm, setShowCreateForm] = useState(false);
+  const [isPublic, setIsPublic] = useState(true); // State for the is_public checkbox
   const jwtAccess = localStorage.getItem('jwtAccess');
   const [userId, setUserId] = useState(null); // userId
+  
 
   useEffect(() => {
     fetch('http://127.0.0.1:8000/auth/users/me', {
@@ -80,6 +82,7 @@ export default function MyListsPage() {
   const handleCreateList = (event) => {
     event.preventDefault();
     const listName = event.target.listName.value;
+
     setIsLoading(true);
   
     fetch('http://127.0.0.1:8000/movie/lists/create/', {
@@ -88,19 +91,23 @@ export default function MyListsPage() {
         'Authorization': `JWT ${jwtAccess}`,
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify({ title: listName }), // Using "title" as the key for the list name
+      body: JSON.stringify({
+        title: listName,
+        is_public: isPublic, // Include is_public in the POST request
+      }),
     })
-    .then((response) => {
+    .then(response => {
       if (!response.ok) {
         throw new Error('Network response was not ok');
       }
       return response.json();
     })
-    .then((newList) => {
+    .then(newList => {
       setLists(currentLists => [...currentLists, newList]);
       setShowCreateForm(false);
+      setIsPublic(true); // Reset the isPublic state to default
     })
-    .catch((error) => {
+    .catch(error => {
       console.error('Error creating list:', error);
       setError(error.toString());
     })
@@ -131,6 +138,14 @@ export default function MyListsPage() {
           <label>
             List Name:
             <input type="text" name="listName" required />
+          </label>
+          <label>
+            Public:
+            <input 
+              type="checkbox" 
+              checked={isPublic} 
+              onChange={(e) => setIsPublic(e.target.checked)} 
+            />
           </label>
           <button type="submit">Create</button>
         </form>
