@@ -11,4 +11,7 @@ urlpatterns = [
     path('profile/<str:user__username>/', views.UserProfileView.as_view(), name='user-profile'),
     path('profile/<str:user__username>/stats/', views.UserProfileStatsView.as_view(), name='user-profile-stats'),
     path('profile_pictures/<path:filename>/', views.serve_profile_picture, name='profile-picture'),
-] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+] #+ static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+
+if settings.DEBUG:
+    urlpatterns += static(settings.MEDIA_URL, document_root = settings.MEDIA_ROOT)
