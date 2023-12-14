@@ -116,6 +116,32 @@ export default function MyListsPage() {
     });
   };
   
+  // remove the list from the database
+  const handleDeleteList = (listId) => {
+    setIsLoading(true);
+
+    fetch(`http://127.0.0.1:8000/movie/movie-lists/${listId}/delete/`, {
+      method: 'DELETE',
+      headers: {
+        'Authorization': `JWT ${jwtAccess}`,
+        'Content-Type': 'application/json',
+      },
+    })
+    .then(response => {
+      if (!response.ok) {
+        throw new Error('Network response was not ok');
+      }
+      // Remove the deleted list from the state
+      setLists(currentLists => currentLists.filter(list => list.id !== listId));
+    })
+    .catch(error => {
+      console.error('Error deleting list:', error);
+      setError(error.toString());
+    })
+    .finally(() => {
+      setIsLoading(false);
+    });
+  };
   
   
 
@@ -160,6 +186,7 @@ export default function MyListsPage() {
                 <p>{movie.title}</p>
               </div>
             ))}
+            <button onClick={() => handleDeleteList(list.id)}>Delete</button>
           </li>
         ))}
       </ul>

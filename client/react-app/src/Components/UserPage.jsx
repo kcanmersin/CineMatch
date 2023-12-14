@@ -10,6 +10,7 @@ import Row from "react-bootstrap/Row";
 
 export default function UserPage(){
     const { username } = useParams();
+    const [yourUserId, setYourUserId] = useState(null);
     const [profileData, setProfileData] = useState({
         id: null,
         username: "Loading...",
@@ -32,38 +33,92 @@ export default function UserPage(){
     */
 
     useEffect(() => {
-        // Fetch profile data using the provided username
-        fetch(`http://127.0.0.1:8000/accounts/profile/${username}/`, {
-            method: 'GET',
-            headers: {
+    // Fetch profile data using the provided username
+    fetch(`http://127.0.0.1:8000/accounts/profile/${username}/`, {
+        method: 'GET',
+        headers: {
+        'Authorization': `JWT ${jwtAccess}`,
+        'Content-Type': 'application/json',
+        },
+    })
+        .then(response => {
+        if (response.ok) {
+            return response.json();
+        }
+        throw new Error('Network response was not ok.');
+        })
+        .then(profileInfo => {
+        // Update state with profile information
+        setProfileData(prevData => ({
+            ...prevData,
+            id: profileInfo.id,
+            username: username,
+            matchRate: profileInfo.match_rate,
+            followerCount: profileInfo.follower_count,
+            followingCount: profileInfo.following_count,
+            profilePictureUrl: profileInfo.profile_picture_url,
+            watchedMovieCount: profileInfo.watched_movie_count,
+            bestMatchMoviePoster: profileInfo.best_match_movie_poster
+        }));
+        })
+        .catch(error => console.error('There has been a problem with your fetch operations:', error));
+    }, [jwtAccess, username]);
+
+    // in order to create follow and unfollow functionality, I need the user id
+    useEffect(() => {
+        // Fetch authenticated user's data
+        fetch('http://127.0.0.1:8000/auth/users/me', {
+          method: 'GET',
+          headers: {
             'Authorization': `JWT ${jwtAccess}`,
             'Content-Type': 'application/json',
-            },
+          },
         })
-            .then(response => {
+          .then(response => {
             if (response.ok) {
-                return response.json();
+              return response.json();
             }
             throw new Error('Network response was not ok.');
-            })
-            .then(profileInfo => {
-            // Update state with profile information
-            console.log(profileInfo);
-            setProfileData(prevData => ({
-                ...prevData,
-                id: profileInfo.id,
-                username: username,
-                matchRate: profileInfo.match_rate,
-                followerCount: profileInfo.follower_count,
-                followingCount: profileInfo.following_count,
-                profilePictureUrl: profileInfo.profile_picture_url,
-                watchedMovieCount: profileInfo.watched_movie_count,
-                bestMatchMoviePoster: profileInfo.best_match_movie_poster
-            }));
-            })
-            .catch(error => console.error('There has been a problem with your fetch operations:', error));
-        }, [jwtAccess, username]);
+          })
+          .then(data => {
+            // Set the authenticated user's ID
+            setYourUserId(data.id);
+          })
+          .catch(error => console.error('There has been a problem with your fetch operations:', error));
+    }, [jwtAccess]);
     
+    // follow or unfollow
+    const handleFollow = () => {
+        // Create a follow object with follower_id and following_id
+        const followData = {
+          follower_id: yourUserId, // Replace with the follower's user ID
+          following_id: profileData.id, // Use the user ID of the profile being viewed
+        };
+      
+        // Send a POST request to the follow endpoint
+        fetch('http://127.0.0.1:8000/accounts/follow/', {
+          method: 'POST',
+          headers: {
+            'Authorization': `JWT ${jwtAccess}`,
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(followData),
+        })
+          .then(response => {
+            if (response.ok) {
+              // Follow request successful
+              // You can update the UI or show a success message here
+            } else {
+              // Handle errors, e.g., the user is already following
+              console.error('Follow request failed');
+            }
+          })
+          .catch(error => {
+            // Handle network errors
+            console.error('Follow request failed:', error);
+          });
+      };
+
     //const MyProfileBgImage= "src/assets/dummy1.jpg";
 
     //const username="Michael Corleone";
@@ -118,7 +173,7 @@ export default function UserPage(){
                         <Button variant="success profile-button">LISTS</Button>
                     </Link>
                     <Button variant="success profile-button">STATS</Button>
-                    <Button variant="success profile-button">FOLLOW</Button>
+                    <Button variant="success profile-button" onClick={handleFollow}>FOLLOW</Button>
                 </div>
                 {/*<div className= "watched-movies">
                     <div className="watched-movies-text">
