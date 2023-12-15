@@ -97,8 +97,8 @@ from django.conf import settings
 
 def serve_profile_picture(request, filename):
     user_profile = get_object_or_404(UserProfile, user__username=filename.split('/')[0])
-    return FileResponse(open('profile_pictures/' + str(user_profile.profile_picture), 'rb'))
-#    return FileResponse(open(settings.MEDIA_ROOT + '/' + str(user_profile.profile_picture), 'rb'))
+    #return FileResponse(open('profile_pictures/' + str(user_profile.profile_picture), 'rb'))
+    return FileResponse(open(settings.MEDIA_ROOT + '/' + str(user_profile.profile_picture), 'rb'))
 
 
 import datetime
