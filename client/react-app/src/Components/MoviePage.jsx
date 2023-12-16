@@ -77,8 +77,8 @@ export default function MoviePage(){
             <div className="user-list">
                 <h2>User List</h2>
                 <ul>
-                    {userList.map((user) => (
-                        <li key={user.id}>{user.name}</li>
+                    {userList.map(({ id, listName }) => (
+                        <li key={id}>{listName}</li>
                     ))}
                 </ul>
             </div>
