@@ -4,15 +4,17 @@ from .forms import CommentForm
 from rest_framework import viewsets, generics,status
 from .models import Comment, Movie, MovieList, Vote
 from django.views.generic import ListView, DetailView, CreateView
-from .serializers import CommentSerializer, MovieSerializer, MovieListSerializer, VoteSerializer,RateSerializer, MovieListFilterSerializer,MovieSearchSerializer,UserSerializer
+from .serializers import CommentSerializer, MovieSerializer, MovieListSerializer, VoteSerializer,RateSerializer,MovieSearchSerializer,UserSerializer
 from rest_framework.response import Response
 from rest_framework.decorators import action
 from django.shortcuts import render, get_object_or_404
 from .models import Movie, Movie_Genre, Genre, Cast, Actor, Character, Crew, MovieCrew,Rate
 from rest_framework.permissions import AllowAny
 
+from accounts.models import UserAccount
 from django.db.models import F
 from rest_framework import filters
+from rest_framework.views import APIView
 from django_filters.rest_framework import DjangoFilterBackend
 
 class SearchBarCreateView(generics.ListCreateAPIView):

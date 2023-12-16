@@ -1,4 +1,5 @@
 from rest_framework import serializers
+from accounts.models import UserAccount,UserProfile
 from .models import  MovieList, Genre, Comment, Vote,Actor, Cast, Character, Crew,  Movie, Movie_Genre, MovieCrew,Rate
 from django.urls import reverse
 
