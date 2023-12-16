@@ -4,7 +4,7 @@ from django.shortcuts import redirect, get_object_or_404
 from django.http import JsonResponse
 
 from .models import UserAccount as User, Follower
-from .serializers import FollowerSerializer
+from .serializers import FollowerSerializer, ChangeProfilePhotoSerializer
 from rest_framework import generics, mixins, permissions
 from django.views.decorators.csrf import csrf_exempt
 
@@ -87,10 +87,24 @@ class Followers(generics.ListCreateAPIView):
 from .serializers import UserProfileSerializer
 from .models import UserProfile
 
-class UserProfileView(generics.RetrieveAPIView):
+class UserProfileView(generics.RetrieveUpdateAPIView):
     queryset = UserProfile.objects.all()
     serializer_class = UserProfileSerializer
     lookup_field = 'user__username'
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request, *args, **kwargs):
+        # Handle GET request for retrieving the user profile
+        return super(UserProfileView, self).get(request, *args, **kwargs)
+
+    def post(self, request, *args, **kwargs):
+        # Handle PUT request for updating the user profile
+        serializer = UserProfileSerializer(instance=request.user.profile.first(), data=request.data, partial=True)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
 
 from django.http import FileResponse
 from django.conf import settings
@@ -170,3 +184,22 @@ class UserProfileStatsView(APIView):
         }
 
         return Response(response_data)
+    
+
+
+class ChangeProfilePhotoView(APIView):
+    serializer_class = ChangeProfilePhotoSerializer
+    permission_classes = [IsAuthenticated]
+
+    def patch(self, request, *args, **kwargs):
+        print("PATCH method is called!")
+        serializer = ChangeProfilePhotoSerializer(instance=request.user.profile.first(), data=request.data, partial=True)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    def options(self, request, *args, **kwargs):
+        print("OPTIONS method is called!")
+        response = super().options(request, *args, **kwargs)
+        return response

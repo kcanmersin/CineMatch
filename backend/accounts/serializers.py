@@ -77,4 +77,15 @@ class UserProfileSerializer(serializers.ModelSerializer):
         return None
     
     
+class ChangeProfilePhotoSerializer(serializers.Serializer):
+    profile_picture = serializers.ImageField()
+
+    class Meta:
+        model = UserProfile
+        fields = '__all__'
+
+    def update(self, instance, validated_data):
+        instance.profile_picture = validated_data.get('profile_picture', instance.profile_picture)
+        instance.save()
+        return instance
     
