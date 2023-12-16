@@ -3,7 +3,23 @@ from accounts.models import UserAccount,UserProfile
 from .models import  MovieList, Genre, Comment, Vote,Actor, Cast, Character, Crew,  Movie, Movie_Genre, MovieCrew,Rate
 from django.urls import reverse
 
+class MovieSearchSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Movie
+        fields = ('title', 'poster_path', 'release_date')
 
+    
+class UserProfileSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = UserProfile
+        fields = ('profile_picture', )
+
+class UserSerializer(serializers.ModelSerializer):
+    profile = UserProfileSerializer(source='user_profile', read_only=True)
+
+    class Meta:
+        model = UserAccount
+        fields = ('id', 'username', 'profile')
 
 
 class CrewSerializer(serializers.ModelSerializer):
@@ -53,11 +69,39 @@ class RateSerializer(serializers.ModelSerializer):
         model = Rate
         fields = '__all__'
 class CommentSerializer(serializers.ModelSerializer):
-    movie = serializers.StringRelatedField(read_only=True) # user yorum yaparken başka bir user olarak ve ya başka bir filme yorum yapmasın diye
-    user = serializers.ReadOnlyField(source='user.username')
+    user = UserSerializer()  # Assuming you have a UserSerializer defined
+
+    # Include the rate information for the user who posted the comment
+    user_rate = serializers.SerializerMethodField()
+
     class Meta:
         model = Comment
-        fields = '__all__'
+        fields = ('id', 'user', 'text', 'created_at', 'parent_comment', 'user_rate')
+
+    def get_user_rate(self, obj):
+        # Retrieve the rate for the user and movie associated with the comment
+        user = obj.user
+        movie = obj.movie
+        try:
+            rate = Rate.objects.get(user=user, movie=movie)
+            return RateSerializer(rate).data
+        except Rate.DoesNotExist:
+            return None
+
+    def create(self, validated_data):
+        # Extract the rate data if provided
+        rate_data = validated_data.pop('rate', None)
+
+        # Create the comment
+        comment = Comment.objects.create(**validated_data)
+
+        # Create associated rate if rate data is provided
+        if rate_data:
+            Rate.objects.create(comment=comment, **rate_data)
+
+        return comment
+
+
 
 
 
@@ -69,7 +113,7 @@ class CommentSerializer(serializers.ModelSerializer):
 
 class MovieSerializer(serializers.ModelSerializer):
     comments = serializers.SerializerMethodField()
-    rates = serializers.SerializerMethodField()
+    #rates = serializers.SerializerMethodField()
     genres = serializers.SerializerMethodField()
     cast = serializers.SerializerMethodField()
     crew = serializers.SerializerMethodField()  # Add this line for crew
@@ -94,13 +138,13 @@ class MovieSerializer(serializers.ModelSerializer):
             "comments" : CommentSerializer(comments,many=True).data,
             "all_comment_link":request.build_absolute_uri(reverse('movie_comment_list',kwargs={'movie_id':obj.id}))
         }
-    def get_rates(self, obj):
-        rates = Rate.objects.filter(movie=obj)[:3]
-        request = self.context.get('request')
-        return {
-            "rates": RateSerializer(rates, many=True).data,
-            "all_rate_link": request.build_absolute_uri(reverse('movie_rate_list_create', kwargs={'movie_id': obj.id}))
-        }
+    #def get_rates(self, obj):
+    #    rates = Rate.objects.filter(movie=obj)[:3]
+    #    request = self.context.get('request')
+    #    return {
+    #        "rates": RateSerializer(rates, many=True).data,
+    #        "all_rate_link": request.build_absolute_uri(reverse('movie_rate_list_create', kwargs={'movie_id': obj.id}))
+    #    }
     def get_genres(self, obj):
         # Retrieve all genres associated with the movie
         movie_genres = Movie_Genre.objects.filter(movie=obj)

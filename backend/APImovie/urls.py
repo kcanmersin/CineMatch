@@ -15,7 +15,7 @@
 # ]
 
 from rest_framework.routers import DefaultRouter
-from .views import MovieFilterListCreateView, MovieListFilterView, MovieRateListCreateView,MovieRateDetailView, MovieViewSet, VoteView, MovieListCreateView, MovieListDetailView, MovieListViewSet, MovieListRetrieveAddView, GenreMovieListView, UsersMovieListView, MovieCommentListCreateView, MovieCommentDetailView, MovieListDeleteView
+from .views import SearchBarCreateView,MovieDetailView,  MovieListFilterView, MovieRateListCreateView,MovieRateDetailView, MovieViewSet, VoteView, MovieListCreateView, MovieListDetailView, MovieListViewSet, MovieListRetrieveAddView, GenreMovieListView, UsersMovieListView, MovieCommentListCreateView, MovieCommentDetailView, MovieListDeleteView
 from django.urls import path, include
 
 movie_router = DefaultRouter()
@@ -26,6 +26,11 @@ vote_router.register(r'votes', VoteView, basename='vote')
 
 urlpatterns = [
     path('movie/', include(movie_router.urls)),
+    path('movie_detail/<int:pk>/', MovieDetailView.as_view(), name='movie-detail'), # spesifik bir filmin sayfasına bakmak icin
+    path('movie/search_bar/', SearchBarCreateView.as_view(), name="movie-search-list"),
+    
+
+
     path('lists/', MovieListViewSet.as_view({'get': 'list'}), name='movie-list-list'),
     path('lists/<int:pk>/', MovieListDetailView.as_view(), name='movie-list-detail'),
     path('lists/create/', MovieListCreateView.as_view(), name='movie-list-create'),
@@ -38,7 +43,7 @@ urlpatterns = [
     path('movie-lists/<int:list_id>/delete/', MovieListDeleteView.as_view(), name='movie-list-delete'),
     path('rate_list/<int:movie_id>/rates/', MovieRateListCreateView.as_view(), name='movie_rate_list_create'),
     path('rate_list/<int:movie_id>/rates/<int:rate_id>/', MovieRateDetailView.as_view(), name='movie_rate_list_detail'),
-    path('movie/movie_filter/', MovieFilterListCreateView.as_view(), name="movie-filter-list"),
+    #path('movie/movie_filter/', MovieFilterListCreateView.as_view(), name="movie-filter-list"),
     path('movie-lists/<int:list_id>/filter/', MovieListFilterView.as_view(), name='movie-list-filter'),
 
 
