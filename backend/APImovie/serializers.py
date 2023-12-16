@@ -1,4 +1,5 @@
 from rest_framework import serializers
+from accounts.models import UserAccount,UserProfile
 from .models import  MovieList, Genre, Comment, Vote,Actor, Cast, Character, Crew,  Movie, Movie_Genre, MovieCrew,Rate
 from django.urls import reverse
 
@@ -72,6 +73,8 @@ class MovieSerializer(serializers.ModelSerializer):
     genres = serializers.SerializerMethodField()
     cast = serializers.SerializerMethodField()
     crew = serializers.SerializerMethodField()  # Add this line for crew
+    similar_movies = serializers.SerializerMethodField()
+
     class Meta:
         model = Movie
         fields = '__all__'
@@ -111,6 +114,25 @@ class MovieSerializer(serializers.ModelSerializer):
         # Retrieve all crew members associated with the movie
         movie_crew = MovieCrew.objects.filter(movie=obj)
         return MovieCrewSerializer(movie_crew, many=True).data
+    
+    def get_similar_movies(self, obj):
+        similar_movie_ids = obj.get_similar_movies()
+        
+        formatted_similar_movies = []
+        for movie_id in similar_movie_ids:
+            try:
+                movie = Movie.objects.get(id=movie_id)
+                
+                formatted_movie = {
+                    'movie_id': movie_id,
+                    'movie_title': movie.title,
+                    'movie_poster_url': movie.poster_path  
+                }
+                formatted_similar_movies.append(formatted_movie)
+            except Movie.DoesNotExist:
+                pass
+
+        return formatted_similar_movies
 
 
 class MovieListAddSerializer(serializers.ModelSerializer):
@@ -153,12 +175,12 @@ class MovieListSerializer(serializers.ModelSerializer):
     movies = MovieSerializer(many=True, read_only=True)
     votes = VoteSerializer(many=True, read_only=True)  # Include votes in the response
     total_time_of_movies = serializers.IntegerField(read_only=True)
-    movies = serializers.ListField(child=serializers.IntegerField(), write_only=True)
+    #movies = serializers.ListField(child=serializers.IntegerField(), write_only=True)
 
 
     class Meta:
         model = MovieList
-        fields = ('id', 'title', 'user', 'is_public', 'movies', 'upvotes', 'downvotes', 'votes', 'total_time_of_movies', 'movies') # votes eklendi
+        fields = ('id', 'title', 'user', 'is_public', 'movies', 'upvotes', 'downvotes', 'votes', 'total_time_of_movies') # votes eklendi
 
     
     def get_number_of_movies(self, obj):

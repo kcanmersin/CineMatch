@@ -53,6 +53,7 @@ INSTALLED_APPS = [
     'corsheaders',
     "django_filters",
     'whitenoise.runserver_nostatic', #Make sure to add this for deploy
+    'AI',
 ]
 
 MIDDLEWARE = [

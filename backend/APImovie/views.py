@@ -65,6 +65,8 @@ class MovieViewSet(viewsets.ModelViewSet):
     permission_classes = [AllowAny]
     queryset = Movie.objects.all()
     serializer_class = MovieSerializer
+    
+
 class MovieFilterListCreateView(generics.ListCreateAPIView):
     permission_classes = [AllowAny]
     queryset = Movie.objects.all()

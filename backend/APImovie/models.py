@@ -53,6 +53,10 @@ class Movie(models.Model):
     vote_count = models.IntegerField()
     popularity = models.FloatField(max_length=255)  # Updated to DecimalField
 
+    def get_similar_movies(self):
+        import AI.movietomovie as mtm
+        return mtm.movie_to_movie(self.id)
+
     def __str__(self):
         return self.title
 class Genre(models.Model):
