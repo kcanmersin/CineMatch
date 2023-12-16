@@ -3,6 +3,7 @@
 import torch
 import torch.nn as nn
 import pandas as pd
+from pathlib import Path
 
 class NCF(nn.Module):
     def __init__(self, num_users, num_items, embedding_dim=8):
@@ -32,7 +33,10 @@ class NCF(nn.Module):
 
         similar_movie_indices = torch.argsort(similarities, descending=True)[1:top_k + 1]
         similar_movieIds = [idx.item() for idx in similar_movie_indices]
-        movieId_to_name = pd.read_csv(r'C:\courses\CSE343SE\archive\movies_out.csv')
+
+        BASE_DIR = Path(__file__).resolve().parent.parent
+
+        movieId_to_name = pd.read_csv(str(BASE_DIR) + '\AI\movies_out.csv')
         
         similar_movies_names = []
         for movieId in similar_movieIds:

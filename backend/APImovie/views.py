@@ -327,6 +327,7 @@ from rest_framework.response import Response
 from rest_framework import status
 from .models import Movie, Movie_Genre
 
+
 class MovieListFilterView(APIView):
     def post(self, request, list_id, *args, **kwargs):
         try:
