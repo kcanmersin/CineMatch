@@ -4,7 +4,7 @@ from .forms import CommentForm
 from rest_framework import viewsets, generics,status
 from .models import Comment, Movie, MovieList, Vote
 from django.views.generic import ListView, DetailView, CreateView
-from .serializers import CommentSerializer, MovieSerializer, MovieListSerializer, VoteSerializer,RateSerializer, MovieListFilterSerializer
+from .serializers import CommentSerializer, MovieSerializer, MovieListSerializer, VoteSerializer,RateSerializer, MovieListFilterSerializer,MovieSearchSerializer,UserSerializer
 from rest_framework.response import Response
 from rest_framework.decorators import action
 from django.shortcuts import render, get_object_or_404
@@ -15,6 +15,58 @@ from django.db.models import F
 from rest_framework import filters
 from django_filters.rest_framework import DjangoFilterBackend
 
+class SearchBarCreateView(generics.ListCreateAPIView):
+    permission_classes = [AllowAny]
+    queryset = Movie.objects.all()
+    serializer_class = MovieSearchSerializer
+
+    queryset1 = UserAccount.objects.all()
+    serializer_class1 = UserSerializer
+
+    filter_backends = [DjangoFilterBackend, filters.SearchFilter]
+    search_fields = ['title']
+    search_fields1 = ['username']
+
+    def get_queryset(self):
+        search_term = self.request.query_params.get('search', '')
+        
+        # Filter movies based on the search term
+        movies = self.queryset.filter(title__icontains=search_term)
+        
+        # Filter users based on the search term
+        users = self.queryset1.filter(username__icontains=search_term)
+
+        return {'movies': movies, 'users': users}
+
+    def list(self, request, *args, **kwargs):
+        queryset_dict = self.get_queryset()
+
+        # Serialize movies and users separately
+        movies_serializer = self.get_serializer(queryset_dict['movies'], many=True)
+        users_serializer = self.serializer_class1(queryset_dict['users'], many=True)
+
+        # Combine serialized data into a single dictionary
+        serialized_data = {
+            'movies': movies_serializer.data,
+            'users': users_serializer.data
+        }
+
+        return Response(serialized_data)
+class MovieDetailView(APIView):
+    permission_classes = [AllowAny]
+    queryset = Movie.objects.all()
+    serializer_class = MovieSerializer
+
+    def get(self, request, pk, format=None):
+        movie = self.queryset.filter(pk=pk).first()
+        if movie:
+            # Pass the request context to the serializer
+            serializer = self.serializer_class(movie, context={'request': request})
+            return Response(serializer.data)
+        else:
+            return Response({"detail": "Not found."}, status=status.HTTP_404_NOT_FOUND)
+
+ 
 def movie_list(request):
     # Get all movies
     movieurl = 'http://127.0.0.1:8000/movie/movies/'
@@ -65,13 +117,6 @@ class MovieViewSet(viewsets.ModelViewSet):
     permission_classes = [AllowAny]
     queryset = Movie.objects.all()
     serializer_class = MovieSerializer
-class MovieFilterListCreateView(generics.ListCreateAPIView):
-    permission_classes = [AllowAny]
-    queryset = Movie.objects.all()
-    serializer_class = MovieSerializer
-    filter_backends = [DjangoFilterBackend, filters.SearchFilter]
-
-    search_fields = ['$title']
 
 
 class MovieListViewSet(viewsets.ModelViewSet):
