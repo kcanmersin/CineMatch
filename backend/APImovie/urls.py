@@ -26,6 +26,11 @@ vote_router.register(r'votes', VoteView, basename='vote')
 
 urlpatterns = [
     path('movie/', include(movie_router.urls)),
+    path('movie_detail/<int:pk>/', MovieDetailView.as_view(), name='movie-detail'), # spesifik bir filmin sayfasına bakmak icin
+    path('movie/search_bar/', SearchBarCreateView.as_view(), name="movie-search-list"),
+    
+
+
     path('lists/', MovieListViewSet.as_view({'get': 'list'}), name='movie-list-list'),
     path('lists/<int:pk>/', MovieListDetailView.as_view(), name='movie-list-detail'),
     path('lists/create/', MovieListCreateView.as_view(), name='movie-list-create'),
