@@ -17,7 +17,9 @@ export const AuthProvider = ({ children }) => {
         navigate('/signin');
     };
 
-    
+    // TODO: remove access tokens if the isAuthenticated is false
+  
+  
     
     useEffect(() => {
         const accessToken = localStorage.getItem('jwtAccess');

@@ -177,18 +177,21 @@ export default function MyListsPage() {
         </form>
       )}
       <ul>
-        {lists.map((list, index) => (
-          <li key={index}>
-            <h3>{list.title}</h3>
-            <p>{list.movies.length} Movies</p>
-            {moviesData[list.id] && moviesData[list.id].map((movie, movieIndex) => (
-              <div key={movieIndex}>
-                <p>{movie.title}</p>
-              </div>
-            ))}
-            <button onClick={() => handleDeleteList(list.id)}>Delete</button>
-          </li>
-        ))}
+          {lists.map((list, index) => (
+            <li key={index}>
+              <h3>{list.title}</h3>
+              <p>{list.movies.length} Movies</p>
+              {moviesData[list.id] && moviesData[list.id].map((movie, movieIndex) => (
+                <div key={movieIndex}>
+                  <p>{movie.title}</p>
+                </div>
+              ))}
+              {/* Conditionally render the delete button */}
+              {index >= 2 && (
+                <button onClick={() => handleDeleteList(list.id)}>Delete</button>
+              )}
+            </li>
+          ))}
       </ul>
     </div>
   );

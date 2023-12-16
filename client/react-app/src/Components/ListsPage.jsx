@@ -10,6 +10,8 @@ export default function ListsPage() {
   const [error, setError] = useState(null);
   const jwtAccess = localStorage.getItem('jwtAccess');
 
+  // TODO: undefined slice error
+
   // Fetch the user's ID based on the username
   useEffect(() => {
     setIsLoading(true);
@@ -70,31 +72,38 @@ export default function ListsPage() {
 
   const fetchListImages = (lists) => {
     lists.forEach((list) => {
-      const listMovieIds = list.movies.slice(0, 2).map(movie => movie.id);
-      Promise.all(listMovieIds.map((movieId) => 
-        fetch(`http://127.0.0.1:8000/movie/movie/movies/${movieId}`, {
-          method: 'GET',
-          headers: {
-            'Authorization': `JWT ${jwtAccess}`,
-            'Content-Type': 'application/json',
-          },
-        })
-        .then(response => {
-          if (!response.ok) {
-            throw new Error('Network response was not ok');
-          }
-          return response.json();
-        })
-      ))
-      .then((movies) => {
-        setMoviesData(prevMovies => ({ ...prevMovies, [list.id]: movies }));
-      })
-      .catch((error) => {
-        console.error('Error fetching movie data:', error);
-        setError(error.toString());
-      });
+        // Check if list.movies is defined and is an array
+        if (Array.isArray(list.movies)) {
+            const listMovieIds = list.movies.slice(0, 2).map(movie => movie.id);
+            Promise.all(listMovieIds.map((movieId) => 
+                fetch(`http://127.0.0.1:8000/movie/movie/movies/${movieId}`, {
+                    method: 'GET',
+                    headers: {
+                        'Authorization': `JWT ${jwtAccess}`,
+                        'Content-Type': 'application/json',
+                    },
+                })
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Network response was not ok');
+                    }
+                    return response.json();
+                })
+            ))
+            .then((movies) => {
+                setMoviesData(prevMovies => ({ ...prevMovies, [list.id]: movies }));
+            })
+            .catch((error) => {
+                console.error('Error fetching movie data:', error);
+                setError(error.toString());
+            });
+        } else {
+            // Handle the scenario where list.movies is not an array
+            console.error('list.movies is undefined or not an array for list:', list);
+        }
     });
-  };
+};
+
 
   if (isLoading) {
     return <div>Loading...</div>;
@@ -104,11 +113,14 @@ export default function ListsPage() {
     return <div>Error: {error}</div>;
   }
 
+  // Filter and display only public lists
+  const publicLists = lists.filter(list => list.is_public === true);
+
   return (
     <div className="lists-page">
       <h1>Movie Lists</h1>
       <ul>
-        {lists.map((list, index) => (
+        {publicLists.map((list, index) => (
           <li key={index}>
             <h3>{list.title}</h3>
             <p>{list.movies.length} Movies</p>
