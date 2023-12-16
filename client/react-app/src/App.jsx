@@ -12,6 +12,7 @@ import MyProfilePage from './Components/MyProfilePage';
 import UserPage from './Components/UserPage';
 import ListsPage from './Components/ListsPage';
 import PrivateRoute from './auth/PrivateRoute';
+import MoviePage from './Components/MoviePage';
 
 export default function App() {
     const { isAuthenticated } = useContext(AuthContext);
@@ -27,7 +28,7 @@ export default function App() {
             <Route path="/myprofile" element={<PrivateRoute isAuthenticated={isAuthenticated}><MyProfilePage /></PrivateRoute>} />
             <Route path="/user/:username" element={<PrivateRoute isAuthenticated={isAuthenticated}><UserPage /></PrivateRoute>} />
             <Route path="/user/:username/lists" element={<PrivateRoute isAuthenticated={isAuthenticated}><ListsPage /></PrivateRoute>} />
-
+            <Route path="/moviepage" element={<PrivateRoute isAuthenticated={isAuthenticated}><MoviePage /></PrivateRoute>} />
 
         </Routes>
       

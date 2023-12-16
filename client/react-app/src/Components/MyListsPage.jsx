@@ -12,7 +12,7 @@ export default function MyListsPage() {
   
 
   useEffect(() => {
-    fetch('http://127.0.0.1:8000/auth/users/me', {
+    fetch('http://127.0.0.1:8000/auth/users/me/', {
       method: 'GET',
       headers: {
         'Authorization': `JWT ${jwtAccess}`,
@@ -177,18 +177,22 @@ export default function MyListsPage() {
         </form>
       )}
       <ul>
-        {lists.map((list, index) => (
-          <li key={index}>
-            <h3>{list.title}</h3>
-            <p>{list.movies.length} Movies</p>
-            {moviesData[list.id] && moviesData[list.id].map((movie, movieIndex) => (
-              <div key={movieIndex}>
-                <p>{movie.title}</p>
-              </div>
-            ))}
-            <button onClick={() => handleDeleteList(list.id)}>Delete</button>
-          </li>
-        ))}
+          {lists.map((list, index) => (
+            <li key={index}>
+              <h3>{list.title}</h3>
+              <p>{list.movies.length} Movies</p>
+              {moviesData[list.id] && moviesData[list.id].map((movie, movieIndex) => (
+                <div key={movieIndex}>
+                  <p>{movie.title}</p>
+                </div>
+              ))}
+              <p>Total time of watch: {list.total_time_of_movies}</p>
+              {/* Conditionally render the delete button */}
+              {index >= 2 && (
+                <button onClick={() => handleDeleteList(list.id)}>Delete</button>
+              )}
+            </li>
+          ))}
       </ul>
     </div>
   );

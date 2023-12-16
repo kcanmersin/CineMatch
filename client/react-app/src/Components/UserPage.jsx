@@ -11,12 +11,14 @@ import Row from "react-bootstrap/Row";
 export default function UserPage(){
     const { username } = useParams();
     const [yourUserId, setYourUserId] = useState(null);
+    const [isLoading, setIsLoading] = useState(true); // New loading state
     const [profileData, setProfileData] = useState({
         id: null,
         username: "Loading...",
         matchRate: 0,
         followerCount: 0,
         followingCount: 0,
+        followStatus: null,
         profilePictureUrl: '',
         watchedMovieCount: 0,
         bestMatchMoviePoster: ''
@@ -33,6 +35,7 @@ export default function UserPage(){
     */
 
     useEffect(() => {
+      setIsLoading(true);
     // Fetch profile data using the provided username
     fetch(`http://127.0.0.1:8000/accounts/profile/${username}/`, {
         method: 'GET',
@@ -58,8 +61,10 @@ export default function UserPage(){
             followingCount: profileInfo.following_count,
             profilePictureUrl: profileInfo.profile_picture_url,
             watchedMovieCount: profileInfo.watched_movie_count,
-            bestMatchMoviePoster: profileInfo.best_match_movie_poster
+            bestMatchMoviePoster: profileInfo.best_match_movie_poster,
+            followStatus: profileInfo.follow_status,
         }));
+        setIsLoading(false);
         })
         .catch(error => console.error('There has been a problem with your fetch operations:', error));
     }, [jwtAccess, username]);
@@ -87,38 +92,65 @@ export default function UserPage(){
           .catch(error => console.error('There has been a problem with your fetch operations:', error));
     }, [jwtAccess]);
     
-    // follow or unfollow
     const handleFollow = () => {
-        // Create a follow object with follower_id and following_id
-        const followData = {
-          follower_id: yourUserId, // Replace with the follower's user ID
-          following_id: profileData.id, // Use the user ID of the profile being viewed
-        };
-      
-        // Send a POST request to the follow endpoint
-        fetch('http://127.0.0.1:8000/accounts/follow/', {
-          method: 'POST',
-          headers: {
-            'Authorization': `JWT ${jwtAccess}`,
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify(followData),
-        })
-          .then(response => {
-            if (response.ok) {
-              // Follow request successful
-              // You can update the UI or show a success message here
-            } else {
-              // Handle errors, e.g., the user is already following
-              console.error('Follow request failed');
-            }
-          })
-          .catch(error => {
-            // Handle network errors
-            console.error('Follow request failed:', error);
-          });
+      // Determine whether to follow or unfollow based on the current followStatus
+      const shouldFollow = !profileData.followStatus;
+    
+      // Create a follow object with follower_id and following_id
+      const followData = {
+        follower_id: profileData.id, // Replace with the follower's user ID
+        following_id: yourUserId, // Use the user ID of the profile being viewed
       };
-
+    
+      // Send a POST request to the follow endpoint
+      fetch('http://127.0.0.1:8000/accounts/follow/', {
+        method: 'POST',
+        headers: {
+          'Authorization': `JWT ${jwtAccess}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(followData),
+      })
+        .then(response => {
+          if (response.ok) {
+            // After the follow/unfollow is successful, fetch the updated follower count
+            return fetch(`http://127.0.0.1:8000/accounts/profile/${username}/`, {
+              method: 'GET',
+              headers: {
+                'Authorization': `JWT ${jwtAccess}`,
+                'Content-Type': 'application/json',
+              },
+            });
+          } else {
+            // Handle errors, e.g., the user is already following
+            console.error(shouldFollow ? 'Follow request failed' : 'Unfollow request failed');
+            return null;
+          }
+        })
+        .then(updatedProfileResponse => {
+          if (updatedProfileResponse) {
+            return updatedProfileResponse.json();
+          }
+          return null;
+        })
+        .then(updatedProfileInfo => {
+          if (updatedProfileInfo) {
+            // Update the state with the new follower count
+            console.log(updatedProfileInfo);
+            setProfileData(prevData => ({
+              ...prevData,
+              followerCount: updatedProfileInfo.follower_count,
+              followStatus: updatedProfileInfo.follow_status,
+            }));
+          }
+        })
+        .catch(error => {
+          // Handle network errors
+          console.error(shouldFollow ? 'Follow request failed' : 'Unfollow request failed', error);
+        });
+    };
+    
+  
     //const MyProfileBgImage= "src/assets/dummy1.jpg";
 
     //const username="Michael Corleone";
@@ -173,7 +205,13 @@ export default function UserPage(){
                         <Button variant="success profile-button">LISTS</Button>
                     </Link>
                     <Button variant="success profile-button">STATS</Button>
-                    <Button variant="success profile-button" onClick={handleFollow}>FOLLOW</Button>
+                    <Button 
+                        variant="success profile-button" 
+                        onClick={handleFollow}
+                        disabled={isLoading} // Disable button while loading
+                    >
+                        {isLoading ? "Loading..." : profileData.followStatus ? "Unfollow" : "Follow"}
+                    </Button>
                 </div>
                 {/*<div className= "watched-movies">
                     <div className="watched-movies-text">

@@ -112,7 +112,7 @@ export default function MainPage(){
       ];
 
       const userCards = [
-        { id: 1, username: "kenan", percentage: 123, image: "src/assets/pp.jpg" },
+        { id: 1, username: "kea", percentage: 123, image: "src/assets/pp.jpg" },
         { id: 2, username: "diko", percentage: 456, image: "src/assets/pp.jpg" },
         { id: 3, username: "User4", percentage: 456, image: "src/assets/pp.jpg" },
         { id: 4, username: "User5", percentage: 456, image: "src/assets/pp.jpg" },
