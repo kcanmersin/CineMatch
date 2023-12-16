@@ -102,6 +102,18 @@ export default function MyProfilePage(){
         { id: 10, name: "Movie 3", image: "src/assets/dummyPoster.jpg", date: "2020" },
     ];
 
+    const handleProfilePictureChange = (e) => {
+        const file = e.target.files[0];
+        if (file) {
+            const tempUrl = URL.createObjectURL(file);
+            setProfileData(prevData => ({
+                ...prevData,
+                profilePictureUrl: tempUrl,
+            }));
+
+            // Optional: Add logic here to upload the file to the server
+        }
+    };
 
 
     return(
@@ -115,10 +127,20 @@ export default function MyProfilePage(){
               backgroundRepeat: 'no-repeat',
                 }}>
                 <div className= "user-profile">
+                <label htmlFor="profilePictureInput">
                     <img
                         className="user-profile-image"
-                        src={profileData.profilePictureUrl}
+                        src={profileData.profilePictureUrl || 'default-image-url.jpg'} // Fallback to a default image if profilePictureUrl is empty
+                        alt="Profile"
                     />
+                    <input
+                        type="file"
+                        id="profilePictureInput"
+                        accept="image/*"
+                        style={{ display: "none" }}
+                        onChange={handleProfilePictureChange}
+                    />
+                </label>
                     <div className="user-name">{profileData.username}</div>
                 </div>
                 <div className="follow-stats">
