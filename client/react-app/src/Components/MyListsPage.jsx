@@ -186,6 +186,7 @@ export default function MyListsPage() {
                   <p>{movie.title}</p>
                 </div>
               ))}
+              <p>Total time of watch: {list.total_time_of_movies}</p>
               {/* Conditionally render the delete button */}
               {index >= 2 && (
                 <button onClick={() => handleDeleteList(list.id)}>Delete</button>

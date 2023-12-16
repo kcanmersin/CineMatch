@@ -39,6 +39,7 @@ export default function MoviePage(){
 
     const userList= [{id: 1, listName:"sjagd"}, {id: 2, listName:"sjdsfsdagd"}]
 
+
     return (
         <div className="movie-page">
             <div className="movie-details">

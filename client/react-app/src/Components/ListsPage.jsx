@@ -129,6 +129,7 @@ export default function ListsPage() {
                 <p>{movie.title}</p>
               </div>
             ))}
+            <p>Total time of watch : {list.total_time_of_movies}</p>
           </li>
         ))}
       </ul>
