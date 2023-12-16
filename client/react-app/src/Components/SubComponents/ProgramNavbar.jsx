@@ -36,7 +36,7 @@ export default function ProgramNavbar() {
   // get the username and profile picture
   useEffect(() => {
     // Fetch username data
-    fetch('http://127.0.0.1:8000/auth/users/me', {
+    fetch('http://127.0.0.1:8000/auth/users/me/', {
         method: 'GET',
         headers: {
             'Authorization': `JWT ${jwtAccess}`,

@@ -12,7 +12,7 @@ export default function MyListsPage() {
   
 
   useEffect(() => {
-    fetch('http://127.0.0.1:8000/auth/users/me', {
+    fetch('http://127.0.0.1:8000/auth/users/me/', {
       method: 'GET',
       headers: {
         'Authorization': `JWT ${jwtAccess}`,
