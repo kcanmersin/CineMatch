@@ -69,10 +69,10 @@ class RateSerializer(serializers.ModelSerializer):
         model = Rate
         fields = '__all__'
 class CommentSerializer(serializers.ModelSerializer):
-    user = UserSerializer()  # Assuming you have a UserSerializer defined
+    user = UserSerializer(read_only=True)  # Assuming you have a UserSerializer defined
 
     # Include the rate information for the user who posted the comment
-    user_rate = serializers.SerializerMethodField()
+    user_rate = serializers.SerializerMethodField(read_only=True)
 
     class Meta:
         model = Comment
