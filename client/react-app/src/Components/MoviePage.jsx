@@ -1,11 +1,14 @@
-import React from "react";
+import React, { useContext } from "react";
 import CommentSection from "./SubComponents/CommentSection";
 import Button from "react-bootstrap/Button";
 import { useState, useEffect } from "react";
 import { Link } from 'react-router-dom';
 import { useParams } from 'react-router-dom';
+import { UserContext } from "./UserContext";
+
 
 export default function MoviePage(){
+    const { username } = useContext(UserContext)
 
     // TODO : poster pathi ayarla
     const UserPoints= " NOT RATED";
@@ -47,6 +50,7 @@ export default function MoviePage(){
     const [movieData, setMovieData] = useState(null);
     const [comments, setComments] = useState([]);
     const jwtAccess = localStorage.getItem('jwtAccess');
+    const [lastUpdate, setLastUpdate] = useState(Date.now());
     const { movieId } = useParams();
 
     // logic part
@@ -70,20 +74,78 @@ export default function MoviePage(){
         .catch(error => {
             console.error("Error fetching data: ", error);
         });
-    }, []);
+    }, [movieId, lastUpdate]);
 
 
     if (!movieData) {
         return <div>Loading...</div>;
     }
 
+
+    // Function to handle reply submission
+    const onReplySubmit = (replyText, parentCommentId) => {
+        const replyData = {
+            // structure the reply data as needed for your backend
+            username: username,
+            text: replyText,
+            parent_comment: parentCommentId,
+        };
+
+        fetch(`http://127.0.0.1:8000/movie/comment_list/${movieId}/`, {
+            method: 'POST',
+            headers: {
+                'Authorization': `JWT ${jwtAccess}`,
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(replyData)
+        })
+        .then(response => response.json())
+        .then(data => {
+            //console.log('Reply submitted:', data);
+            setLastUpdate(Date.now());
+            // Update your comments state or handle the UI update as needed
+        })
+        .catch(error => {
+            console.error('Error submitting reply:', error);
+        });
+    };
+
+    // new comment 
+    const onCommentSubmit = (commentText) => {
+        const commentData = {
+            username: username,
+            text: commentText,
+            parent_comment: null, // null for a top-level comment
+        };
+
+        fetch(`http://127.0.0.1:8000/movie/comment_list/${movieId}/`, {
+            method: 'POST',
+            headers: {
+                'Authorization': `JWT ${jwtAccess}`,
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(commentData)
+        })
+        .then(response => response.json())
+        .then(data => {
+            setLastUpdate(Date.now());
+            //console.log('Comment submitted:', data);
+            // Update your comments state with the new comment
+        })
+        .catch(error => {
+            console.error('Error submitting comment:', error);
+        });
+    };
+
     const { title, poster_path, release_date, overview, vote_average, runtime, genres, cast, crew, similar_movies } = movieData;
     // Find the director in the crew array
     const director = crew.find(member => member.crew.role === "Director")?.crew.name;
+    // Extracting actors' names
+    const actorsNames = cast.map(actor => actor.actor_id.actor_name).join(", ");
 
     return (
         <div className="movie-page">
-            <div className="movie-details">
+            {/*<div className="movie-details">
                 <div className="movie-poster">
                     
                     <img src={"https://image.tmdb.org/t/p/w500/6CoRTJTmijhBLJTUNoVSUNxZMEI.jpg"} alt="Movie Poster" />
@@ -96,8 +158,8 @@ export default function MoviePage(){
                     <p>Points: {vote_average}</p>
                     <p>User Points: {UserPoints}</p>
                     <p>Length: {runtime} minutes</p>
-                    {/*<p>Writers: {Writers.join(", ")}</p>*/}
-                    <p>Actors: {cast.join(", ")}</p>
+                    {/*<p>Writers: {Writers.join(", ")}</p>}
+                    <p>Actors: {actorsNames}</p>
                     <p>Genres: {genres.join(", ")}</p>
                 </div>
             </div>
@@ -105,16 +167,18 @@ export default function MoviePage(){
                 <h2>Similar Movies</h2>
                 <div className="similar-movies-list">
                     {similar_movies.map((movie) => (
-                        <div key={movie.movie_id} className="similar-movie">
-                            <img src={movie.movie_poster_url} alt={movie.movie_title} />
-                            <p>{movie.movie_title}</p>
-                        </div>
+                        <Link to={`/moviepage/${movie.movie_id}`} key={movie.movie_id}>
+                            <div className="similar-movie">
+                                <img src={movie.movie_poster_url} alt={movie.movie_title} />
+                                <p>{movie.movie_title}</p>
+                            </div>
+                        </Link>
                     ))}
                 </div>
-            </div>
+            </div>*/}
             <div className="comments-section">
                 <h2>Comments {comments.length}</h2>
-                <CommentSection comments={comments} />
+                <CommentSection comments={comments} onReplySubmit={onReplySubmit} onCommentSubmit={onCommentSubmit} />
             </div>
             {/*<div className="user-list">
                 <h2>User List</h2>
