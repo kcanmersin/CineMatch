@@ -49,6 +49,9 @@ export default function MoviePage(){
 
     const [movieData, setMovieData] = useState(null);
     const [comments, setComments] = useState([]);
+    const [lists, setLists] = useState([]);
+    const [userId, setUserId] = useState(null);
+    const [isLoading, setIsLoading] = useState(false);
     const jwtAccess = localStorage.getItem('jwtAccess');
     const [lastUpdate, setLastUpdate] = useState(Date.now());
     const { movieId } = useParams();
@@ -75,6 +78,38 @@ export default function MoviePage(){
             console.error("Error fetching data: ", error);
         });
     }, [movieId, lastUpdate]);
+
+    useEffect(() => {
+        fetch('http://127.0.0.1:8000/auth/users/me/', {
+          method: 'GET',
+          headers: {
+            'Authorization': `JWT ${jwtAccess}`,
+            'Content-Type': 'application/json',
+          },
+        })
+        .then(response => response.json())
+        .then(data => {
+          setUserId(data.id);
+          return fetch('http://127.0.0.1:8000/movie/lists/', {
+            method: 'GET',
+            headers: {
+              'Authorization': `JWT ${jwtAccess}`,
+              'Content-Type': 'application/json',
+            },
+          });
+        })
+        .then(response => response.json())
+        .then(data => {
+          const userLists = data.filter(list => list.user === userId);
+          setLists(userLists);
+        })
+        .catch(error => {
+          console.error('Error:', error);
+        })
+        .finally(() => {
+          setIsLoading(false);
+        });
+      }, [userId, jwtAccess]);
 
 
     if (!movieData) {
@@ -137,6 +172,52 @@ export default function MoviePage(){
         });
     };
 
+    // Function to handle adding a movie to a list
+    const handleAddToList = (listId) => {
+        if (!listId) {
+            alert("Please select a list.");
+            return;
+        }
+
+
+        const url = `http://127.0.0.1:8000/movie/movie-lists/`;
+
+        const requestData = {
+            movie_list_id: listId,
+            movie_id: movieId, // Ensure this matches the expected format of your backend
+        };
+
+        fetch(url, {
+            method: 'POST',
+            headers: {
+                'Authorization': `JWT ${jwtAccess}`,
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(requestData)
+        })
+        .then(response => {
+            
+            if (!response.ok) {
+                throw new Error(`HTTP error! Status: ${response.status}`);
+            }
+            // Handle no-content responses
+            if (response.headers.get("content-length") === "0" || response.status === 204) {
+                return null;
+            } else {
+                return response.json();
+            }
+        })
+        .then(data => {
+            console.log('Movie added to list:', data);
+            // Here, handle any updates to the state or UI after successful addition
+        })
+        .catch(error => {
+            console.error('Error adding movie to list:', error);
+        });
+    };
+
+
+
     const { title, poster_path, release_date, overview, vote_average, runtime, genres, cast, crew, similar_movies } = movieData;
     // Find the director in the crew array
     const director = crew.find(member => member.crew.role === "Director")?.crew.name;
@@ -158,12 +239,19 @@ export default function MoviePage(){
                     <p>Points: {vote_average}</p>
                     <p>User Points: {UserPoints}</p>
                     <p>Length: {runtime} minutes</p>
-                    {/*<p>Writers: {Writers.join(", ")}</p>}
                     <p>Actors: {actorsNames}</p>
                     <p>Genres: {genres.join(", ")}</p>
                 </div>
-            </div>
-            <div className="similar-movies">
+    </div>*/}
+                <select id="listSelector">
+                    {lists.map(list => (
+                        <option key={list.id} value={list.id}>{list.title}</option>
+                    ))}
+                </select>
+                <Button variant="primary" onClick={() => handleAddToList(document.getElementById('listSelector').value)}>Add to List</Button>
+
+            
+            {/*<div className="similar-movies">
                 <h2>Similar Movies</h2>
                 <div className="similar-movies-list">
                     {similar_movies.map((movie) => (
@@ -175,7 +263,7 @@ export default function MoviePage(){
                         </Link>
                     ))}
                 </div>
-            </div>*/}
+            </div>
             <div className="comments-section">
                 <h2>Comments {comments.length}</h2>
                 <CommentSection comments={comments} onReplySubmit={onReplySubmit} onCommentSubmit={onCommentSubmit} />

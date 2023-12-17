@@ -51,6 +51,7 @@ export default function MyListsPage() {
       const userLists = data.filter(list => list.user === userId);
       setLists(userLists);
       fetchListImages(userLists);
+      console.log(userLists)
     })
     .catch(error => {
       console.error('Error:', error);
