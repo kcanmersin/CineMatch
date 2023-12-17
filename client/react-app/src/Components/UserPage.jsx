@@ -26,13 +26,7 @@ export default function UserPage(){
 
     const jwtAccess = localStorage.getItem('jwtAccess');
 
-    /*  ---------------------------------------------------------------------------
-        --------------------------------------------------------------------------
-        LAN DİYAR YAPILACAKLARI BURAYA YAZIYORUM
-
-        -username hem aşağıda variable olarak tanımlı hem de navbar da. eğer onları
-        backendde bi defa çekip bi yerde tutup oradan çekebiliyosan öyle yap
-    */
+    
 
     useEffect(() => {
       setIsLoading(true);
@@ -72,7 +66,7 @@ export default function UserPage(){
     // in order to create follow and unfollow functionality, I need the user id
     useEffect(() => {
         // Fetch authenticated user's data
-        fetch('http://127.0.0.1:8000/auth/users/me', {
+        fetch('http://127.0.0.1:8000/auth/users/me/', {
           method: 'GET',
           headers: {
             'Authorization': `JWT ${jwtAccess}`,

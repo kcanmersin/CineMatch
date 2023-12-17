@@ -1,4 +1,7 @@
+import "./MyListsPage.css";
 import { useState, useEffect } from 'react';
+import ProgramNavbar from "./SubComponents/ProgramNavbar";
+import { Button, Form, Container, Row, Col } from 'react-bootstrap';
 
 export default function MyListsPage() {
   const [lists, setLists] = useState([]);
@@ -10,6 +13,7 @@ export default function MyListsPage() {
   const jwtAccess = localStorage.getItem('jwtAccess');
   const [userId, setUserId] = useState(null); // userId
   
+  const MoviePosterLink= "src/assets/dummyPoster.jpg";
 
   useEffect(() => {
     fetch('http://127.0.0.1:8000/auth/users/me/', {
@@ -51,7 +55,7 @@ export default function MyListsPage() {
       const listMovieIds = list.movies.slice(0, 2).map(movie => movie.id);
   
       Promise.all(listMovieIds.map((movieId) => 
-        fetch(`http://127.0.0.1:8000/movie/movie/movies/${movieId}`, {
+        fetch(`http://127.0.0.1:8000/movie/movie/movies/${movieId}/`, {
           method: 'GET',
           headers: {
             'Authorization': `JWT ${jwtAccess}`,
@@ -154,46 +158,56 @@ export default function MyListsPage() {
   }
 
   return (
-    <div className="lists-page">
-      <h1>Movie Lists</h1>
-      <button onClick={handleCreateButtonClick}>
-        {showCreateForm ? 'Cancel' : 'Create List'}
-      </button>
-      {showCreateForm && (
-        <form onSubmit={handleCreateList}>
-          <label>
-            List Name:
-            <input type="text" name="listName" required />
-          </label>
-          <label>
-            Public:
-            <input 
-              type="checkbox" 
-              checked={isPublic} 
-              onChange={(e) => setIsPublic(e.target.checked)} 
-            />
-          </label>
-          <button type="submit">Create</button>
-        </form>
-      )}
-      <ul>
-          {lists.map((list, index) => (
-            <li key={index}>
-              <h3>{list.title}</h3>
-              <p>{list.movies.length} Movies</p>
-              {moviesData[list.id] && moviesData[list.id].map((movie, movieIndex) => (
-                <div key={movieIndex}>
-                  <p>{movie.title}</p>
-                </div>
-              ))}
-              <p>Total time of watch: {list.total_time_of_movies}</p>
-              {/* Conditionally render the delete button */}
+    <div className="main-page">
+      <ProgramNavbar />
+      <ul className='movie-lists-container'>
+        {lists.map((list, index) => (
+          <li className= "movie-lists" key={index}>
+            <div className="poster-info-container">
+              <div className= "movie-lists-posters-container">
+                {moviesData[list.id] && moviesData[list.id].map((movie, movieIndex) => (
+                  <div key={movieIndex}>
+                    <p>{movie.title}</p>
+                  </div>
+                ))}
+              </div>
+              <div className="list-info">
+                <h3>{list.title}</h3>
+                <p>{list.movies.length} Movies</p>
+              </div>
+            </div>
+            <div className="delete-button-container">
               {index >= 2 && (
-                <button onClick={() => handleDeleteList(list.id)}>Delete</button>
+                <Button variant="danger" className="delete-button" onClick={() => handleDeleteList(list.id)}>
+                  Delete
+                </Button>
               )}
-            </li>
-          ))}
+            </div>
+          </li>
+        ))}
       </ul>
+      <Button onClick={handleCreateButtonClick}>
+        {showCreateForm ? 'Cancel' : 'Create List'}
+      </Button>
+      {showCreateForm && (
+        <Form onSubmit={handleCreateList}>
+          <Form.Group controlId="listName">
+            <Form.Label>List Name:</Form.Label>
+            <Form.Control type="text" name="listName" required />
+          </Form.Group>
+          <Form.Group controlId="isPublic">
+            <Form.Check
+              type="checkbox"
+              label="Public"
+              checked={isPublic}
+              onChange={(e) => setIsPublic(e.target.checked)}
+            />
+          </Form.Group>
+          <Button variant="primary" type="submit">
+            Create
+          </Button>
+        </Form>
+      )}
     </div>
   );
 }
