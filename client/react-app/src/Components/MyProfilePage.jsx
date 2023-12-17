@@ -77,7 +77,7 @@ export default function MyProfilePage(){
             }));
         })
         .catch(error => console.error('There has been a problem with your fetch operations:', error));
-    }, [jwtAccess]);
+    }, [jwtAccess, profileData.profilePictureUrl]);
     
     //const MyProfileBgImage= "src/assets/dummy1.jpg";
     //const ppLink= "src/assets/pp.jpg";
@@ -105,15 +105,34 @@ export default function MyProfilePage(){
     const handleProfilePictureChange = (e) => {
         const file = e.target.files[0];
         if (file) {
-            const tempUrl = URL.createObjectURL(file);
-            setProfileData(prevData => ({
-                ...prevData,
-                profilePictureUrl: tempUrl,
-            }));
-
-            // Optional: Add logic here to upload the file to the server
+            const formData = new FormData();
+            formData.append("profile_picture", file);
+    
+            fetch('http://127.0.0.1:8000/accounts/change-profile-photo/', {
+                method: 'PATCH',
+                headers: {
+                    'Authorization': `JWT ${jwtAccess}`,
+                    // 'Content-Type': 'application/json', // This header is not needed for FormData
+                },
+                body: formData,
+            })
+            .then(response => {
+                if (response.ok) {
+                    return response.json();
+                }
+                throw new Error('Network response was not ok.');
+            })
+            .then(data => {
+                // Assuming the response contains the new profile picture URL
+                setProfileData(prevData => ({
+                    ...prevData,
+                    profilePictureUrl: data.profile_picture_url, // Update this key based on your actual response structure
+                }));
+            })
+            .catch(error => console.error('Error updating profile picture:', error));
         }
     };
+    
 
 
     return(
@@ -130,7 +149,7 @@ export default function MyProfilePage(){
                 <label htmlFor="profilePictureInput">
                     <img
                         className="user-profile-image"
-                        src={profileData.profilePictureUrl || 'default-image-url.jpg'} // Fallback to a default image if profilePictureUrl is empty
+                        src={profileData.profilePictureUrl} // Fallback to a default image if profilePictureUrl is empty
                         alt="Profile"
                     />
                     <input
