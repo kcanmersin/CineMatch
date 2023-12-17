@@ -13,24 +13,26 @@ import UserPage from './Components/UserPage';
 import ListsPage from './Components/ListsPage';
 import PrivateRoute from './auth/PrivateRoute';
 import MoviePage from './Components/MoviePage';
+import { UserProvider } from './Components/UserContext';
 
 export default function App() {
     const { isAuthenticated } = useContext(AuthContext);
 
     return (
+        <UserProvider>
+            <Routes>
+                <Route path="/" element={<FirstPage />} />
+                <Route path="/signup" element={<SignupPage />} />
+                <Route path="/signin" element={<SigninPage isAuthenticated={isAuthenticated} />} />
+                <Route path="/mainpage" element={<PrivateRoute isAuthenticated={isAuthenticated}><MainPage /></PrivateRoute>} />
+                <Route path="/mylists" element={<PrivateRoute isAuthenticated={isAuthenticated}><MyListsPage /></PrivateRoute>} />
+                <Route path="/myprofile" element={<PrivateRoute isAuthenticated={isAuthenticated}><MyProfilePage /></PrivateRoute>} />
+                <Route path="/user/:username" element={<PrivateRoute isAuthenticated={isAuthenticated}><UserPage /></PrivateRoute>} />
+                <Route path="/user/:username/lists" element={<PrivateRoute isAuthenticated={isAuthenticated}><ListsPage /></PrivateRoute>} />
+                <Route path="/moviepage" element={<PrivateRoute isAuthenticated={isAuthenticated}><MoviePage /></PrivateRoute>} />
 
-        <Routes>
-            <Route path="/" element={<FirstPage />} />
-            <Route path="/signup" element={<SignupPage />} />
-            <Route path="/signin" element={<SigninPage isAuthenticated={isAuthenticated} />} />
-            <Route path="/mainpage" element={<PrivateRoute isAuthenticated={isAuthenticated}><MainPage /></PrivateRoute>} />
-            <Route path="/mylists" element={<PrivateRoute isAuthenticated={isAuthenticated}><MyListsPage /></PrivateRoute>} />
-            <Route path="/myprofile" element={<PrivateRoute isAuthenticated={isAuthenticated}><MyProfilePage /></PrivateRoute>} />
-            <Route path="/user/:username" element={<PrivateRoute isAuthenticated={isAuthenticated}><UserPage /></PrivateRoute>} />
-            <Route path="/user/:username/lists" element={<PrivateRoute isAuthenticated={isAuthenticated}><ListsPage /></PrivateRoute>} />
-            <Route path="/moviepage" element={<PrivateRoute isAuthenticated={isAuthenticated}><MoviePage /></PrivateRoute>} />
-
-        </Routes>
+            </Routes>
+        </UserProvider>
       
     );
 }
