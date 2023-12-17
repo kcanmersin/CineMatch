@@ -78,5 +78,14 @@ li.movie-lists{
     display: flex;
 }
 
+/* THE PART BELOW IS ONLY FOR Listpage.jsx*/
 
+.list-page-username{
+    font-size: 2rem;
+    color: #cecece;
+    margin-bottom: 2rem;
+}
 
+.list-page-username > span{
+    font-weight: bold;
+}
