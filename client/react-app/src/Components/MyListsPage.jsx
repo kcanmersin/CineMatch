@@ -1,7 +1,8 @@
 import "./MyListsPage.css";
 import { useState, useEffect } from 'react';
 import ProgramNavbar from "./SubComponents/ProgramNavbar";
-import { Button, Form, Container, Row, Col } from 'react-bootstrap';
+import { Button, Form, Container, Row, Col, Modal } from 'react-bootstrap';
+
 
 export default function MyListsPage() {
   const [lists, setLists] = useState([]);
@@ -12,8 +13,19 @@ export default function MyListsPage() {
   const [isPublic, setIsPublic] = useState(true); // State for the is_public checkbox
   const jwtAccess = localStorage.getItem('jwtAccess');
   const [userId, setUserId] = useState(null); // userId
-  
+  const [showModal, setShowModal] = useState(false);
+
   const MoviePosterLink= "src/assets/dummyPoster.jpg";
+
+  
+
+  const handleShowModal = () => {
+    setShowModal(true);
+  };
+
+  const handleCloseModal = () => {
+    setShowModal(false);
+  };
 
   useEffect(() => {
     fetch('http://127.0.0.1:8000/auth/users/me/', {
@@ -79,9 +91,6 @@ export default function MyListsPage() {
     });
   };
 
-  const handleCreateButtonClick = () => {
-    setShowCreateForm(!showCreateForm);
-  };
 
   const handleCreateList = (event) => {
     event.preventDefault();
@@ -108,7 +117,7 @@ export default function MyListsPage() {
     })
     .then(newList => {
       setLists(currentLists => [...currentLists, newList]);
-      setShowCreateForm(false);
+      setShowModal(false);
       setIsPublic(true); // Reset the isPublic state to default
     })
     .catch(error => {
@@ -166,8 +175,8 @@ export default function MyListsPage() {
             <div className="poster-info-container">
               <div className= "movie-lists-posters-container">
                 {moviesData[list.id] && moviesData[list.id].map((movie, movieIndex) => (
-                  <div key={movieIndex}>
-                    <p>{movie.title}</p>
+                  <div className= "container-for-shift" key={movieIndex}>
+                    <img src={MoviePosterLink} className="movie-image" />
                   </div>
                 ))}
               </div>
@@ -186,12 +195,18 @@ export default function MyListsPage() {
           </li>
         ))}
       </ul>
-      <Button onClick={handleCreateButtonClick}>
+      <Button variant="success"
+        style={{margin:'2rem'}}onClick={handleShowModal}>
         {showCreateForm ? 'Cancel' : 'Create List'}
       </Button>
-      {showCreateForm && (
-        <Form onSubmit={handleCreateList}>
-          <Form.Group controlId="listName">
+      <Modal className= "create-list-modal" show={showModal} onHide={handleCloseModal}>
+        <Modal.Header className="modal-header"closeButton>
+          <Modal.Title>Create List</Modal.Title>
+        </Modal.Header>
+        <Modal.Body
+          className="modal-body">
+          <Form className= "create-list-form" onSubmit={handleCreateList}>
+            <Form.Group controlId="listName">
             <Form.Label>List Name:</Form.Label>
             <Form.Control type="text" name="listName" required />
           </Form.Group>
@@ -203,11 +218,12 @@ export default function MyListsPage() {
               onChange={(e) => setIsPublic(e.target.checked)}
             />
           </Form.Group>
-          <Button variant="primary" type="submit">
+          <Button variant="primary" className="create-list-submit-button" type="submit">
             Create
           </Button>
-        </Form>
-      )}
+          </Form>
+        </Modal.Body>
+      </Modal>
     </div>
   );
 }
