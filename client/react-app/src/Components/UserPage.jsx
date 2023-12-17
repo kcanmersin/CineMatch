@@ -48,20 +48,20 @@ export default function UserPage(){
         throw new Error('Network response was not ok.');
         })
         .then(profileInfo => {
-        // Update state with profile information
-        setProfileData(prevData => ({
-            ...prevData,
-            id: profileInfo.id,
-            username: username,
-            matchRate: profileInfo.match_rate,
-            followerCount: profileInfo.follower_count,
-            followingCount: profileInfo.following_count,
-            profilePictureUrl: profileInfo.profile_picture_url,
-            watchedMovieCount: profileInfo.watched_movie_count,
-            bestMatchMoviePoster: profileInfo.best_match_movie_poster,
-            followStatus: profileInfo.follow_status,
-        }));
-        setIsLoading(false);
+          // Update state with profile information
+          setProfileData(prevData => ({
+              ...prevData,
+              id: profileInfo.id,
+              username: username,
+              matchRate: profileInfo.match_rate,
+              followerCount: profileInfo.follower_count,
+              followingCount: profileInfo.following_count,
+              profilePictureUrl: profileInfo.profile_picture_url,
+              watchedMovieCount: profileInfo.watched_movie_count,
+              bestMatchMoviePoster: profileInfo.best_match_movie_poster,
+              followStatus: profileInfo.follow_status,
+          }));
+          
         })
         .catch(error => console.error('There has been a problem with your fetch operations:', error));
     }, [jwtAccess, username]);
