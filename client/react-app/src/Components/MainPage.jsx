@@ -159,7 +159,9 @@ export default function MainPage(){
                     <Container className="movie-cards-container">
                             <div className="movie-cards">
                                 {movieCardsMostPopular.map((movie) => (
-                                    <MovieCard key={movie.id} {...movie} />
+                                    <Link to={`/moviepage/${movie.id}`} key={movie.id} className="movie-card-link">
+                                        <MovieCard {...movie} />
+                                    </Link>
                                 ))}
                             </div>
                     </Container>
@@ -171,8 +173,10 @@ export default function MainPage(){
                     <Container className="movie-cards-container">
                             <div className="movie-cards">
                                 {movieCardsBestRated.map((movie) => (
-                                    <MovieCard key={movie.id} {...movie} />
-                                ))}
+                                        <Link to={`/moviepage/${movie.id}`} key={movie.id} className="movie-card-link">
+                                            <MovieCard {...movie} />
+                                        </Link>
+                                    ))}
                             </div>
                     </Container>
                 </Row>
@@ -183,8 +187,10 @@ export default function MainPage(){
                     <Container className="movie-cards-container">
                             <div className="movie-cards">
                                 {movieCardsForYou.map((movie) => (
-                                    <MovieCard key={movie.id} {...movie} />
-                                ))}
+                                        <Link to={`/moviepage/${movie.id}`} key={movie.id} className="movie-card-link">
+                                            <MovieCard {...movie} />
+                                        </Link>
+                                    ))}
                             </div>
                     </Container>
                 </Row>
