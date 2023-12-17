@@ -9,8 +9,11 @@ import Row from "react-bootstrap/Row";
 
 
 export default function UserPage(){
+
+    // TODO: add matched percentage below username
     const { username } = useParams();
     const [yourUserId, setYourUserId] = useState(null);
+    const [watchedMovies, setWatchedMovies] = useState([]);
     const [isLoading, setIsLoading] = useState(true); // New loading state
     const [profileData, setProfileData] = useState({
         id: null,
@@ -85,6 +88,24 @@ export default function UserPage(){
           })
           .catch(error => console.error('There has been a problem with your fetch operations:', error));
     }, [jwtAccess]);
+
+    // display the watched movies
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
     
     const handleFollow = () => {
       // Determine whether to follow or unfollow based on the current followStatus
@@ -143,31 +164,6 @@ export default function UserPage(){
           console.error(shouldFollow ? 'Follow request failed' : 'Unfollow request failed', error);
         });
     };
-    
-  
-    //const MyProfileBgImage= "src/assets/dummy1.jpg";
-
-    //const username="Michael Corleone";
-
-    
-    //const movieCount="1071";
-    //const followersCount= "1453";
-    //const followingsCount= "1923"
-
-    // Dummy movie data
-    /*const movieData = [
-        { id: 1, name: "Movie 1", image: "src/assets/dummyPoster.jpg", date: "2022" },
-        { id: 2, name: "Modsdddsdasdasda dasdasd dasdddddfsdvie 2", image: "src/assets/dummyPoster.jpg", date: "2021" },
-        { id: 3, name: "Movie 3", image: "src/assets/dummyPoster.jpg", date: "2020" },
-        { id: 4, name: "Movie 3", image: "src/assets/dummyPoster.jpg", date: "2020" },
-        { id: 5, name: "Movie 3", image: "src/assets/dummyPoster.jpg", date: "2020" },
-        { id: 6, name: "Movie 3", image: "src/assets/dummyPoster.jpg", date: "2020" },
-        { id: 7, name: "Movie 3", image: "src/assets/dummyPoster.jpg", date: "2020" },
-        { id: 8, name: "Movie 3", image: "src/assets/dummyPoster.jpg", date: "2020" },
-        { id: 9, name: "Movie 3", image: "src/assets/dummyPoster.jpg", date: "2020" },
-        { id: 10, name: "Movie 3", image: "src/assets/dummyPoster.jpg", date: "2020" },
-    ];*/
-
 
 
     return(

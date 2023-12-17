@@ -226,7 +226,7 @@ export default function MoviePage(){
 
     return (
         <div className="movie-page">
-            {/*<div className="movie-details">
+            <div className="movie-details">
                 <div className="movie-poster">
                     
                     <img src={"https://image.tmdb.org/t/p/w500/6CoRTJTmijhBLJTUNoVSUNxZMEI.jpg"} alt="Movie Poster" />
@@ -242,7 +242,7 @@ export default function MoviePage(){
                     <p>Actors: {actorsNames}</p>
                     <p>Genres: {genres.join(", ")}</p>
                 </div>
-    </div>*/}
+    </div>
                 <select id="listSelector">
                     {lists.map(list => (
                         <option key={list.id} value={list.id}>{list.title}</option>
@@ -251,7 +251,7 @@ export default function MoviePage(){
                 <Button variant="primary" onClick={() => handleAddToList(document.getElementById('listSelector').value)}>Add to List</Button>
 
             
-            {/*<div className="similar-movies">
+            <div className="similar-movies">
                 <h2>Similar Movies</h2>
                 <div className="similar-movies-list">
                     {similar_movies.map((movie) => (
