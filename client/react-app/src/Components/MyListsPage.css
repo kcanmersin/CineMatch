@@ -1,0 +1,25 @@
+ul.movie-lists-container {
+    list-style: none;
+    color: #cecece;
+    padding: 0;
+}
+
+li.movie-lists:first-child {
+    border-top: 0.1px solid rgba(0,255,56,0.5);
+}
+
+.poster-info-container{
+    display: flex;
+}
+
+li.movie-lists{
+    text-align: left;
+    border-bottom: 0.1px solid rgba(0,255,56,0.5);
+    display: flex;
+    padding: 2rem;
+    justify-content: space-between;
+}
+
+.delete-button{
+    height: 3rem;
+}

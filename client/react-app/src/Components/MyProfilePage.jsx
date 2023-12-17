@@ -50,7 +50,7 @@ export default function MyProfilePage(){
             setProfileData(prevData => ({ ...prevData, username: fetchedUsername }));
 
             // Fetch profile data using the fetched username
-            return fetch(`http://127.0.0.1:8000/accounts/profile/${fetchedUsername}`, {
+            return fetch(`http://127.0.0.1:8000/accounts/profile/${fetchedUsername}/`, {
                 method: 'GET',
                 headers: {
                     'Authorization': `JWT ${jwtAccess}`,
