@@ -59,10 +59,13 @@ const Comment = ({ comment, replies, showReplyButton, onReplySubmit }) => {
         <div className="comment">
             <div className="comment-header">
                 {/* Uncomment and use the following line if images are available */}
-                {/* <img src={comment.user.profile.profile_picture} alt={comment.user.username} className="comment-profile-picture" /> */}
+                {<img src={comment.user.profile.profile_picture} alt={comment.user.username} className="comment-profile-picture" />}
                 <div className="comment-info">
                     <p className="comment-username">{comment.user.username}</p>
-                    {comment.user_rate && <p className="comment-rating">Rating: {comment.user_rate}</p>}
+                    {comment.user_rate && comment.user_rate.rate_point && (
+                        <p className="comment-rating">Rating: {comment.user_rate.rate_point}</p>
+                    )}
+
                 </div>
             </div>
             <p className="comment-text">{comment.text}</p>

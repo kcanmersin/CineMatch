@@ -67,6 +67,7 @@ export default function MoviePage(){
     const [isLoading, setIsLoading] = useState(false);
     const jwtAccess = localStorage.getItem('jwtAccess');
     const [lastUpdate, setLastUpdate] = useState(Date.now());
+    const [userRating, setUserRating] = useState(0);
     const { movieId } = useParams();
 
     // logic part
@@ -87,6 +88,7 @@ export default function MoviePage(){
         .then(response => response.json())
         .then(commentsData => {
             setComments(commentsData);
+            console.log(commentsData);
         })
         .catch(error => {
             console.error("Error fetching data: ", error);
@@ -231,6 +233,36 @@ export default function MoviePage(){
         });
     };
 
+    const handleRatingSubmit = (rating) => {
+        // Create the rating data to send to the server
+        const ratingData = {
+          username: username, // Replace with the actual movie ID
+          rate_point: parseFloat(rating), // Convert the rating to a number if needed
+        };
+      
+        // Send the rating data to the server
+        fetch(`http://127.0.0.1:8000/movie/rate_list/${movieId}/rates/`, {
+          method: 'POST',
+          headers: {
+            'Authorization': `JWT ${jwtAccess}`,
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(ratingData)
+        })
+        .then(response => {
+          if (response.ok) {
+            // Rating submitted successfully, you can handle UI updates here if needed
+            console.log('Rating submitted successfully');
+          } else {
+            throw new Error(`HTTP error! Status: ${response.status}`);
+          }
+        })
+        .catch(error => {
+          console.error('Error submitting rating:', error);
+        });
+      };
+      
+
 
 
     const { title, poster_path, release_date, overview, vote_average, runtime, genres, cast, crew, similar_movies } = movieData;
@@ -245,13 +277,13 @@ export default function MoviePage(){
             <div className= "best-match-movie">
                 <div className= "best-match-movie-poster">
                     <img
-                        src={"https://image.tmdb.org/t/p/w500/6CoRTJTmijhBLJTUNoVSUNxZMEI.jpg"}
+                        src={"https://image.tmdb.org/t/p/original" + movieData.poster_path}
                         alt="First Image"
                         className="best-match-movie-poster-image"
                     />
                 </div>
                 <div className= "best-match-movie-scene" style={{
-                    backgroundImage: `linear-gradient(0deg, #0A1421 5%, rgba(0, 0, 0, 0.00) 100%),url(${MovieScene})`,
+                    backgroundImage: `linear-gradient(0deg, #0A1421 5%, rgba(0, 0, 0, 0.00) 100%),url(${"https://image.tmdb.org/t/p/original" + movieData.background_path})`,
                     backgroundPosition: 'center center',
                     backgroundSize: 'cover',
                     backgroundRepeat: 'no-repeat',
@@ -287,6 +319,21 @@ export default function MoviePage(){
                         onClick={handleShowModal}>
                         Add to a List
                     </Button>
+                    <div className="rating-section">
+  <h2>Rate This Movie</h2>
+  <div className="user-rating">
+    <p>Your Rating:</p>
+    <input
+      type="number"
+      min="0"
+      max="10"
+      step="0.1"
+      value={userRating}
+      onChange={(e) => setUserRating(e.target.value)}
+    />
+    <button onClick={() => handleRatingSubmit(userRating)}>Submit</button>
+  </div>
+</div>
                     <Modal show={showModal} onHide={handleCloseModal}>
                         <Modal.Header closeButton>
                             <Modal.Title>LISTS</Modal.Title>

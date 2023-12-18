@@ -87,11 +87,11 @@ export default function MainPage(){
 
 
     const movieCardsMostPopular = [
-        { id: 1, title: "The Curious Case of Benjamin Button", poster_path: "src/assets/dummyPoster.jpg", release_date: "1980" },
-        { id: 2, title: "The Shining", poster_path: "src/assets/dummyPoster.jpg", release_date: "1980" },
-        { id: 3, title: "The Shining", poster_path: "src/assets/dummyPoster.jpg", release_date: "1980" },
-        { id: 4, title: "The Shining", poster_path: "src/assets/dummyPoster.jpg", release_date: "1980" },
-        { id: 5, title: "The Shining", poster_path: "src/assets/dummyPoster.jpg", release_date: "1980" },
+        { id: 5, title: "The Curious Case of Benjamin Button", poster_path: "src/assets/dummyPoster.jpg", release_date: "1980" },
+        { id: 11, title: "The Shining", poster_path: "src/assets/dummyPoster.jpg", release_date: "1980" },
+        { id: 12, title: "The Shining", poster_path: "src/assets/dummyPoster.jpg", release_date: "1980" },
+        { id: 13, title: "The Shining", poster_path: "src/assets/dummyPoster.jpg", release_date: "1980" },
+        { id: 19, title: "The Shining", poster_path: "src/assets/dummyPoster.jpg", release_date: "1980" },
       ];
 
 
