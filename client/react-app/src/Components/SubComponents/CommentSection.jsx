@@ -1,7 +1,10 @@
 /* eslint-disable react/prop-types */
 import React, { useState } from "react";
+import "./CommentSection.css";
+import Button from "react-bootstrap/Button";
+import Form from "react-bootstrap/Form";
 
-const ReplyForm = ({ onSubmit, parentCommentId }) => {
+const ReplyForm = ({ onSubmit, onCancel, parentCommentId }) => {
     const [replyText, setReplyText] = useState('');
 
     const handleSubmit = (e) => {
@@ -10,15 +13,28 @@ const ReplyForm = ({ onSubmit, parentCommentId }) => {
         setReplyText(''); // Clear the textarea after submitting
     };
 
+    const handleCancel = () => {
+        onCancel();
+    };
+
     return (
-        <form onSubmit={handleSubmit}>
-            <textarea 
-                value={replyText} 
-                onChange={(e) => setReplyText(e.target.value)} 
-                placeholder="Write a reply..."
-            />
-            <button type="submit">Submit Reply</button>
-        </form>
+        <Form onSubmit={handleSubmit} className="reply-form">
+            <Form.Group controlId="replyText">
+                <Form.Control
+                    as="textarea"
+                    rows={3}
+                    value={replyText}
+                    onChange={(e) => setReplyText(e.target.value)}
+                    placeholder="Write a reply..."
+                />
+            </Form.Group>
+            <Button type="submit" variant="success" className="submit-cancel-reply-buttons">
+                Submit Reply
+            </Button>
+            <Button variant="danger" onClick={handleCancel} className="submit-cancel-reply-buttons">
+                Cancel
+            </Button>
+        </Form>
     );
 };
 
@@ -32,17 +48,22 @@ const NewCommentForm = ({ onSubmit }) => {
     };
 
     return (
-        <form onSubmit={handleSubmit}>
-            <textarea 
-                value={commentText} 
-                onChange={(e) => setCommentText(e.target.value)} 
-                placeholder="Write a comment..."
-            />
-            <button type="submit">Submit Comment</button>
-        </form>
+        <Form onSubmit={handleSubmit}>
+            <Form.Group controlId="commentText">
+                <Form.Control
+                    as="textarea"
+                    rows={3}
+                    value={commentText}
+                    onChange={(e) => setCommentText(e.target.value)}
+                    placeholder="Write a comment..."
+                />
+            </Form.Group>
+            <Button type="submit" variant="success" className="submit-comment-button">
+                Submit Comment
+            </Button>
+        </Form>
     );
 };
-
 
 const Comment = ({ comment, replies, showReplyButton, onReplySubmit }) => {
     const [showReplyForm, setShowReplyForm] = useState(false);
@@ -59,7 +80,7 @@ const Comment = ({ comment, replies, showReplyButton, onReplySubmit }) => {
         <div className="comment">
             <div className="comment-header">
                 {/* Uncomment and use the following line if images are available */}
-                {<img src={comment.user.profile.profile_picture} alt={comment.user.username} className="comment-profile-picture" />}
+                {/*<img src={comment.user.profile.profile_picture} alt={comment.user.username} className="comment-profile-picture" />*/}
                 <div className="comment-info">
                     <p className="comment-username">{comment.user.username}</p>
                     {comment.user_rate && comment.user_rate.rate_point && (
@@ -69,16 +90,19 @@ const Comment = ({ comment, replies, showReplyButton, onReplySubmit }) => {
                 </div>
             </div>
             <p className="comment-text">{comment.text}</p>
-            {showReplyButton && <button onClick={handleReplyClick} className="reply-button">Reply</button>}
+            {showReplyButton && (
+                <Button variant="success" onClick={handleReplyClick} className="reply-button">
+                    Reply
+                </Button>
+            )}
             {showReplyForm && (
                 <>
-                    <ReplyForm onSubmit={onReplySubmit} parentCommentId={comment.id} />
-                    <button onClick={handleCancelReply} className="cancel-reply-button">Cancel</button>
+                    <ReplyForm onSubmit={onReplySubmit} onCancel={handleCancelReply} parentCommentId={comment.id} />
                 </>
             )}
             {replies && replies.length > 0 && (
                 <div className="replies">
-                    {replies.map(reply => (
+                    {replies.map((reply) => (
                         <Comment key={reply.id} comment={reply} replies={[]} showReplyButton={false} onReplySubmit={onReplySubmit} />
                     ))}
                 </div>
@@ -88,9 +112,9 @@ const Comment = ({ comment, replies, showReplyButton, onReplySubmit }) => {
 };
 
 const CommentSection = ({ comments, onReplySubmit, onCommentSubmit }) => {
-    const topLevelComments = comments.filter(comment => comment.parent_comment === null);
+    const topLevelComments = comments.filter((comment) => comment.parent_comment === null);
     const repliesMap = comments
-        .filter(comment => comment.parent_comment !== null)
+        .filter((comment) => comment.parent_comment !== null)
         .reduce((acc, comment) => {
             const parentID = comment.parent_comment;
             acc[parentID] = acc[parentID] || [];
@@ -100,16 +124,10 @@ const CommentSection = ({ comments, onReplySubmit, onCommentSubmit }) => {
 
     return (
         <div className="comment-section">
-            <NewCommentForm  onSubmit={onCommentSubmit} />
-            {topLevelComments.map(comment => (
-                <Comment 
-                    key={comment.id} 
-                    comment={comment} 
-                    replies={repliesMap[comment.id]} 
-                    showReplyButton={true} 
-                    onReplySubmit={onReplySubmit}
-                />
+            {topLevelComments.map((comment) => (
+                <Comment key={comment.id} comment={comment} replies={repliesMap[comment.id]} showReplyButton={true} onReplySubmit={onReplySubmit} />
             ))}
+            <NewCommentForm onSubmit={onCommentSubmit} />
         </div>
     );
 };

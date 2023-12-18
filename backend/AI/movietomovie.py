@@ -13,5 +13,5 @@ def movie_to_movie(movieId):
     #     loaded_model = joblib.load(pkl_file)
 
     # similar_movies = loaded_model.recommend_similar_movies(movieId)
-    return [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+    return [64, 65, 66, 68, 69, 70, 71, 73, 74, 76]
     # return similar_movies

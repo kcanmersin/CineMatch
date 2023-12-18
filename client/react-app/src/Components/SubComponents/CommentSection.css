@@ -1,0 +1,32 @@
+.comment{
+    border-bottom: 1px solid rgba(0, 255, 56, 1);
+    overflow-wrap: break-word;
+    padding-left: 1rem;
+}
+
+.replies > .comment{
+    border-bottom: 0;
+}
+
+.comment-username{
+    font-weight: bold;
+    font-size: 1.25rem;
+}
+
+.reply-button{
+    margin-bottom: 1rem;
+}
+
+.submit-comment-button{
+    margin-top: 1rem;
+}
+
+.reply-form{
+    margin-top: 1rem;
+    margin-bottom: 1rem;
+}
+
+.submit-cancel-reply-buttons{
+    margin-top: 1rem;
+    margin-right: 2rem;
+}

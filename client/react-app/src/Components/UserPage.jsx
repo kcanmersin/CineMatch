@@ -14,10 +14,10 @@ export default function UserPage(){
     const { username } = useParams();
     const [yourUserId, setYourUserId] = useState(null);
     const [watchedMovies, setWatchedMovies] = useState([]);
+    const [followState, setFollowState] = useState("Follow");
     const [isLoading, setIsLoading] = useState(true); // New loading state
     const [profileData, setProfileData] = useState({
         id: null,
-        username: "Loading...",
         matchRate: 0,
         followerCount: 0,
         followingCount: 0,
@@ -40,6 +40,21 @@ export default function UserPage(){
           setIsLoading(true);
   
           try {
+              // Fetch the current user's ID
+              const userResponse = await fetch('http://127.0.0.1:8000/auth/users/me/', {
+                method: 'GET',
+                headers: {
+                    'Authorization': `JWT ${jwtAccess}`,
+                    'Content-Type': 'application/json',
+                },
+            });
+
+            if (!userResponse.ok) {
+                throw new Error('Failed to fetch user data');
+            }
+
+            const userData = await userResponse.json();
+            setYourUserId(userData.id);
               // Fetch profile data
               const profileResponse = await fetch(`http://127.0.0.1:8000/accounts/profile/${username}/`, {
                   method: 'GET',
@@ -65,6 +80,7 @@ export default function UserPage(){
                 bestMatchMoviePoster: profileInfo.best_match_movie_poster,
                 profilePictureUrl: profileInfo.profile_picture_url
             });
+            setFollowState(profileInfo.follow_status ? "Unfollow": "Follow");
   
               // Fetch lists
               const listsResponse = await fetch(`http://127.0.0.1:8000/movie/lists/`, {
@@ -108,17 +124,15 @@ export default function UserPage(){
       };
   
       fetchData();
-  }, [jwtAccess, username]);
+  }, [jwtAccess, username, followState]);
   
 
     const handleFollow = () => {
-      // Determine whether to follow or unfollow based on the current followStatus
-      const shouldFollow = !profileData.followStatus;
     
       // Create a follow object with follower_id and following_id
       const followData = {
-        follower_id: profileData.id, // Replace with the follower's user ID
-        following_id: yourUserId, // Use the user ID of the profile being viewed
+        follower_id: yourUserId, // Replace with the follower's user ID
+        following_id: profileData.id, // Use the user ID of the profile being viewed
       };
     
       // Send a POST request to the follow endpoint
@@ -129,9 +143,12 @@ export default function UserPage(){
           'Content-Type': 'application/json',
         },
         body: JSON.stringify(followData),
-      })
-        .then(response => {
-          if (response.ok) {
+      }).then(response => response.json())
+        .then(data => {
+          if (data.status) {
+            console.log(data.status);
+            // Update the follow status in the component's state
+            setFollowState(data.status === "Following" ? "Unfollow" : "Follow");
             // After the follow/unfollow is successful, fetch the updated follower count
             return fetch(`http://127.0.0.1:8000/accounts/profile/${username}/`, {
               method: 'GET',
@@ -142,7 +159,7 @@ export default function UserPage(){
             });
           } else {
             // Handle errors, e.g., the user is already following
-            console.error(shouldFollow ? 'Follow request failed' : 'Unfollow request failed');
+            console.error('Follow/ unfollow request failed');
             return null;
           }
         })
@@ -155,9 +172,10 @@ export default function UserPage(){
         .then(updatedProfileInfo => {
           if (updatedProfileInfo) {
             // Update the state with the new follower count
-            console.log(updatedProfileInfo);
+            //console.log(updatedProfileInfo);
             setProfileData(prevData => ({
               ...prevData,
+              username: updatedProfileInfo.username,
               followerCount: updatedProfileInfo.follower_count,
               followStatus: updatedProfileInfo.follow_status,
             }));
@@ -165,7 +183,7 @@ export default function UserPage(){
         })
         .catch(error => {
           // Handle network errors
-          console.error(shouldFollow ? 'Follow request failed' : 'Unfollow request failed', error);
+          console.error('Follow/unfollow request failed', error);
         });
     };
 
@@ -185,7 +203,7 @@ export default function UserPage(){
                         className="user-profile-image"
                         src={profileData.profilePictureUrl}
                     />
-                    <div className="user-name">{profileData.username}</div>
+                    <div className="user-name">{username}</div>
                 </div>
                 <div className="follow-stats">
                     <div><span style={{fontWeight: 'bold'}}>{profileData.watchedMovieCount}</span> MOVIES</div>
@@ -204,7 +222,7 @@ export default function UserPage(){
                         onClick={handleFollow}
                         disabled={isLoading} // Disable button while loading
                     >
-                        {isLoading ? "Loading..." : profileData.followStatus ? "Unfollow" : "Follow"}
+                        {followState}
                     </Button>
                 </div>
                 <div className= "watched-movies">
@@ -223,4 +241,5 @@ export default function UserPage(){
         </div>
     )
 }
+
 

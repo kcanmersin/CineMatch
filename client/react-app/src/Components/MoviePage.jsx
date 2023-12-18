@@ -25,7 +25,8 @@ export default function MoviePage(){
     // TODO : poster pathi ayarla
     const UserPoints= "9.9";
     const MovieScene= "https://hips.hearstapps.com/hmg-prod/images/american-actors-marlon-brando-and-al-pacino-on-the-set-of-news-photo-1578503843.jpg?crop=1.00xw:0.756xh;0,0.0556xh&resize=1200:*";
-    
+    const SimilarMoviePoster= "https://s.yimg.com/ny/api/res/1.2/ZzAHlDHi8a2xdBRRbruaYQ--/YXBwaWQ9aGlnaGxhbmRlcjt3PTY0MDtoPTkyOA--/https://media.zenfs.com/en/homerun/feed_manager_auto_publish_494/d05a3f087fa57f6d41b865d53a42a5f5";
+
     /*const MoviePoster= "src/assets/dummyPoster.jpg";
     const MovieScene= "src/assets/dummy1.jpg";
     const MovieName= "The Shining";
@@ -289,15 +290,15 @@ export default function MoviePage(){
                     backgroundRepeat: 'no-repeat',
                 }}>
                     <div className="movie-title-director">
-                        <div className="name-and-date">{title} <span className="movie-date">({release_date})</span></div>
+                        <div className="name-and-date">{title.toUpperCase()} <span className="movie-date">({release_date})</span></div>
                         <div className="director-name">Directed by <span className="bold">{director}</span></div>
                     </div>
                 </div>
             </div>
             <div className="rest-of-the-movie-page">
                 <div className="movie-page-movie-details">
-                    <p className="rating-data"><div className="voting-text">RATING:</div><div className="bold">{vote_average}</div></p>
-                    <p className="rating-data"><div className="your-voting-text">YOUR RATING:</div><div className="bold">{UserPoints}</div></p>
+                    <p className="rating-data"><div className="voting-text">RATING:</div><div className="bold">{parseFloat(vote_average).toFixed(1)}</div></p>
+                    <p className="rating-data"><div className="your-voting-text">YOUR RATING:</div><div className="bold">{movieData.user_rating}</div></p>
                     <p><span className="bold">{runtime}</span><span className="lighter"> minutes</span></p>
                     <div><p className="starring bold">STARRING</p><p className="lighter">{actorsNames}</p></div>
                 </div>
@@ -309,14 +310,14 @@ export default function MoviePage(){
                     </div>
                     <p style={{color: "#cecece", marginBottom: "5rem"}}>{overview}</p>
                     <div className="comments-section">
-                        <h2>Comments {comments.length}</h2>
+                        <h2 className="comment-amount">{comments.length} COMMENTS</h2>
                         <CommentSection comments={comments} onReplySubmit={onReplySubmit} onCommentSubmit={onCommentSubmit} />
                     </div>
                 </div>
-                
                 <div className="movie-page-buttons-similars">
                     <Button variant="success"
-                        onClick={handleShowModal}>
+                        onClick={handleShowModal}
+                        className="add-to-a-list-button">
                         Add to a List
                     </Button>
                     <div className="rating-section">
@@ -356,13 +357,18 @@ export default function MoviePage(){
                         </Modal.Body>
                     </Modal>         
                     <div className="similar-movies">
-                        <h2>Similar Movies</h2>
+                        <div className="movies-like-text">Movies like <span className="bold">{title}</span></div>
                         <div className="similar-movies-list">
                             {similar_movies.map((movie) => (
                                 <Link to={`/moviepage/${movie.movie_id}`} key={movie.movie_id}>
                                     <div className="similar-movie">
-                                        <img src={movie.movie_poster_url} alt={movie.movie_title} />
-                                        <p>{movie.movie_title}</p>
+                                        <img className="similar-movie-poster" src={"https://image.tmdb.org/t/p/original" + movie.movie_poster_url} alt={movie.movie_title} />
+                                        <p className="similar-movie-title">
+                                        {movie.movie_title
+                                            .split(' ')
+                                            .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+                                            .join(' ')}
+                                        </p>
                                     </div>
                                 </Link>
                             ))}

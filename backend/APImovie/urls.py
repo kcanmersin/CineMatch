@@ -45,6 +45,4 @@ urlpatterns = [
     path('rate_list/<int:movie_id>/rates/<int:rate_id>/', MovieRateDetailView.as_view(), name='movie_rate_list_detail'),
     #path('movie/movie_filter/', MovieFilterListCreateView.as_view(), name="movie-filter-list"),
     path('movie-lists/<int:list_id>/filter/', MovieListFilterView.as_view(), name='movie-list-filter'),
-
-
 ]

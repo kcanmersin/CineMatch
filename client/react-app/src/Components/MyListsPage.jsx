@@ -177,7 +177,7 @@ export default function MyListsPage() {
               <div className= "movie-lists-posters-container">
                 {moviesData[list.id] && moviesData[list.id].map((movie, movieIndex) => (
                   <div className= "container-for-shift" key={movieIndex}>
-                    <img src={MoviePosterLink} className="movie-image" />
+                    <img src={"https://image.tmdb.org/t/p/original" + movie.poster_path} className="movie-image" />
                   </div>
                 ))}
               </div>
