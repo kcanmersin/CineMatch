@@ -38,7 +38,8 @@
     text-align: left;
     white-space: pre;
     padding: 1vw;
-    overflow: auto;
+    overflow:auto;
+    height: fit-content;
 }
 
 .movie-page-movie-details > *{
@@ -58,6 +59,8 @@
     text-align: left;
     padding-left: 3vw;
     padding-top: 2vw;
+    overflow: auto;
+    height: fit-content;
 }
 
 .voting-text{
@@ -93,6 +96,7 @@
 
 .movie-page-buttons-similars{
     margin-top: 3rem;
+    width: 25vw;
 }
 
 .list-select-modal-body{
@@ -106,4 +110,31 @@
 
 .add-button{
     width: 5rem;
+}
+
+.add-to-a-list-button{
+    margin-bottom: 2rem;
+}
+
+
+.movies-like-text{
+    margin-bottom: 2rem;
+}
+
+.similar-movie{
+    margin-bottom: 2rem;
+}
+
+.similar-movie-poster{
+    width: 30%;
+}
+
+.similar-movie-title{
+    color: #cecece;
+    font-size: 1.5vw;
+}
+
+.comment-amount{
+    color: rgb(0,255,56);
+    border-bottom: 1px solid rgb(0,255,56);;
 }
