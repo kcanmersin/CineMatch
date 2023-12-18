@@ -12,6 +12,7 @@ import { UserContext } from "./UserContext";
 export default function MyProfilePage(){
     const { username, profilePictureUrl, setProfilePicture } = useContext(UserContext);
     const [profileData, setProfileData] = useState({
+        id:null,
         matchRate: 0,
         followerCount: 0,
         followingCount: 0,
@@ -19,51 +20,84 @@ export default function MyProfilePage(){
         bestMatchMoviePoster: ''
     });
 
-
+    const [watchedMovies, setWatchedMovies] = useState([]);
     const jwtAccess = localStorage.getItem('jwtAccess');
 
-    /*  ---------------------------------------------------------------------------
-        --------------------------------------------------------------------------
-        LAN DİYAR YAPILACAKLARI BURAYA YAZIYORUM
-
-        -username hem aşağıda variable olarak tanımlı hem de navbar da. eğer onları
-        backendde bi defa çekip bi yerde tutup oradan çekebiliyosan öyle yap
-    */
-
-        useEffect(() => {
-            if (!username || username === "Loading...") {
-                // Do not fetch data if username is not loaded or is "Loading..."
-                return;
+    useEffect(() => {
+        const fetchData = async () => {
+            if (!username) {
+                return; // Exit if username is not defined.
             }
-        
-            // Fetch additional profile data
-            fetch(`http://127.0.0.1:8000/accounts/profile/${username}/`, {
-                method: 'GET',
-                headers: {
-                    'Authorization': `JWT ${jwtAccess}`,
-                    'Content-Type': 'application/json',
-                },
-            })
-            .then(response => {
-                if(response.ok) {
-                    return response.json();
+    
+    
+            try {
+                // Fetch profile data
+                const profileResponse = await fetch(`http://127.0.0.1:8000/accounts/profile/${username}/`, {
+                    method: 'GET',
+                    headers: {
+                        'Authorization': `JWT ${jwtAccess}`,
+                        'Content-Type': 'application/json',
+                    },
+                });
+    
+                if (!profileResponse.ok) {
+                    throw new Error('Network response was not ok.');
                 }
-                throw new Error('Network response was not ok.');
-            })
-            .then(profileInfo => {
-                // Update state with the additional profile information
-                setProfileData(prevData => ({
-                    ...prevData,
+    
+                const profileInfo = await profileResponse.json();
+    
+                // Update state with profile information
+                setProfileData({
+                    id: profileInfo.id,
                     matchRate: profileInfo.match_rate,
                     followerCount: profileInfo.follower_count,
                     followingCount: profileInfo.following_count,
                     watchedMovieCount: profileInfo.watched_movie_count,
                     bestMatchMoviePoster: profileInfo.best_match_movie_poster,
-
-                }));
-            })
-            .catch(error => console.error('There has been a problem with your fetch operations:', error));
-        }, [jwtAccess, username]);
+                    profilePictureUrl: profileInfo.profile_picture_url
+                });
+    
+                // Fetch lists
+                const listsResponse = await fetch(`http://127.0.0.1:8000/movie/lists/`, {
+                    method: 'GET',
+                    headers: {
+                        'Authorization': `JWT ${jwtAccess}`,
+                        'Content-Type': 'application/json',
+                    },
+                });
+    
+                if (!listsResponse.ok) {
+                    throw new Error('Error fetching lists.');
+                }
+    
+                const allLists = await listsResponse.json();
+                const userLists = await allLists.filter(list => list.user === profileInfo.id);
+                const watchedList = userLists.find((list, index) => index === 1);
+    
+                if (watchedList) {
+                    const moviePromises = watchedList.movies.map(movie => 
+                        fetch(`http://127.0.0.1:8000/movie/movie/movies/${movie.id}/`, {
+                            method: 'GET',
+                            headers: {
+                                'Authorization': `JWT ${jwtAccess}`,
+                                'Content-Type': 'application/json',
+                            },
+                        }).then(response => response.json())
+                    );
+    
+                    const moviesDetails = await Promise.all(moviePromises);
+                    setWatchedMovies(moviesDetails);
+                } else {
+                    console.log('Watched list not found');
+                }
+    
+            } catch (error) {
+                console.error('Error:', error);
+            }
+        };
+    
+        fetchData();
+    }, [jwtAccess, username]);
         
     
     //const MyProfileBgImage= "src/assets/dummy1.jpg";
@@ -161,7 +195,7 @@ export default function MyProfilePage(){
                     </div>
                     <Container className="watched-movies-card-container">
                         <Row>
-                            {movieData.map((movie) => (
+                            {watchedMovies.map((movie) => (
                                 <MovieCard key={movie.id} {...movie} />
                             ))}
                         </Row>

@@ -32,77 +32,84 @@ export default function UserPage(){
     
 
     useEffect(() => {
-
-      if (!username) {
-        // If username is not defined, exit the effect.
-        return;
-    }
-      setIsLoading(true);
-      fetch(`http://127.0.0.1:8000/accounts/profile/${username}/`, {
-          method: 'GET',
-          headers: {
-              'Authorization': `JWT ${jwtAccess}`,
-              'Content-Type': 'application/json',
-          },
-      })
-      .then(response => {
-          if (!response.ok) {
-              throw new Error('Network response was not ok.');
+      const fetchData = async () => {
+          if (!username) {
+              return; // Exit if username is not defined.
           }
-          return response.json();
-      })
-      .then(profileInfo => {
-          // Update state with profile information
-          setProfileData(prevData => ({
-            ...prevData,
-            id: profileInfo.id,
-            username: username,
-            matchRate: profileInfo.match_rate,
-            followerCount: profileInfo.follower_count,
-            followingCount: profileInfo.following_count,
-            profilePictureUrl: profileInfo.profile_picture_url,
-            watchedMovieCount: profileInfo.watched_movie_count,
-            bestMatchMoviePoster: profileInfo.best_match_movie_poster,
-            followStatus: profileInfo.follow_status,
-        }));
-          // Fetch the lists associated with the profile
-          return fetch(`http://127.0.0.1:8000/movie/lists/`, {
-              method: 'GET',
-              headers: {
-                  'Authorization': `JWT ${jwtAccess}`,
-                  'Content-Type': 'application/json',
-              },
-          });
-      })
-      .then(response => response.json())
-      .then(lists => {
-        const watchedList = lists.find((list, index) => index === 1);
-        if (watchedList) {
-            const moviePromises = watchedList.movies.map(movie => 
-                fetch(`http://127.0.0.1:8000/movie/movie/movies/${movie.id}/`, {
-                    method: 'GET',
-                    headers: {
-                        'Authorization': `JWT ${jwtAccess}`,
-                        'Content-Type': 'application/json',
-                    },
-                }).then(response => response.json())
-            );
-            return Promise.all(moviePromises);
-        } else {
-            throw new Error('Watched list not found');
-        }
-    })
-    .then(moviesDetails => {
-        console.log("Movies fetched:", moviesDetails);
-        setWatchedMovies(moviesDetails);
-    })
-    .catch(error => {
-        console.error('Error:', error);
-    })
-    .finally(() => {
-        setIsLoading(false);
-    });
-    }, [jwtAccess, username]);
+  
+          setIsLoading(true);
+  
+          try {
+              // Fetch profile data
+              const profileResponse = await fetch(`http://127.0.0.1:8000/accounts/profile/${username}/`, {
+                  method: 'GET',
+                  headers: {
+                      'Authorization': `JWT ${jwtAccess}`,
+                      'Content-Type': 'application/json',
+                  },
+              });
+  
+              if (!profileResponse.ok) {
+                  throw new Error('Network response was not ok.');
+              }
+  
+              const profileInfo = await profileResponse.json();
+  
+              // Update state with profile information
+              setProfileData({
+                id: profileInfo.id,
+                matchRate: profileInfo.match_rate,
+                followerCount: profileInfo.follower_count,
+                followingCount: profileInfo.following_count,
+                watchedMovieCount: profileInfo.watched_movie_count,
+                bestMatchMoviePoster: profileInfo.best_match_movie_poster,
+                profilePictureUrl: profileInfo.profile_picture_url
+            });
+  
+              // Fetch lists
+              const listsResponse = await fetch(`http://127.0.0.1:8000/movie/lists/`, {
+                  method: 'GET',
+                  headers: {
+                      'Authorization': `JWT ${jwtAccess}`,
+                      'Content-Type': 'application/json',
+                  },
+              });
+  
+              if (!listsResponse.ok) {
+                  throw new Error('Error fetching lists.');
+              }
+  
+              const allLists = await listsResponse.json();
+              const userLists = await allLists.filter(list => list.user === profileInfo.id);
+              const watchedList = userLists.find((list, index) => index === 1);
+  
+              if (watchedList) {
+                  const moviePromises = watchedList.movies.map(movie => 
+                      fetch(`http://127.0.0.1:8000/movie/movie/movies/${movie.id}/`, {
+                          method: 'GET',
+                          headers: {
+                              'Authorization': `JWT ${jwtAccess}`,
+                              'Content-Type': 'application/json',
+                          },
+                      }).then(response => response.json())
+                  );
+  
+                  const moviesDetails = await Promise.all(moviePromises);
+                  setWatchedMovies(moviesDetails);
+              } else {
+                  console.log('Watched list not found');
+              }
+  
+          } catch (error) {
+              console.error('Error:', error);
+          } finally {
+              setIsLoading(false);
+          }
+      };
+  
+      fetchData();
+  }, [jwtAccess, username]);
+  
 
     const handleFollow = () => {
       // Determine whether to follow or unfollow based on the current followStatus
