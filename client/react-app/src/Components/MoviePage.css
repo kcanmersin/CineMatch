@@ -1,0 +1,48 @@
+.movie-title-director{
+    position: relative;
+    top: 82%;
+    margin-left: 5%;
+    color: #cecece;
+    text-align: left; 
+}
+
+.name-and-date{
+    font-size: 2.5vw;
+    font-weight: bold;
+}
+
+.director-name{
+    font-size: 1.5vw;
+}
+
+.movie-date{
+    font-weight: normal;
+}
+
+.bold{
+    font-weight: bold;
+}
+
+.rest-of-the-movie-page{
+    width: 98vw;
+    display: flex;
+    color: #cecece;
+}
+
+.movie-page-movie-details{
+    position: relative;
+    width: 25vw;
+    top: 0;
+    text-align: left;
+    white-space: pre;
+    padding: 1vw;
+    overflow: auto;
+}
+
+.movie-page-desc-comments{
+    position: relative;
+    width: 30vw;
+    left: 25vw;
+    top: 0;
+}
+

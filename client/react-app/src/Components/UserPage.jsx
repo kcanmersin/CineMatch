@@ -9,8 +9,11 @@ import Row from "react-bootstrap/Row";
 
 
 export default function UserPage(){
+
+    // TODO: add matched percentage below username
     const { username } = useParams();
     const [yourUserId, setYourUserId] = useState(null);
+    const [watchedMovies, setWatchedMovies] = useState([]);
     const [isLoading, setIsLoading] = useState(true); // New loading state
     const [profileData, setProfileData] = useState({
         id: null,
@@ -26,72 +29,88 @@ export default function UserPage(){
 
     const jwtAccess = localStorage.getItem('jwtAccess');
 
-    /*  ---------------------------------------------------------------------------
-        --------------------------------------------------------------------------
-        LAN DİYAR YAPILACAKLARI BURAYA YAZIYORUM
-
-        -username hem aşağıda variable olarak tanımlı hem de navbar da. eğer onları
-        backendde bi defa çekip bi yerde tutup oradan çekebiliyosan öyle yap
-    */
-
-    useEffect(() => {
-      setIsLoading(true);
-    // Fetch profile data using the provided username
-    fetch(`http://127.0.0.1:8000/accounts/profile/${username}/`, {
-        method: 'GET',
-        headers: {
-        'Authorization': `JWT ${jwtAccess}`,
-        'Content-Type': 'application/json',
-        },
-    })
-        .then(response => {
-        if (response.ok) {
-            return response.json();
-        }
-        throw new Error('Network response was not ok.');
-        })
-        .then(profileInfo => {
-        // Update state with profile information
-        setProfileData(prevData => ({
-            ...prevData,
-            id: profileInfo.id,
-            username: username,
-            matchRate: profileInfo.match_rate,
-            followerCount: profileInfo.follower_count,
-            followingCount: profileInfo.following_count,
-            profilePictureUrl: profileInfo.profile_picture_url,
-            watchedMovieCount: profileInfo.watched_movie_count,
-            bestMatchMoviePoster: profileInfo.best_match_movie_poster,
-            followStatus: profileInfo.follow_status,
-        }));
-        setIsLoading(false);
-        })
-        .catch(error => console.error('There has been a problem with your fetch operations:', error));
-    }, [jwtAccess, username]);
-
-    // in order to create follow and unfollow functionality, I need the user id
-    useEffect(() => {
-        // Fetch authenticated user's data
-        fetch('http://127.0.0.1:8000/auth/users/me', {
-          method: 'GET',
-          headers: {
-            'Authorization': `JWT ${jwtAccess}`,
-            'Content-Type': 'application/json',
-          },
-        })
-          .then(response => {
-            if (response.ok) {
-              return response.json();
-            }
-            throw new Error('Network response was not ok.');
-          })
-          .then(data => {
-            // Set the authenticated user's ID
-            setYourUserId(data.id);
-          })
-          .catch(error => console.error('There has been a problem with your fetch operations:', error));
-    }, [jwtAccess]);
     
+
+    useEffect(() => {
+      const fetchData = async () => {
+          if (!username) {
+              return; // Exit if username is not defined.
+          }
+  
+          setIsLoading(true);
+  
+          try {
+              // Fetch profile data
+              const profileResponse = await fetch(`http://127.0.0.1:8000/accounts/profile/${username}/`, {
+                  method: 'GET',
+                  headers: {
+                      'Authorization': `JWT ${jwtAccess}`,
+                      'Content-Type': 'application/json',
+                  },
+              });
+  
+              if (!profileResponse.ok) {
+                  throw new Error('Network response was not ok.');
+              }
+  
+              const profileInfo = await profileResponse.json();
+  
+              // Update state with profile information
+              setProfileData({
+                id: profileInfo.id,
+                matchRate: profileInfo.match_rate,
+                followerCount: profileInfo.follower_count,
+                followingCount: profileInfo.following_count,
+                watchedMovieCount: profileInfo.watched_movie_count,
+                bestMatchMoviePoster: profileInfo.best_match_movie_poster,
+                profilePictureUrl: profileInfo.profile_picture_url
+            });
+  
+              // Fetch lists
+              const listsResponse = await fetch(`http://127.0.0.1:8000/movie/lists/`, {
+                  method: 'GET',
+                  headers: {
+                      'Authorization': `JWT ${jwtAccess}`,
+                      'Content-Type': 'application/json',
+                  },
+              });
+  
+              if (!listsResponse.ok) {
+                  throw new Error('Error fetching lists.');
+              }
+  
+              const allLists = await listsResponse.json();
+              const userLists = await allLists.filter(list => list.user === profileInfo.id);
+              const watchedList = userLists.find((list, index) => index === 1);
+  
+              if (watchedList) {
+                  const moviePromises = watchedList.movies.map(movie => 
+                      fetch(`http://127.0.0.1:8000/movie/movie/movies/${movie.id}/`, {
+                          method: 'GET',
+                          headers: {
+                              'Authorization': `JWT ${jwtAccess}`,
+                              'Content-Type': 'application/json',
+                          },
+                      }).then(response => response.json())
+                  );
+  
+                  const moviesDetails = await Promise.all(moviePromises);
+                  setWatchedMovies(moviesDetails);
+              } else {
+                  console.log('Watched list not found');
+              }
+  
+          } catch (error) {
+              console.error('Error:', error);
+          } finally {
+              setIsLoading(false);
+          }
+      };
+  
+      fetchData();
+  }, [jwtAccess, username]);
+  
+
     const handleFollow = () => {
       // Determine whether to follow or unfollow based on the current followStatus
       const shouldFollow = !profileData.followStatus;
@@ -149,31 +168,6 @@ export default function UserPage(){
           console.error(shouldFollow ? 'Follow request failed' : 'Unfollow request failed', error);
         });
     };
-    
-  
-    //const MyProfileBgImage= "src/assets/dummy1.jpg";
-
-    //const username="Michael Corleone";
-
-    
-    //const movieCount="1071";
-    //const followersCount= "1453";
-    //const followingsCount= "1923"
-
-    // Dummy movie data
-    /*const movieData = [
-        { id: 1, name: "Movie 1", image: "src/assets/dummyPoster.jpg", date: "2022" },
-        { id: 2, name: "Modsdddsdasdasda dasdasd dasdddddfsdvie 2", image: "src/assets/dummyPoster.jpg", date: "2021" },
-        { id: 3, name: "Movie 3", image: "src/assets/dummyPoster.jpg", date: "2020" },
-        { id: 4, name: "Movie 3", image: "src/assets/dummyPoster.jpg", date: "2020" },
-        { id: 5, name: "Movie 3", image: "src/assets/dummyPoster.jpg", date: "2020" },
-        { id: 6, name: "Movie 3", image: "src/assets/dummyPoster.jpg", date: "2020" },
-        { id: 7, name: "Movie 3", image: "src/assets/dummyPoster.jpg", date: "2020" },
-        { id: 8, name: "Movie 3", image: "src/assets/dummyPoster.jpg", date: "2020" },
-        { id: 9, name: "Movie 3", image: "src/assets/dummyPoster.jpg", date: "2020" },
-        { id: 10, name: "Movie 3", image: "src/assets/dummyPoster.jpg", date: "2020" },
-    ];*/
-
 
 
     return(
@@ -213,19 +207,20 @@ export default function UserPage(){
                         {isLoading ? "Loading..." : profileData.followStatus ? "Unfollow" : "Follow"}
                     </Button>
                 </div>
-                {/*<div className= "watched-movies">
+                <div className= "watched-movies">
                     <div className="watched-movies-text">
                         WATCHED MOVIES
                     </div>
                     <Container className="watched-movies-card-container">
                         <Row>
-                            {movieData.map((movie) => (
+                            {watchedMovies.map((movie) => (
                                 <MovieCard key={movie.id} {...movie} />
                             ))}
                         </Row>
                     </Container>
-                </div> */}
+                </div>
             </div>
         </div>
     )
 }
+

@@ -1,0 +1,91 @@
+ul.movie-lists-container {
+    list-style: none;
+    color: #cecece;
+    padding: 0;
+}
+
+li.movie-lists:first-child {
+    border-top: 0.1px solid rgba(0,255,56,0.5);
+}
+
+.poster-info-container{
+    display: flex;
+}
+
+li.movie-lists{
+    text-align: left;
+    border-bottom: 0.1px solid rgba(0,255,56,0.5);
+    display: flex;
+    padding: 2rem;
+    justify-content: space-between;
+}
+
+.list-info{
+    padding-left: 1rem;
+}
+
+.delete-button{
+    height: 2.5rem;
+}
+
+.modal-header{
+    background-color: #282a36;
+    color: #cecece;
+    border-bottom: 1px solid #cecece;
+    border-radius: 0;
+    padding-right: 1.5rem;
+}
+
+.modal-body{
+    background-color: #282a36;
+    color: #cecece;
+}
+
+.btn-close{
+    background-color: azure;
+}
+
+.create-list-form> *{
+    padding-bottom: 1rem;
+}
+
+.create-list-submit-button{
+    height: 2.5rem;
+}
+
+.movie-posters{
+    display: flex;
+}
+
+.movie-image{
+    height: 5rem;
+    
+}
+
+.container-for-shift{
+    position: relative;
+}
+
+.container-for-shift:first-child{
+    left: 0;
+}
+
+.container-for-shift:last-child{
+    left: -1.5rem;
+}
+
+.movie-lists-posters-container{
+    display: flex;
+}
+
+/* THE PART BELOW IS ONLY FOR Listpage.jsx*/
+
+.list-page-username{
+    font-size: 2rem;
+    color: #cecece;
+    margin-bottom: 2rem;
+}
+
+.list-page-username > span{
+    font-weight: bold;
+}

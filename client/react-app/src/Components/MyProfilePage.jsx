@@ -1,83 +1,104 @@
 import "./MyProfilePage.css"
-import { useState, useEffect } from "react";
+import { useState, useEffect, useContext } from "react";
 import { Link} from "react-router-dom";
 import ProgramNavbar from "./SubComponents/ProgramNavbar";
 import Button from "react-bootstrap/esm/Button";
 import Container from "react-bootstrap/esm/Container";
 import MovieCard from "./SubComponents/MovieCard";
 import Row from "react-bootstrap/Row";
+import { UserContext } from "./UserContext";
 
 
 export default function MyProfilePage(){
+    const { username, profilePictureUrl, setProfilePicture } = useContext(UserContext);
     const [profileData, setProfileData] = useState({
-        username: "Loading...",
+        id:null,
         matchRate: 0,
         followerCount: 0,
         followingCount: 0,
-        profilePictureUrl: '',
         watchedMovieCount: 0,
         bestMatchMoviePoster: ''
     });
 
+    const [watchedMovies, setWatchedMovies] = useState([]);
     const jwtAccess = localStorage.getItem('jwtAccess');
 
-    /*  ---------------------------------------------------------------------------
-        --------------------------------------------------------------------------
-        LAN DİYAR YAPILACAKLARI BURAYA YAZIYORUM
-
-        -username hem aşağıda variable olarak tanımlı hem de navbar da. eğer onları
-        backendde bi defa çekip bi yerde tutup oradan çekebiliyosan öyle yap
-    */
-
     useEffect(() => {
-        // Fetch username data
-        fetch('http://127.0.0.1:8000/auth/users/me/', {
-            method: 'GET',
-            headers: {
-                'Authorization': `JWT ${jwtAccess}`,
-                'Content-Type': 'application/json',
-            },
-        })
-        .then(response => {
-            if(response.ok) {
-                return response.json();
+        const fetchData = async () => {
+            if (!username) {
+                return; // Exit if username is not defined.
             }
-            throw new Error('Network response was not ok.');
-        })
-        .then(data => {
-            // Set username in profile data
-            const fetchedUsername = data.username;
-            setProfileData(prevData => ({ ...prevData, username: fetchedUsername }));
-
-            // Fetch profile data using the fetched username
-            return fetch(`http://127.0.0.1:8000/accounts/profile/${fetchedUsername}`, {
-                method: 'GET',
-                headers: {
-                    'Authorization': `JWT ${jwtAccess}`,
-                    'Content-Type': 'application/json',
-                },
-            });
-        })
-        .then(response => {
-            if(response.ok) {
-                return response.json();
+    
+    
+            try {
+                // Fetch profile data
+                const profileResponse = await fetch(`http://127.0.0.1:8000/accounts/profile/${username}/`, {
+                    method: 'GET',
+                    headers: {
+                        'Authorization': `JWT ${jwtAccess}`,
+                        'Content-Type': 'application/json',
+                    },
+                });
+    
+                if (!profileResponse.ok) {
+                    throw new Error('Network response was not ok.');
+                }
+    
+                const profileInfo = await profileResponse.json();
+    
+                // Update state with profile information
+                setProfileData({
+                    id: profileInfo.id,
+                    matchRate: profileInfo.match_rate,
+                    followerCount: profileInfo.follower_count,
+                    followingCount: profileInfo.following_count,
+                    watchedMovieCount: profileInfo.watched_movie_count,
+                    bestMatchMoviePoster: profileInfo.best_match_movie_poster,
+                    profilePictureUrl: profileInfo.profile_picture_url
+                });
+    
+                // Fetch lists
+                const listsResponse = await fetch(`http://127.0.0.1:8000/movie/lists/`, {
+                    method: 'GET',
+                    headers: {
+                        'Authorization': `JWT ${jwtAccess}`,
+                        'Content-Type': 'application/json',
+                    },
+                });
+    
+                if (!listsResponse.ok) {
+                    throw new Error('Error fetching lists.');
+                }
+    
+                const allLists = await listsResponse.json();
+                const userLists = await allLists.filter(list => list.user === profileInfo.id);
+                const watchedList = userLists.find((list, index) => index === 1);
+    
+                if (watchedList) {
+                    const moviePromises = watchedList.movies.map(movie => 
+                        fetch(`http://127.0.0.1:8000/movie/movie/movies/${movie.id}/`, {
+                            method: 'GET',
+                            headers: {
+                                'Authorization': `JWT ${jwtAccess}`,
+                                'Content-Type': 'application/json',
+                            },
+                        }).then(response => response.json())
+                    );
+    
+                    const moviesDetails = await Promise.all(moviePromises);
+                    setWatchedMovies(moviesDetails);
+                } else {
+                    console.log('Watched list not found');
+                }
+    
+            } catch (error) {
+                console.error('Error:', error);
             }
-            throw new Error('Network response was not ok.');
-        })
-        .then(profileInfo => {
-            // Update state with profile information
-            setProfileData(prevData => ({
-                ...prevData,
-                matchRate: profileInfo.match_rate,
-                followerCount: profileInfo.follower_count,
-                followingCount: profileInfo.following_count,
-                profilePictureUrl: profileInfo.profile_picture_url,
-                watchedMovieCount: profileInfo.watched_movie_count,
-                bestMatchMoviePoster: profileInfo.best_match_movie_poster
-            }));
-        })
-        .catch(error => console.error('There has been a problem with your fetch operations:', error));
-    }, [jwtAccess, profileData.profilePictureUrl]);
+        };
+    
+        fetchData();
+    }, [jwtAccess, username]);
+        
     
     //const MyProfileBgImage= "src/assets/dummy1.jpg";
     //const ppLink= "src/assets/pp.jpg";
@@ -105,39 +126,32 @@ export default function MyProfilePage(){
     const handleProfilePictureChange = (e) => {
         const file = e.target.files[0];
         if (file) {
-            const formData = new FormData();
-            formData.append("profile_picture", file);
-    
-            fetch('http://127.0.0.1:8000/accounts/change-profile-photo/', {
-                method: 'PATCH',
-                headers: {
-                    'Authorization': `JWT ${jwtAccess}`,
-                    // 'Content-Type': 'application/json', // This header is not needed for FormData
-                },
-                body: formData,
-            })
-            .then(response => {
-                if (response.ok) {
-                    return response.json();
-                }
-                throw new Error('Network response was not ok.');
-            })
+          const formData = new FormData();
+          formData.append("profile_picture", file);
+      
+          fetch('http://127.0.0.1:8000/accounts/change-profile-photo/', {
+            method: 'PATCH',
+            headers: {
+              Authorization: `JWT ${jwtAccess}`,
+            },
+            body: formData,
+          })
+            .then(response => response.json())
             .then(data => {
-                // Assuming the response contains the new profile picture URL
-                setProfileData(prevData => ({
-                    ...prevData,
-                    profilePictureUrl: data.profile_picture_url, // Update this key based on your actual response structure
-                }));
+              setProfilePicture(data.profile_picture_url)
+              window.location.reload();
             })
             .catch(error => console.error('Error updating profile picture:', error));
         }
-    };
+      };
+      
+    
     
 
 
     return(
         <div className="main-page">
-            <ProgramNavbar/>
+            <ProgramNavbar />
             <div className="profile-page-content"
               style={{
               backgroundImage: `linear-gradient(0deg, rgba(10, 20, 33, 0.4) 0%, rgba(10, 20, 33, 0.4) 100%), linear-gradient(0deg, #0A1421 0%, rgba(0, 0, 0, 0.00) 100%), url(${profileData.bestMatchMoviePoster})`,
@@ -149,7 +163,7 @@ export default function MyProfilePage(){
                 <label htmlFor="profilePictureInput">
                     <img
                         className="user-profile-image"
-                        src={profileData.profilePictureUrl} // Fallback to a default image if profilePictureUrl is empty
+                        src={profilePictureUrl} // Fallback to a default image if profilePictureUrl is empty
                         alt="Profile"
                     />
                     <input
@@ -160,7 +174,7 @@ export default function MyProfilePage(){
                         onChange={handleProfilePictureChange}
                     />
                 </label>
-                    <div className="user-name">{profileData.username}</div>
+                    <div className="user-name">{username}</div>
                 </div>
                 <div className="follow-stats">
                     <div><span style={{fontWeight: 'bold'}}>{profileData.watchedMovieCount}</span> MOVIES</div>
@@ -181,7 +195,7 @@ export default function MyProfilePage(){
                     </div>
                     <Container className="watched-movies-card-container">
                         <Row>
-                            {movieData.map((movie) => (
+                            {watchedMovies.map((movie) => (
                                 <MovieCard key={movie.id} {...movie} />
                             ))}
                         </Row>

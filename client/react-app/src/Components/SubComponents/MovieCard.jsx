@@ -1,10 +1,10 @@
-import React from "react";
+/* eslint-disable react/prop-types */
 
-const MovieCard = ({ id, name, image, date }) => (
+const MovieCard = ({ id, poster_path, title, release_date }) => (
   <div key={id} className="movie-card">
-    <img src={image} alt={name} className="movie-card-image" />
+    <img src={poster_path} alt={title} className="movie-card-image" />
     <div className="movie-card-body">
-      <div className="movie-card-title">{name}({date})</div>
+      <div className="movie-card-title">{title}({release_date})</div>
     </div>
   </div>
 );
