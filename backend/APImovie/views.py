@@ -268,10 +268,20 @@ class MovieRateListCreateView(generics.ListCreateAPIView):
     def perform_create(self, serializer):
         movie_id = self.kwargs.get('movie_id')
         movie = get_object_or_404(Movie, id=movie_id)
-        user = self.request.user if self.request.user.is_authenticated else get_user_model().objects.get_or_create(username='anonymous_user')[0]  
-        # Save the rate
+        
+        # Check if the user is authenticated
+        if self.request.user.is_authenticated:
+            user = self.request.user
+            username = user.username
+        else:
+            # Create or get an anonymous user
+            user, created = get_user_model().objects.get_or_create(username='anonymous_user')
+            username = 'anonymous_user'
+
+        # Save the rate with the user
         serializer.save(user=user, movie=movie)
 
+        # Update movie ratings
         movie.vote_count = F('vote_count') + 1
         movie.vote_average = (F('vote_average') * F('vote_count') + serializer.validated_data['rate_point']) / F('vote_count')
         movie.save()
