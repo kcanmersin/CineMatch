@@ -16,8 +16,6 @@ export default function ListsPage() {
 
   const MoviePosterLink= "src/assets/dummyPoster.jpg";
 
-  // TODO: undefined slice error
-
   // Fetch the user's ID based on the username
   useEffect(() => {
     setIsLoading(true);

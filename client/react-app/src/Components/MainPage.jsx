@@ -87,28 +87,28 @@ export default function MainPage(){
 
 
     const movieCardsMostPopular = [
-        { id: 1, name: "The Curious Case of Benjamin Button", image: "src/assets/dummyPoster.jpg", date: "1980" },
-        { id: 2, name: "The Shining", image: "src/assets/dummyPoster.jpg", date: "1980" },
-        { id: 3, name: "The Shining", image: "src/assets/dummyPoster.jpg", date: "1980" },
-        { id: 4, name: "The Shining", image: "src/assets/dummyPoster.jpg", date: "1980" },
-        { id: 5, name: "The Shining", image: "src/assets/dummyPoster.jpg", date: "1980" },
+        { id: 1, title: "The Curious Case of Benjamin Button", poster_path: "src/assets/dummyPoster.jpg", release_date: "1980" },
+        { id: 2, title: "The Shining", poster_path: "src/assets/dummyPoster.jpg", release_date: "1980" },
+        { id: 3, title: "The Shining", poster_path: "src/assets/dummyPoster.jpg", release_date: "1980" },
+        { id: 4, title: "The Shining", poster_path: "src/assets/dummyPoster.jpg", release_date: "1980" },
+        { id: 5, title: "The Shining", poster_path: "src/assets/dummyPoster.jpg", release_date: "1980" },
       ];
 
 
       const movieCardsBestRated = [
-        { id: 1, name: "The Shining", image: "src/assets/dummyPoster.jpg", date: "1980" },
-        { id: 2, name: "The Shining", image: "src/assets/dummyPoster.jpg", date: "1980" },
-        { id: 3, name: "The Shining", image: "src/assets/dummyPoster.jpg", date: "1980" },
-        { id: 4, name: "The Shining", image: "src/assets/dummyPoster.jpg", date: "1980"},
-        { id: 5, name: "The Shining", image: "src/assets/dummyPoster.jpg", date: "1980"},
+        { id: 1, title: "The Shining", poster_path: "src/assets/dummyPoster.jpg", release_date: "1980" },
+        { id: 2, title: "The Shining", poster_path: "src/assets/dummyPoster.jpg", release_date: "1980" },
+        { id: 3, title: "The Shining", poster_path: "src/assets/dummyPoster.jpg", release_date: "1980" },
+        { id: 4, title: "The Shining", poster_path: "src/assets/dummyPoster.jpg", release_date: "1980"},
+        { id: 5, title: "The Shining", poster_path: "src/assets/dummyPoster.jpg", release_date: "1980"},
       ];
 
       const movieCardsForYou = [
-        { id: 1, name: "The Shining", image: "src/assets/dummyPoster.jpg", date: "1980" },
-        { id: 2, name: "The Shining", image: "src/assets/dummyPoster.jpg", date: "1980" },
-        { id: 3, name: "The Shining", image: "src/assets/dummyPoster.jpg", date: "1980" },
-        { id: 4, name: "The Shining", image: "src/assets/dummyPoster.jpg", date: "1980" },
-        { id: 5, name: "The Shining", image: "src/assets/dummyPoster.jpg", date: "1980" },
+        { id: 1, title: "The Shining", poster_path: "src/assets/dummyPoster.jpg", release_date: "1980" },
+        { id: 2, title: "The Shining", poster_path: "src/assets/dummyPoster.jpg", release_date: "1980" },
+        { id: 3, title: "The Shining", poster_path: "src/assets/dummyPoster.jpg", release_date: "1980" },
+        { id: 4, title: "The Shining", poster_path: "src/assets/dummyPoster.jpg", release_date: "1980" },
+        { id: 5, title: "The Shining", poster_path: "src/assets/dummyPoster.jpg", release_date: "1980" },
       ];
 
       const userCards = [
