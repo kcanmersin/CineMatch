@@ -76,6 +76,9 @@ class UserAccount(AbstractBaseUser, PermissionsMixin):
             MovieList.objects.create(title="watchlist", user=self)
             MovieList.objects.create(title="watched_movies", user=self)
 
+    def get_best_matched_users(self):
+        return [1, 2]
+
     def get_username(self):
         return self.username
     

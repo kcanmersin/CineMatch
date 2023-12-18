@@ -192,7 +192,7 @@ class ChangeProfilePhotoView(APIView):
     permission_classes = [IsAuthenticated]
 
     def patch(self, request, *args, **kwargs):
-        print("PATCH method is called!")
+        #print("PATCH method is called!")
         serializer = ChangeProfilePhotoSerializer(instance=request.user.profile.first(), data=request.data, partial=True)
         if serializer.is_valid():
             serializer.save()
@@ -200,6 +200,34 @@ class ChangeProfilePhotoView(APIView):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
     def options(self, request, *args, **kwargs):
-        print("OPTIONS method is called!")
+        #print("OPTIONS method is called!")
         response = super().options(request, *args, **kwargs)
         return response
+class MainPageView(APIView):
+    def get(self, request, *args, **kwargs):
+        if request.user.is_authenticated:
+            user_profile = get_object_or_404(UserProfile, user=request.user)
+            best_matched_people_ids = user_profile.user.get_best_matched_users()
+
+            best_matched_people = []
+            for user_id in best_matched_people_ids:
+                other_user_profile = get_object_or_404(UserProfile, user__id=user_id)
+
+                # Calculate rate ratio (replace this with your actual calculation)
+                rate_ratio = user_profile.calculate_match_rate(other_user_profile)
+
+                # Append user information to the list
+                best_matched_people.append({
+                    'username': other_user_profile.user.username,
+                    'profile_picture': request.build_absolute_uri(other_user_profile.profile_picture.url) if other_user_profile.profile_picture else None,
+                    'rate_ratio': rate_ratio,
+                })
+
+            # Include best matched people information in the response data
+            response_data = {
+                'best_matched_people': best_matched_people,
+            }
+
+            return Response(response_data)
+        else:
+            return Response({'error': 'User is not authenticated'}, status=status.HTTP_401_UNAUTHORIZED)
