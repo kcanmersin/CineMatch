@@ -54,13 +54,13 @@ def follow(request):
     #print (follower)
     #print (following)
 
-    if Follower.objects.filter(user=follower, is_followed_by=following).exists():
+    if Follower.objects.filter(user=following, is_followed_by=follower).exists():
         # If the relationship already exists, delete it
-        Follower.objects.filter(user=follower, is_followed_by=following).delete()
+        Follower.objects.filter(user=following, is_followed_by=follower).delete()
         return Response({'status': 'Not following'}, status=status.HTTP_200_OK)
     else:
         # If the relationship does not exist, create it
-        Follower.objects.create(user=follower, is_followed_by=following)
+        Follower.objects.create(user=following, is_followed_by=follower)
         return Response({'status': 'Following'}, status=status.HTTP_201_CREATED)
 
 

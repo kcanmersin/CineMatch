@@ -183,6 +183,7 @@ class MovieListRetrieveAddView(APIView):
         movie_lists = MovieList.objects.filter(user=request.user)
         serializer = MovieListSerializer(movie_lists, many=True)
         return Response(serializer.data)
+    
 
     def post(self, request, *args, **kwargs):
         movie_list_id = request.data.get('movie_list_id')
