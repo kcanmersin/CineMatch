@@ -62,12 +62,23 @@ class MovieDetailView(APIView):
     def get(self, request, pk, format=None):
         movie = self.queryset.filter(pk=pk).first()
         if movie:
-            # Pass the request context to the serializer
-            serializer = self.serializer_class(movie, context={'request': request})
-            return Response(serializer.data)
+            movie_serializer = self.serializer_class(movie, context={'request': request})
+            movie_data = movie_serializer.data
+
+            # Check if the user is authenticated
+            if request.user.is_authenticated:
+                user_rating = Rate.objects.filter(movie=movie, user=request.user).first()
+                if user_rating:
+                    rating_serializer = RateSerializer(user_rating)
+                    movie_data['user_rating'] = rating_serializer.data
+                else:
+                    movie_data['user_rating'] = "User has not rated this movie."
+            else:
+                movie_data['user_rating'] = "User is not authenticated."
+
+            return Response(movie_data)
         else:
             return Response({"detail": "Not found."}, status=status.HTTP_404_NOT_FOUND)
-
  
 def movie_list(request):
     # Get all movies

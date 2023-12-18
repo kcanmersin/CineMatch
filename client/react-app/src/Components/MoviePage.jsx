@@ -296,8 +296,8 @@ export default function MoviePage(){
             </div>
             <div className="rest-of-the-movie-page">
                 <div className="movie-page-movie-details">
-                    <p className="rating-data"><div className="voting-text">RATING:</div><div className="bold">{vote_average}</div></p>
-                    <p className="rating-data"><div className="your-voting-text">YOUR RATING:</div><div className="bold">{UserPoints}</div></p>
+                    <p className="rating-data"><div className="voting-text">RATING:</div><div className="bold">{parseFloat(vote_average).toFixed(1)}</div></p>
+                    <p className="rating-data"><div className="your-voting-text">YOUR RATING:</div><div className="bold">{movieData.user_rating}</div></p>
                     <p><span className="bold">{runtime}</span><span className="lighter"> minutes</span></p>
                     <div><p className="starring bold">STARRING</p><p className="lighter">{actorsNames}</p></div>
                 </div>
@@ -361,7 +361,7 @@ export default function MoviePage(){
                             {similar_movies.map((movie) => (
                                 <Link to={`/moviepage/${movie.movie_id}`} key={movie.movie_id}>
                                     <div className="similar-movie">
-                                        <img src={movie.movie_poster_url} alt={movie.movie_title} />
+                                        <img src={"https://image.tmdb.org/t/p/original" + movie.movie_poster_url} alt={movie.movie_title} />
                                         <p>{movie.movie_title}</p>
                                     </div>
                                 </Link>
