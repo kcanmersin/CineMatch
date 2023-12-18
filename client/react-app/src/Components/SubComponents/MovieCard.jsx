@@ -1,5 +1,4 @@
 /* eslint-disable react/prop-types */
-import React from "react";
 
 const MovieCard = ({ id, poster_path, title, release_date }) => (
   <div key={id} className="movie-card">
