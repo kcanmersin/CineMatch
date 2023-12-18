@@ -32,81 +32,78 @@ export default function UserPage(){
     
 
     useEffect(() => {
-      setIsLoading(true);
-    // Fetch profile data using the provided username
-    fetch(`http://127.0.0.1:8000/accounts/profile/${username}/`, {
-        method: 'GET',
-        headers: {
-        'Authorization': `JWT ${jwtAccess}`,
-        'Content-Type': 'application/json',
-        },
-    })
-        .then(response => {
-        if (response.ok) {
-            return response.json();
-        }
-        throw new Error('Network response was not ok.');
-        })
-        .then(profileInfo => {
-          // Update state with profile information
-          setProfileData(prevData => ({
-              ...prevData,
-              id: profileInfo.id,
-              username: username,
-              matchRate: profileInfo.match_rate,
-              followerCount: profileInfo.follower_count,
-              followingCount: profileInfo.following_count,
-              profilePictureUrl: profileInfo.profile_picture_url,
-              watchedMovieCount: profileInfo.watched_movie_count,
-              bestMatchMoviePoster: profileInfo.best_match_movie_poster,
-              followStatus: profileInfo.follow_status,
-          }));
-          
-        })
-        .catch(error => console.error('There has been a problem with your fetch operations:', error));
-    }, [jwtAccess, username]);
 
-    // in order to create follow and unfollow functionality, I need the user id
-    useEffect(() => {
-        // Fetch authenticated user's data
-        fetch('http://127.0.0.1:8000/auth/users/me/', {
+      if (!username) {
+        // If username is not defined, exit the effect.
+        return;
+    }
+      setIsLoading(true);
+      fetch(`http://127.0.0.1:8000/accounts/profile/${username}/`, {
           method: 'GET',
           headers: {
-            'Authorization': `JWT ${jwtAccess}`,
-            'Content-Type': 'application/json',
+              'Authorization': `JWT ${jwtAccess}`,
+              'Content-Type': 'application/json',
           },
-        })
-          .then(response => {
-            if (response.ok) {
-              return response.json();
-            }
-            throw new Error('Network response was not ok.');
-          })
-          .then(data => {
-            // Set the authenticated user's ID
-            setYourUserId(data.id);
-          })
-          .catch(error => console.error('There has been a problem with your fetch operations:', error));
-    }, [jwtAccess]);
+      })
+      .then(response => {
+          if (!response.ok) {
+              throw new Error('Network response was not ok.');
+          }
+          return response.json();
+      })
+      .then(profileInfo => {
+          // Update state with profile information
+          setProfileData(prevData => ({
+            ...prevData,
+            id: profileInfo.id,
+            username: username,
+            matchRate: profileInfo.match_rate,
+            followerCount: profileInfo.follower_count,
+            followingCount: profileInfo.following_count,
+            profilePictureUrl: profileInfo.profile_picture_url,
+            watchedMovieCount: profileInfo.watched_movie_count,
+            bestMatchMoviePoster: profileInfo.best_match_movie_poster,
+            followStatus: profileInfo.follow_status,
+        }));
+          // Fetch the lists associated with the profile
+          return fetch(`http://127.0.0.1:8000/movie/lists/`, {
+              method: 'GET',
+              headers: {
+                  'Authorization': `JWT ${jwtAccess}`,
+                  'Content-Type': 'application/json',
+              },
+          });
+      })
+      .then(response => response.json())
+      .then(lists => {
+        const watchedList = lists.find((list, index) => index === 1);
+        if (watchedList) {
+            const moviePromises = watchedList.movies.map(movie => 
+                fetch(`http://127.0.0.1:8000/movie/movie/movies/${movie.id}/`, {
+                    method: 'GET',
+                    headers: {
+                        'Authorization': `JWT ${jwtAccess}`,
+                        'Content-Type': 'application/json',
+                    },
+                }).then(response => response.json())
+            );
+            return Promise.all(moviePromises);
+        } else {
+            throw new Error('Watched list not found');
+        }
+    })
+    .then(moviesDetails => {
+        console.log("Movies fetched:", moviesDetails);
+        setWatchedMovies(moviesDetails);
+    })
+    .catch(error => {
+        console.error('Error:', error);
+    })
+    .finally(() => {
+        setIsLoading(false);
+    });
+    }, [jwtAccess, username]);
 
-    // display the watched movies
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-    
     const handleFollow = () => {
       // Determine whether to follow or unfollow based on the current followStatus
       const shouldFollow = !profileData.followStatus;
@@ -203,19 +200,20 @@ export default function UserPage(){
                         {isLoading ? "Loading..." : profileData.followStatus ? "Unfollow" : "Follow"}
                     </Button>
                 </div>
-                {/*<div className= "watched-movies">
+                <div className= "watched-movies">
                     <div className="watched-movies-text">
                         WATCHED MOVIES
                     </div>
                     <Container className="watched-movies-card-container">
                         <Row>
-                            {movieData.map((movie) => (
+                            {watchedMovies.map((movie) => (
                                 <MovieCard key={movie.id} {...movie} />
                             ))}
                         </Row>
                     </Container>
-                </div> */}
+                </div>
             </div>
         </div>
     )
 }
+
