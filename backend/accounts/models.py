@@ -147,10 +147,10 @@ class UserProfile(models.Model):
         return Follower.objects.filter(user=user).exclude(is_followed_by=user)
 
     def get_following_count(self, user):
-        return Follower.objects.filter(is_followed_by=user).count()
+        return Follower.objects.filter(user=user).count()
 
     def get_followers_count(self, user):
-        return Follower.objects.filter(user=user).count()
+        return Follower.objects.filter(is_followed_by=user).count()
     
     def calculate_match_rate(self, other_user_profile):
         return person_to_person_rate(self.user.id, other_user_profile.user.id)

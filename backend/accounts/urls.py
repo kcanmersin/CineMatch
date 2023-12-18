@@ -13,6 +13,7 @@ urlpatterns = [
     path('profile_pictures/<path:filename>/', views.serve_profile_picture, name='profile-picture'),
     path('change-profile-photo/', views.ChangeProfilePhotoView.as_view(), name='change-profile-photo'),
     path('main-page/', views.MainPageView.as_view(), name='main-page'),
+    path('matched-people/', views.MatchedPeopleView.as_view(), name = 'matched-people'),
 
 ] #+ static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 

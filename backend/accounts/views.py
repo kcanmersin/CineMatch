@@ -117,7 +117,7 @@ def serve_profile_picture(request, filename):
 
 import datetime
 from rest_framework.views import APIView
-from APImovie.models import  MovieList, Rate, Movie_Genre
+from APImovie.models import  MovieList, Rate, Movie_Genre, Movie
 from rest_framework.response import Response
 from django.db.models import Avg, Count
 
@@ -231,3 +231,42 @@ class MainPageView(APIView):
             return Response(response_data)
         else:
             return Response({'error': 'User is not authenticated'}, status=status.HTTP_401_UNAUTHORIZED)
+
+class MatchedPeopleView(APIView):
+    def get(self, request):
+        if request.user.is_authenticated:
+            user_profile = get_object_or_404(UserProfile, user=request.user)
+            best_matched_people_ids = user_profile.user.get_best_matched_users()
+
+            best_matched_people = []
+            for user_id in best_matched_people_ids:
+                other_user_profile = get_object_or_404(UserProfile, user__id=user_id)
+
+                rate_ratio = user_profile.calculate_match_rate(other_user_profile)
+
+                movie_count = other_user_profile.get_watched_movie_count()
+
+                follower_count = other_user_profile.get_followers_count(other_user_profile.user)
+                following_count = other_user_profile.get_following_count(other_user_profile.user)
+
+                best_matched_people.append({
+                    'username': other_user_profile.user.username,
+                    'profile_picture': request.build_absolute_uri(other_user_profile.profile_picture.url) if other_user_profile.profile_picture else None,
+                    'rate_ratio': rate_ratio,
+                    'movie_count':movie_count,
+                    'follower_count':follower_count,
+                    'following_count':following_count,
+                })
+
+            # sort best matched people by rate ratio
+            best_matched_people.sort(key=lambda x: x['rate_ratio'], reverse=True)
+
+            response_data = {
+                'best_matched_people': best_matched_people,
+            }
+
+            return Response(response_data)
+        else:
+            return Response({'error': 'User is not authenticated'}, status=status.HTTP_401_UNAUTHORIZED)
+            
+    
