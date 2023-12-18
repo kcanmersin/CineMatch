@@ -127,7 +127,7 @@ class UserProfileStatsView(APIView):
 
         profile_photo_url = request.build_absolute_uri(user_profile.profile_picture.url) if user_profile.profile_picture else None
 
-        movie_list = MovieList.objects.filter(user=user_profile.user, title="watchlist").first()
+        movie_list = MovieList.objects.filter(user=user_profile.user, title="watched_movies").first()
         if movie_list:
             watched_movie_count = movie_list.movies.count()
         else:
