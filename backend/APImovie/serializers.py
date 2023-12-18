@@ -64,6 +64,7 @@ class MovieGenreSerializer(serializers.ModelSerializer):
         model = Movie_Genre
         fields = '__all__'
 class RateSerializer(serializers.ModelSerializer):
+    user = UserSerializer(read_only=True)
     movie = serializers.StringRelatedField(read_only=True)
     class Meta:
         model = Rate
