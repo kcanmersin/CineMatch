@@ -1,6 +1,6 @@
 import React, { useContext } from "react";
 import CommentSection from "./SubComponents/CommentSection";
-import Button from "react-bootstrap/Button";
+import {Button, Modal} from "react-bootstrap";
 import { useState, useEffect } from "react";
 import { Link } from 'react-router-dom';
 import { useParams } from 'react-router-dom';
@@ -11,6 +11,16 @@ import "./MoviePage.css"
 
 export default function MoviePage(){
     const { username } = useContext(UserContext)
+
+    const [showModal, setShowModal] = useState(false);
+
+    const handleShowModal = () => {
+        setShowModal(true);
+    };
+    
+    const handleCloseModal = () => {
+        setShowModal(false);
+    };
 
     // TODO : poster pathi ayarla
     const UserPoints= "9.9";
@@ -71,6 +81,7 @@ export default function MoviePage(){
         .then(response => response.json())
         .then(data => {
             setMovieData(data);
+            console.log(data);
             return fetch(data.comments.all_comment_link);
         })
         .then(response => response.json())
@@ -213,6 +224,7 @@ export default function MoviePage(){
         .then(data => {
             console.log('Movie added to list:', data);
             // Here, handle any updates to the state or UI after successful addition
+            handleCloseModal();
         })
         .catch(error => {
             console.error('Error adding movie to list:', error);
@@ -225,7 +237,7 @@ export default function MoviePage(){
     // Find the director in the crew array
     const director = "Stanley Kubrick"; //crew.find(member => member.crew.role === "Director")?.crew.name;
     // Extracting actors' names
-    const actorsNames = cast.map(actor => actor.actor_id.actor_name).join(", ");
+    const actorsNames = ["Daniel Daniel\nKarambit\nTuco Benedicto Pacífico Juan María Ramírez"]//cast.map(actor => actor.actor_id.actor_name).join(", ");
 
     return (
         <div className="main-page">
@@ -252,53 +264,65 @@ export default function MoviePage(){
             </div>
             <div className="rest-of-the-movie-page">
                 <div className="movie-page-movie-details">
-                    <p>RATING:                                                <span className="bold">{vote_average}</span></p>
-                    <p>YOUR RATING:                                      <span className="bold">{UserPoints}</span></p>
-                    <p><span className="bold">{runtime}</span> minutes</p>
-                    <p>STARRING</p>
-                    <p>Actors: {actorsNames}</p>
+                    <p className="rating-data"><div className="voting-text">RATING:</div><div className="bold">{vote_average}</div></p>
+                    <p className="rating-data"><div className="your-voting-text">YOUR RATING:</div><div className="bold">{UserPoints}</div></p>
+                    <p><span className="bold">{runtime}</span><span className="lighter"> minutes</span></p>
+                    <div><p className="starring bold">STARRING</p><p className="lighter">{actorsNames}</p></div>
                 </div>
                 <div className="movie-page-desc-comments">
-                    <p>Genres: {genres.join(", ")}</p>
-                    <p>{overview}</p>
+                    <div className="genre-buttons">
+                        {genres.map((genre, index) => (
+                            <button key={index} className="genre-button">{genre}</button>
+                        ))}
+                    </div>
+                    <p style={{color: "#cecece", marginBottom: "5rem"}}>{overview}</p>
+                    <div className="comments-section">
+                        <h2>Comments {comments.length}</h2>
+                        <CommentSection comments={comments} onReplySubmit={onReplySubmit} onCommentSubmit={onCommentSubmit} />
+                    </div>
                 </div>
-                <div className="movie-page-buttons-similars"></div>
-            </div>
-            <div className="movie-details">
-                <div className="movie-info">
-                </div>
-            </div>
-            <select id="listSelector">
-                {lists.map(list => (
-                    <option key={list.id} value={list.id}>{list.title}</option>
-                ))}
-            </select>
-            <Button variant="primary" onClick={() => handleAddToList(document.getElementById('listSelector').value)}>Add to List</Button>
-            <div className="similar-movies">
-                <h2>Similar Movies</h2>
-                <div className="similar-movies-list">
-                    {similar_movies.map((movie) => (
-                    <Link to={`/moviepage/${movie.movie_id}`} key={movie.movie_id}>
-                        <div className="similar-movie">
-                            <img src={movie.movie_poster_url} alt={movie.movie_title} />
-                            <p>{movie.movie_title}</p>
+                
+                <div className="movie-page-buttons-similars">
+                    <Button variant="success"
+                        onClick={handleShowModal}>
+                        Add to a List
+                    </Button>
+                    <Modal show={showModal} onHide={handleCloseModal}>
+                        <Modal.Header closeButton>
+                            <Modal.Title>LISTS</Modal.Title>
+                        </Modal.Header>
+                        <Modal.Body className= "list-select-modal-body">
+                            <select id="listSelector">
+                                {lists.map((list) => (
+                                    <option key={list.id} value={list.id}>
+                                        {list.title}
+                                    </option>
+                                ))}
+                            </select>
+                            <Button
+                                variant="primary"
+                                className="add-button"
+                                onClick={() => handleAddToList(document.getElementById('listSelector').value)}
+                            >
+                                Add
+                            </Button>
+                        </Modal.Body>
+                    </Modal>         
+                    <div className="similar-movies">
+                        <h2>Similar Movies</h2>
+                        <div className="similar-movies-list">
+                            {similar_movies.map((movie) => (
+                                <Link to={`/moviepage/${movie.movie_id}`} key={movie.movie_id}>
+                                    <div className="similar-movie">
+                                        <img src={movie.movie_poster_url} alt={movie.movie_title} />
+                                        <p>{movie.movie_title}</p>
+                                    </div>
+                                </Link>
+                            ))}
                         </div>
-                    </Link>
-                    ))}
+                    </div>
                 </div>
             </div>
-            <div className="comments-section">
-                <h2>Comments {comments.length}</h2>
-                <CommentSection comments={comments} onReplySubmit={onReplySubmit} onCommentSubmit={onCommentSubmit} />
-            </div>
-            {/*<div className="user-list">
-                <h2>User List</h2>
-                <ul>
-                    {userList.map(({ id, listName }) => (
-                        <li key={id}>{listName}</li>
-                    ))}
-                </ul>
-            </div>*/}
         </div>
     );
     
