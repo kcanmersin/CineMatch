@@ -1,5 +1,5 @@
 import "./MainPage.css"
-import { useEffect } from "react";
+import { useState, useEffect } from "react";
 import { Link} from "react-router-dom";
 import ProgramNavbar from "./SubComponents/ProgramNavbar";
 import Container from "react-bootstrap/Container";
@@ -23,6 +23,51 @@ export default function MainPage(){
         e gitsin
         --movie card mekanizmasını chat reis yaptı movie card file ında logic yok
     */
+
+    const [data, setData] = useState([]); // Initialize with an empty array or an appropriate initial value
+    const [isLoading, setIsLoading] = useState(true);
+    const [error, setError] = useState(null);
+    const jwtAccess = localStorage.getItem("jwtAccess");
+    //const [moviesData, setMoviesData] = useState([]);
+    const [mostPopular, setMostPopular] = useState([]);
+    const [bestRated, setBestRated] = useState([]);
+    const [forYou, setForYou] = useState([]);
+
+    const mostPopularMovieIds = [24, 11, 22, 70, 111];
+    const bestRatedMovieIds = [15, 14, 13, 68, 69];
+    const forYouMovieIds = [71, 75, 76, 77, 78];
+
+    const fetchMovieData = async (movieIds, setState) => {
+        try {
+            const movies = await Promise.all(movieIds.map(async (movieId) => {
+                const response = await fetch(`http://127.0.0.1:8000/movie/movie/movies/${movieId}/`, {
+                    method: 'GET',
+                    headers: {
+                        'Authorization': `JWT ${jwtAccess}`,
+                        'Content-Type': 'application/json',
+                    },
+                });
+
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                return response.json();
+            }));
+            setState(movies);
+        } catch (error) {
+            console.error('Error fetching movie data:', error);
+            setError(error.toString());
+        }
+    };
+    useEffect(() => {
+        fetchMovieData([24, 11, 22, 70, 111], setMostPopular);
+        fetchMovieData([15, 14, 13, 68, 69], setBestRated);
+        fetchMovieData([71, 75, 76, 77, 78], setForYou);
+    }, []);
+    
+  // Convert moviesData object to array for mapping
+  const mostPopularArray = Object.values(mostPopular);
+      
 
     /*const [bestMatchMovie, setBestMatchMovie] = useState({});
     const [movieCardsMostPopular, setMovieCardsMostPopular] = useState([]);
@@ -158,11 +203,12 @@ export default function MainPage(){
                     </div>
                     <Container className="movie-cards-container">
                             <div className="movie-cards">
-                                {movieCardsMostPopular.map((movie) => (
-                                    <Link to={`/moviepage/${movie.id}`} key={movie.id} className="movie-card-link">
-                                        <MovieCard {...movie} />
-                                    </Link>
-                                ))}
+                            {mostPopular.map(movie => (
+                                <Link to={`/moviepage/${movie.id}`} key={movie.id} className="movie-card-link">
+                                    <MovieCard {...movie} />
+                                </Link>
+                            ))}
+                            
                             </div>
                     </Container>
                 </Row>
@@ -172,11 +218,11 @@ export default function MainPage(){
                     </div>
                     <Container className="movie-cards-container">
                             <div className="movie-cards">
-                                {movieCardsBestRated.map((movie) => (
-                                        <Link to={`/moviepage/${movie.id}`} key={movie.id} className="movie-card-link">
-                                            <MovieCard {...movie} />
-                                        </Link>
-                                    ))}
+                            {bestRated.map(movie => (
+                                <Link to={`/moviepage/${movie.id}`} key={movie.id} className="movie-card-link">
+                                    <MovieCard {...movie} />
+                                </Link>
+                            ))}
                             </div>
                     </Container>
                 </Row>
@@ -186,11 +232,11 @@ export default function MainPage(){
                     </div>
                     <Container className="movie-cards-container">
                             <div className="movie-cards">
-                                {movieCardsForYou.map((movie) => (
-                                        <Link to={`/moviepage/${movie.id}`} key={movie.id} className="movie-card-link">
-                                            <MovieCard {...movie} />
-                                        </Link>
-                                    ))}
+                            {forYou.map(movie => (
+                                <Link to={`/moviepage/${movie.id}`} key={movie.id} className="movie-card-link">
+                                    <MovieCard {...movie} />
+                                </Link>
+                            ))}
                             </div>
                     </Container>
                 </Row>
