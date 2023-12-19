@@ -1,5 +1,5 @@
-db.sqlite3
-backend/*.sqlite3
+db2.sqlite3
+db4.sqlite3
 __pycache__/
 data/
 backend/media/
