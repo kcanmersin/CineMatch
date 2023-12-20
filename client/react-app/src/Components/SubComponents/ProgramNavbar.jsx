@@ -70,7 +70,7 @@ export default function ProgramNavbar() {
           </div>
         );
       } else if (result.username && result.profile.profile_picture) {
-        // This is a user
+        // This is a use
         return (
           <div key={index}>
             <p>{result.username}</p>
