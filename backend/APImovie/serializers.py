@@ -1,6 +1,6 @@
 from rest_framework import serializers
 from accounts.models import UserAccount,UserProfile
-from .models import  MovieList, Genre, Comment, Vote,Actor, Cast, Character, Crew,  Movie, Movie_Genre, MovieCrew,Rate
+from .models import  MovieList, Genre, Comment, Vote,Actor, Cast, Crew,  Movie, Movie_Genre, MovieCrew,Rate
 from django.urls import reverse
 
 class MovieSearchSerializer(serializers.ModelSerializer):
@@ -39,15 +39,14 @@ class ActorSerializer(serializers.ModelSerializer):
         model = Actor
         fields = '__all__'
 
-class CharacterSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Character
-        fields = '__all__'
+# class CharacterSerializer(serializers.ModelSerializer):
+#     class Meta:
+#         model = Character
+#         fields = '__all__'
 
 class CastSerializer(serializers.ModelSerializer):
     actor_id = ActorSerializer()  # Assuming you have an ActorSerializer
-    character_id = CharacterSerializer()  # Assuming you have a CharacterSerializer
-
+    
     class Meta:
         model = Cast
         fields = '__all__'

@@ -1,7 +1,7 @@
 from django.contrib import admin
 from import_export import resources, fields,widgets
 from import_export.admin import ImportExportModelAdmin
-from .models import Comment, Movie, MovieList, Genre, Movie_Genre ,Actor, Character, Cast, Crew, MovieCrew,Rate
+from .models import Comment, Movie, MovieList, Genre, Movie_Genre ,Actor, Cast, Crew, MovieCrew,Rate
 
 
 
@@ -33,13 +33,13 @@ class RateAdmin(ImportExportModelAdmin):
 class ActorResource(resources.ModelResource):
     class Meta:
         model = Actor
-class CharacterResource(resources.ModelResource):
-    class Meta:
-        model = Character
+# class CharacterResource(resources.ModelResource):
+#     class Meta:
+#         model = Character
     
 
-class CharacterAdmin(ImportExportModelAdmin):
-    resource_class = CharacterResource
+# class CharacterAdmin(ImportExportModelAdmin):
+#     resource_class = CharacterResource
 
 class CastResource(resources.ModelResource):
     class Meta:
@@ -93,7 +93,7 @@ admin.site.register(MovieList, MovieListAdmin)  # Register MovieListAdmin instea
 admin.site.register(Genre, GenreAdmin)
 admin.site.register(Movie_Genre, Movie_GenreAdmin)
 admin.site.register(Actor, ActorAdmin)
-admin.site.register(Character, CharacterAdmin)
+# admin.site.register(Character, CharacterAdmin)
 admin.site.register(Cast, CastAdmin)
 admin.site.register(Crew, CrewAdmin)
 admin.site.register(MovieCrew, MovieCrewAdmin)

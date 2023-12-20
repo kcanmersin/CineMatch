@@ -79,16 +79,20 @@ class Actor(models.Model):
     actor_name = models.CharField(max_length=255)
     profile_path = models.CharField(max_length=255)
 
-class Character(models.Model):
-    id = models.IntegerField(primary_key=True)
-    character_name = models.CharField(max_length=255)
+# class Character(models.Model):
+#     id = models.IntegerField(primary_key=True)
+#     character_name = models.CharField(max_length=255)
 
+# class Cast(models.Model):
+#     id = models.IntegerField(primary_key=True)
+#     actor_id = models.ForeignKey(Actor, on_delete=models.CASCADE)
+#     character_id = models.ForeignKey(Character, on_delete=models.CASCADE)
+#     movie_id = models.ForeignKey(Movie, on_delete=models.CASCADE)
 class Cast(models.Model):
     id = models.IntegerField(primary_key=True)
     actor_id = models.ForeignKey(Actor, on_delete=models.CASCADE)
-    character_id = models.ForeignKey(Character, on_delete=models.CASCADE)
+    character_name = models.CharField(max_length=255)
     movie_id = models.ForeignKey(Movie, on_delete=models.CASCADE)
-
 class Crew(models.Model):
     id = models.IntegerField(primary_key=True)
     name = models.CharField(max_length=255)

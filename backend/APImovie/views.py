@@ -8,7 +8,7 @@ from .serializers import CommentSerializer, MovieSerializer, MovieListSerializer
 from rest_framework.response import Response
 from rest_framework.decorators import action
 from django.shortcuts import render, get_object_or_404
-from .models import Movie, Movie_Genre, Genre, Cast, Actor, Character, Crew, MovieCrew,Rate
+from .models import Movie, Movie_Genre, Genre, Cast, Actor, Crew, MovieCrew,Rate
 from rest_framework.permissions import AllowAny
 
 from accounts.models import UserAccount
@@ -89,42 +89,42 @@ def movie_list(request):
     # Render the template with the list of movies
     return render(request, 'movie_list.html', {'movies': movies})
 
-def movie_detail(request, movie_id):
-    # Get the movie by its ID
-    movie = get_object_or_404(Movie, id=movie_id)
+# def movie_detail(request, movie_id):
+#     # Get the movie by its ID
+#     movie = get_object_or_404(Movie, id=movie_id)
 
-    # Get genres associated with the movie
-    genres = Genre.objects.filter(movie_genre__movie=movie)
+#     # Get genres associated with the movie
+#     genres = Genre.objects.filter(movie_genre__movie=movie)
 
-    # Get cast and crew for the movie
-    cast = Cast.objects.filter(movie_id=movie)
-    actors = Actor.objects.filter(id__in=cast.values('actor_id'))
-    characters = Character.objects.filter(id__in=cast.values('character_id'))
+#     # Get cast and crew for the movie
+#     cast = Cast.objects.filter(movie_id=movie)
+#     actors = Actor.objects.filter(id__in=cast.values('actor_id'))
+#     characters = Character.objects.filter(id__in=cast.values('character_id'))
 
-    crew = MovieCrew.objects.filter(movie=movie)
-    crew_members = Crew.objects.filter(id__in=crew.values('crew_id'))
+#     crew = MovieCrew.objects.filter(movie=movie)
+#     crew_members = Crew.objects.filter(id__in=crew.values('crew_id'))
 
-    # Combine actors and characters into a list of dictionaries
-    actors_characters = [
-        {'actor': actor, 'character': character}
-        for actor, character in zip(actors, characters)
-    ]
+#     # Combine actors and characters into a list of dictionaries
+#     actors_characters = [
+#         {'actor': actor, 'character': character}
+#         for actor, character in zip(actors, characters)
+#     ]
 
-    # Get comments for the movie
-    comments = Comment.objects.filter(movie=movie)
+#     # Get comments for the movie
+#     comments = Comment.objects.filter(movie=movie)
 
-    # Render the template with the movie data and comments
-    return render(
-        request,
-        'movie_detail.html',
-        {
-            'movie': movie,
-            'genres': genres,
-            'actors_characters': actors_characters,
-            'crew_members': crew_members,
-            'comments': comments,  # Pass comments to the template
-        }
-    )
+#     # Render the template with the movie data and comments
+#     return render(
+#         request,
+#         'movie_detail.html',
+#         {
+#             'movie': movie,
+#             'genres': genres,
+#             'actors_characters': actors_characters,
+#             'crew_members': crew_members,
+#             'comments': comments,  # Pass comments to the template
+#         }
+#     )
 
 class MovieViewSet(viewsets.ModelViewSet):
     permission_classes = [AllowAny]
