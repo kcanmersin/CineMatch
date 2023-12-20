@@ -41,6 +41,7 @@ urlpatterns = [
     path('movie-lists/', MovieListRetrieveAddView.as_view(), name='movie-list-retrieve-add'),
     path('genres/<slug:genre_slug>/', GenreMovieListView.as_view(), name='genre-movie-list'),
     path('movie-lists/<int:list_id>/delete/', MovieListDeleteView.as_view(), name='movie-list-delete'),
+    
     path('rate_list/<int:movie_id>/rates/', MovieRateListCreateView.as_view(), name='movie_rate_list_create'),
     path('rate_list/<int:movie_id>/rates/<int:rate_id>/', MovieRateDetailView.as_view(), name='movie_rate_list_detail'),
     #path('movie/movie_filter/', MovieFilterListCreateView.as_view(), name="movie-filter-list"),

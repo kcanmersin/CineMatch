@@ -1,3 +1,4 @@
+from django.forms import ValidationError
 from rest_framework import serializers
 from accounts.models import UserAccount,UserProfile
 from .models import  MovieList, Genre, Comment, Vote,Actor, Cast, Crew,  Movie, Movie_Genre, MovieCrew,Rate
@@ -113,12 +114,12 @@ class CommentSerializer(serializers.ModelSerializer):
 
 class MovieSerializer(serializers.ModelSerializer):
     comments = serializers.SerializerMethodField()
-    #rates = serializers.SerializerMethodField()
     genres = serializers.SerializerMethodField()
     cast = serializers.SerializerMethodField()
     crew = serializers.SerializerMethodField()  # Add this line for crew
     similar_movies = serializers.SerializerMethodField()
-
+ 
+    rate_by_current_user = serializers.SerializerMethodField()
     class Meta:
         model = Movie
         fields = '__all__'
@@ -138,13 +139,22 @@ class MovieSerializer(serializers.ModelSerializer):
             "comments" : CommentSerializer(comments,many=True).data,
             "all_comment_link":request.build_absolute_uri(reverse('movie_comment_list',kwargs={'movie_id':obj.id}))
         }
-    #def get_rates(self, obj):
-    #    rates = Rate.objects.filter(movie=obj)[:3]
-    #    request = self.context.get('request')
-    #    return {
-    #        "rates": RateSerializer(rates, many=True).data,
-    #        "all_rate_link": request.build_absolute_uri(reverse('movie_rate_list_create', kwargs={'movie_id': obj.id}))
-    #    }
+    def get_rate_by_current_user(self, obj):
+        request = self.context.get('request')
+        if request and hasattr(request, "user"):
+            user = request.user
+            if user.is_authenticated:
+                try:
+                    rate = Rate.objects.get(user=user, movie=obj)
+                    return {
+                        'rate_point': rate.rate_point,
+                        'rate_id': rate.id
+                    }
+                except Rate.DoesNotExist:
+                    return None
+            else:
+                raise ValidationError("User must be authenticated to view their rate.")
+        return None
     def get_genres(self, obj):
         # Retrieve all genres associated with the movie
         movie_genres = Movie_Genre.objects.filter(movie=obj)
