@@ -11,19 +11,7 @@ import UserCard from "./SubComponents/UserCard";
 
 
 export default function MainPage(){
-
-    /*  ---------------------------------------------------------------------------
-        --------------------------------------------------------------------------
-        LAN DİYAR YAPILACAKLARI BURAYA YAZIYORUM
-
-        --bestMatchMovieName a tıklandığında o filmin pageine gitmeli onu ayarla
-        ben link to yazmadım html in içinde tam nasıl yapılacağını bilmedğimden sen
-        yaz
-        --benzer şekilde aşağıdaki herhangi bir movie carda tıklandığında onun page
-        e gitsin
-        --movie card mekanizmasını chat reis yaptı movie card file ında logic yok
-    */
-
+    const [matchedPeople, setMatchedPeople] = useState([]);
     const [data, setData] = useState([]); // Initialize with an empty array or an appropriate initial value
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState(null);
@@ -33,10 +21,7 @@ export default function MainPage(){
     const [bestRated, setBestRated] = useState([]);
     const [forYou, setForYou] = useState([]);
 
-    const mostPopularMovieIds = [24, 11, 22, 70, 111];
-    const bestRatedMovieIds = [15, 14, 13, 68, 69];
-    const forYouMovieIds = [71, 75, 76, 77, 78];
-
+    // fetch the movie data
     const fetchMovieData = async (movieIds, setState) => {
         try {
             const movies = await Promise.all(movieIds.map(async (movieId) => {
@@ -64,65 +49,30 @@ export default function MainPage(){
         fetchMovieData([15, 14, 13, 68, 69], setBestRated);
         fetchMovieData([71, 75, 76, 77, 78], setForYou);
     }, []);
-    
-  // Convert moviesData object to array for mapping
-  const mostPopularArray = Object.values(mostPopular);
-      
 
-    /*const [bestMatchMovie, setBestMatchMovie] = useState({});
-    const [movieCardsMostPopular, setMovieCardsMostPopular] = useState([]);
-    const [movieCardsBestRated, setMovieCardsBestRated] = useState([]);
-    const [movieCardsForYou, setMovieCardsForYou] = useState([]);
-    const [userCards, setUserCards] = useState([]);
-    const [isLoading, setIsLoading] = useState(true);
-    const [error, setError] = useState(null);
 
+    // get the matched people information
     useEffect(() => {
-        setIsLoading(true);
-        // Replace these URLs with your actual backend endpoints
-        Promise.all([
-            fetch('your-backend-url/best-match-movie'),
-            fetch('your-backend-url/most-popular'),
-            fetch('your-backend-url/best-rated'),
-            fetch('your-backend-url/for-you'),
-            fetch('your-backend-url/matched-people')
-        ])
-        .then(async ([resBestMatch, resMostPopular, resBestRated, resForYou, resMatchedPeople]) => {
-            const bestMatch = await resBestMatch.json();
-            const mostPopular = await resMostPopular.json();
-            const bestRated = await resBestRated.json();
-            const forYou = await resForYou.json();
-            const matchedPeople = await resMatchedPeople.json();
-            setBestMatchMovie(bestMatch);
-            setMovieCardsMostPopular(mostPopular);
-            setMovieCardsBestRated(bestRated);
-            setMovieCardsForYou(forYou);
-            setUserCards(matchedPeople);
+        fetch('http://127.0.0.1:8000/accounts/matched-people/', {
+          method: 'GET',
+          headers: {
+            'Authorization': `JWT ${jwtAccess}`, // Replace 'jwtAccess' with your JWT token variable
+            'Content-Type': 'application/json',
+          },
+        })
+        .then(response => response.json())
+        .then(data => {
+          setMatchedPeople(data.best_matched_people);
         })
         .catch(error => {
-            console.error('Error fetching data:', error);
-            setError(error.toString());
+          console.error('Error:', error);
+          setError(error.toString());
         })
         .finally(() => {
-            setIsLoading(false);
+          setIsLoading(false);
         });
-    }, []);
-
-    if (isLoading) {
-        return <div>Loading...</div>;
-    }
-
-    if (error) {
-        return <div>Error: {error}</div>;
-    }*/
-
-    // We will use this substitue for this  ---> <MovieCard key={movie.id} {...movie} />
-    /* <Link to={`/movie/${movie.id}`} key={movie.id}>
-                <MovieCard {...movie} />
-        </Link> */ 
+      }, []);
     
-
-
     const bestMatchMoviePoster= "src/assets/dummyPoster.jpg";
     const bestMatchMovieScene= "src/assets/dummy1.jpg";
     const bestMatchMovieName= "The Shining";
@@ -130,31 +80,6 @@ export default function MainPage(){
     const bestMatchMovieDesc= "A family heads to an isolated hotel for the winter where a sinister presence influences the father into violence, while his psychic son sees horrific forebodings from both past and future.";
     const bestMatchMoivePoints= "8.8"
 
-
-    const movieCardsMostPopular = [
-        { id: 5, title: "The Curious Case of Benjamin Button", poster_path: "src/assets/dummyPoster.jpg", release_date: "1980" },
-        { id: 11, title: "The Shining", poster_path: "src/assets/dummyPoster.jpg", release_date: "1980" },
-        { id: 12, title: "The Shining", poster_path: "src/assets/dummyPoster.jpg", release_date: "1980" },
-        { id: 13, title: "The Shining", poster_path: "src/assets/dummyPoster.jpg", release_date: "1980" },
-        { id: 19, title: "The Shining", poster_path: "src/assets/dummyPoster.jpg", release_date: "1980" },
-      ];
-
-
-      const movieCardsBestRated = [
-        { id: 1, title: "The Shining", poster_path: "src/assets/dummyPoster.jpg", release_date: "1980" },
-        { id: 2, title: "The Shining", poster_path: "src/assets/dummyPoster.jpg", release_date: "1980" },
-        { id: 3, title: "The Shining", poster_path: "src/assets/dummyPoster.jpg", release_date: "1980" },
-        { id: 4, title: "The Shining", poster_path: "src/assets/dummyPoster.jpg", release_date: "1980"},
-        { id: 5, title: "The Shining", poster_path: "src/assets/dummyPoster.jpg", release_date: "1980"},
-      ];
-
-      const movieCardsForYou = [
-        { id: 1, title: "The Shining", poster_path: "src/assets/dummyPoster.jpg", release_date: "1980" },
-        { id: 2, title: "The Shining", poster_path: "src/assets/dummyPoster.jpg", release_date: "1980" },
-        { id: 3, title: "The Shining", poster_path: "src/assets/dummyPoster.jpg", release_date: "1980" },
-        { id: 4, title: "The Shining", poster_path: "src/assets/dummyPoster.jpg", release_date: "1980" },
-        { id: 5, title: "The Shining", poster_path: "src/assets/dummyPoster.jpg", release_date: "1980" },
-      ];
 
       const userCards = [
         { id: 1, username: "kea", percentage: 123, image: "src/assets/pp.jpg" },
@@ -241,12 +166,17 @@ export default function MainPage(){
                     </Container>
                 </Row>
                 <Row className="main-page-list">
-                    <div className="main-page-list-text">
+                <div className="main-page-list-text">
+                    <Link to="/matchedpeople" className="matched-people-link">
                         Matched People
-                    </div>
+                    </Link>
+                </div>
+
+    
+    
                     <Container className="movie-cards-container">
                             <div className="movie-cards">
-                                {userCards.map((user) => (
+                                {matchedPeople.map((user) => (
                                     <Link to={`/user/${user.username}`} key={user.id}>
                                         <UserCard {...user} />
                                     </Link>

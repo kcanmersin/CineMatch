@@ -5,7 +5,6 @@ import { Button, Form, Container, Row, Col, Modal } from 'react-bootstrap';
 
 
 export default function MyListsPage() {
-  // TODO: this page renders after 2 or 3 seconds ---> fix it
   const [lists, setLists] = useState([]);
   const [moviesData, setMoviesData] = useState({});
   const [isLoading, setIsLoading] = useState(false);

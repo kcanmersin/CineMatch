@@ -13,6 +13,7 @@ import UserPage from './Components/UserPage';
 import ListsPage from './Components/ListsPage';
 import PrivateRoute from './auth/PrivateRoute';
 import MoviePage from './Components/MoviePage';
+import MatchedPeoplePage from './Components/MatchedPeoplePage';
 import { UserProvider } from './Components/UserContext';
 
 export default function App() {
@@ -30,6 +31,7 @@ export default function App() {
                 <Route path="/user/:username" element={<PrivateRoute isAuthenticated={isAuthenticated}><UserPage /></PrivateRoute>} />
                 <Route path="/user/:username/lists" element={<PrivateRoute isAuthenticated={isAuthenticated}><ListsPage /></PrivateRoute>} />
                 <Route path="/moviepage/:movieId" element={<PrivateRoute isAuthenticated={isAuthenticated}><MoviePage /></PrivateRoute>} />
+                <Route path="/matchedpeople" element={<PrivateRoute isAuthenticated={isAuthenticated}><MatchedPeoplePage /></PrivateRoute>} />
 
             </Routes>
         </UserProvider>

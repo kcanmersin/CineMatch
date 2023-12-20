@@ -10,57 +10,10 @@ import "./MoviePage.css"
 
 
 export default function MoviePage(){
+    // TODO: Rate will be displayed
     const { username } = useContext(UserContext)
-
     const [showModal, setShowModal] = useState(false);
-
-    const handleShowModal = () => {
-        setShowModal(true);
-    };
-    
-    const handleCloseModal = () => {
-        setShowModal(false);
-    };
-
-    // TODO : poster pathi ayarla
-    const UserPoints= "9.9";
-    const MovieScene= "https://hips.hearstapps.com/hmg-prod/images/american-actors-marlon-brando-and-al-pacino-on-the-set-of-news-photo-1578503843.jpg?crop=1.00xw:0.756xh;0,0.0556xh&resize=1200:*";
-    const SimilarMoviePoster= "https://s.yimg.com/ny/api/res/1.2/ZzAHlDHi8a2xdBRRbruaYQ--/YXBwaWQ9aGlnaGxhbmRlcjt3PTY0MDtoPTkyOA--/https://media.zenfs.com/en/homerun/feed_manager_auto_publish_494/d05a3f087fa57f6d41b865d53a42a5f5";
-
-    /*const MoviePoster= "src/assets/dummyPoster.jpg";
-    const MovieScene= "src/assets/dummy1.jpg";
-    const MovieName= "The Shining";
-    const MovieYear= "1980";
-    const MovieDesc= "A family heads to an isolated hotel for the winter where a sinister presence influences the father into violence, while his psychic son sees horrific forebodings from both past and future.";
-    const MoivePoints= "8.8";
-    
-    const Length= "180"
-    const Writers= ["Stanley Kubrick", "Stanley Kubrick"];
-    const Actors= ["Diyar İsi", "Fatih Sultan Mehmet"];
-    const Genres= ["Horror", "Crime"];
-    const similarMoives = [
-        { id: 1, name: "The Curious Case of Benjamin Button", image: "src/assets/dummyPoster.jpg", date: "1980" },
-        { id: 2, name: "The Shining", image: "src/assets/dummyPoster.jpg", date: "1980" },
-        { id: 3, name: "The Shining", image: "src/assets/dummyPoster.jpg", date: "1980" },
-        { id: 4, name: "The Shining", image: "src/assets/dummyPoster.jpg", date: "1980" },
-        { id: 5, name: "The Shining", image: "src/assets/dummyPoster.jpg", date: "1980" },
-    ];
-    const amountOfComments= "1071";
-    const comments= [
-        { id: 1, name: "torlak", image: "src/assets/pp.jpg", rating: "0.2", content: "Literally the worst movie ever. I’ve never understood what people find in this movie. It’s all about long and boring dialogues that points to nowhere. No action whatsoever. Gave up after that silly wedding ceremony scene.",
-            replies: [{id: 1, name: "torlak", image: "src/assets/pp.jpg", rating: "0.2", content: "A masterclass in film making, is The Godfather a contender for the best film of all time? I'd argue the case that it is, this is the ultimate gangster movie.",}]},
-        { id: 2, name: "riza", image: "src/assets/pp.jpg", rating: "8.8",  content: "Me see godfather me give 10",
-            replies: [{id: 1, name: "torlak", image: "src/assets/pp.jpg", rating: "0.2", content: "A masterclass in film making, is The Godfather a contender for the best film of all time? I'd argue the case that it is, this is the ultimate gangster movie.",}]},
-        { id: 3, name: "ADAM_ADAM", image: "src/assets/pp.jpg", rating: "9.9", content: "A masterclass in film making, is The Godfather a contender for the best film of all time? I'd argue the case that it is, this is the ultimate gangster movie.", 
-            replies: [{id: 1, name: "torlak", image: "src/assets/pp.jpg", rating: "0.2", content: "A masterclass in film making, is The Godfather a contender for the best film of all time? I'd argue the case that it is, this is the ultimate gangster movie.",}]},
-        { id: 4, name: "kenan", image: "src/assets/pp.jpg", rating: "7.6", content: "A masterclass in film making, is The Godfather a contender for the best film of all time? I'd argue the case that it is, this is the ultimate gangster movie.",
-            replies: []},
-        { id: 5, name: "Tfal", image: "src/assets/pp.jpg", rating: "8.8", content: "A masterclass in film making, is The Godfather a contender for the best film of all time? I'd argue the case that it is, this is the ultimate gangster movie.",
-            replies: []},
-    ]
-
-    const userList= [{id: 1, listName:"sjagd"}, {id: 2, listName:"sjdsfsdagd"}]*/
-
+    const [userRate, setUserRate] = useState("Not rated");
     const [movieData, setMovieData] = useState(null);
     const [comments, setComments] = useState([]);
     const [lists, setLists] = useState([]);
@@ -70,6 +23,15 @@ export default function MoviePage(){
     const [lastUpdate, setLastUpdate] = useState(Date.now());
     const [userRating, setUserRating] = useState(0);
     const { movieId } = useParams();
+
+
+    const handleShowModal = () => {
+        setShowModal(true);
+    };
+    
+    const handleCloseModal = () => {
+        setShowModal(false);
+    };
 
     // logic part
     useEffect(() => {
@@ -83,13 +45,12 @@ export default function MoviePage(){
         .then(response => response.json())
         .then(data => {
             setMovieData(data);
-            console.log(data);
             return fetch(data.comments.all_comment_link);
         })
         .then(response => response.json())
         .then(commentsData => {
             setComments(commentsData);
-            console.log(commentsData);
+
         })
         .catch(error => {
             console.error("Error fetching data: ", error);
@@ -267,6 +228,9 @@ export default function MoviePage(){
 
 
     const { title, poster_path, release_date, overview, vote_average, runtime, genres, cast, crew, similar_movies } = movieData;
+    // convert runtime into hour and minutes
+    const hours = Math.floor(runtime / 60);
+    const minutes = runtime % 60;
     // Find the director in the crew array
     const director = "Stanley Kubrick"; //crew.find(member => member.crew.role === "Director")?.crew.name;
     // Extracting actors' names
@@ -298,8 +262,11 @@ export default function MoviePage(){
             <div className="rest-of-the-movie-page">
                 <div className="movie-page-movie-details">
                     <p className="rating-data"><div className="voting-text">RATING:</div><div className="bold">{parseFloat(vote_average).toFixed(1)}</div></p>
-                    <p className="rating-data"><div className="your-voting-text">YOUR RATING:</div><div className="bold">{movieData.user_rating}</div></p>
-                    <p><span className="bold">{runtime}</span><span className="lighter"> minutes</span></p>
+                    <p className="rating-data"><div className="your-voting-text">YOUR RATING:</div><div className="bold">{userRate}</div></p>
+                    <p>
+                        <span className="bold">{hours}</span><span className="lighter"> hours </span>
+                        <span className="bold">{minutes}</span><span className="lighter"> minutes</span>
+                    </p>
                     <div><p className="starring bold">STARRING</p><p className="lighter">{actorsNames}</p></div>
                 </div>
                 <div className="movie-page-desc-comments">
