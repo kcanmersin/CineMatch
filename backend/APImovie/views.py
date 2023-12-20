@@ -26,17 +26,17 @@ class SearchBarCreateView(generics.ListCreateAPIView):
     serializer_class1 = UserSerializer
 
     filter_backends = [DjangoFilterBackend, filters.SearchFilter]
-    search_fields = ['title']
-    search_fields1 = ['username']
+    search_fields = ['^title']
+    search_fields1 = ['^username']
 
     def get_queryset(self):
         search_term = self.request.query_params.get('search', '')
         
         # Filter movies based on the search term
-        movies = self.queryset.filter(title__icontains=search_term)
+        movies = self.queryset.filter(title__istartswith=search_term)
         
         # Filter users based on the search term
-        users = self.queryset1.filter(username__icontains=search_term)
+        users = self.queryset1.filter(username__istartswith=search_term)
 
         return {'movies': movies, 'users': users}
 
