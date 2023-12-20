@@ -20,7 +20,7 @@ export default function ProgramNavbar() {
   const { logout } = useContext(AuthContext);
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [searchText, setSearchText] = useState('');
-  const [searchResults, setSearchResults] = useState([]);
+  const [searchResults, setSearchResults] = useState({ movies: [], users: [] });
 
   const toggleSidebar = () => {
     setSidebarOpen(!sidebarOpen);
@@ -39,7 +39,10 @@ export default function ProgramNavbar() {
     fetch(`http://127.0.0.1:8000/movie/movie/search_bar/?search=${query}`)
       .then(response => response.json())
       .then(data => {
-        setSearchResults(data.movies);
+        setSearchResults({
+          movies: Array.isArray(data.movies) ? data.movies : [],
+          users: Array.isArray(data.users) ? data.users : []
+        });
       })
       .catch(error => console.error('Error:', error));
   };
@@ -57,32 +60,36 @@ export default function ProgramNavbar() {
     };
   }, [searchText]);
 
-  // display first 5 results
-  // display first 5 results (movies and users)
+  // Modified displaySearchResults to include both users and movies
   const displaySearchResults = () => {
-    return searchResults.slice(0, 5).map((result, index) => {
-      if (result.title && result.release_date) {
-        // This is a movie
-        return (
-          <div key={index}>
-            <p>{result.title} ({result.release_date})</p>
-            <img src={"https://image.tmdb.org/t/p/original" + result.poster_path} alt={result.title} />
-          </div>
-        );
-      } else if (result.username && result.profile.profile_picture) {
-        // This is a use
-        return (
-          <div key={index}>
-            <p>{result.username}</p>
-            <img src={result.profile.profile_picture} alt={result.username} />
-          </div>
-        );
-      } else {
-        return null;
-      }
-    });
-  };
+    if (searchText.trim() === '') {
+      return null; // Return null when there is no search text
+    }
+    const results = [];
+    const { users, movies } = searchResults;
 
+    // Add user results
+    for (let i = 0; i < users.length && results.length < 5; i++) {
+      results.push(
+        <div key={'user-' + users[i].id}>
+          <p>User: {users[i].username}</p>
+          <img src={"http://127.0.0.1:8000" + users[i].profile.profile_picture} alt={users[i].username} />
+        </div>
+      );
+    }
+
+    // Add movie results
+    for (let i = 0; i < movies.length && results.length < 5; i++) {
+      results.push(
+        <div key={'movie-' + movies[i].title}>
+          <p>{movies[i].title} ({movies[i].release_date})</p>
+          <img src={"https://image.tmdb.org/t/p/original" + movies[i].poster_path} alt={movies[i].title} />
+        </div>
+      );
+    }
+
+    return results;
+  };
   return (
     <div>
       <Navbar expand="lg" sticky="top" className="main-navbar flex-nowrap">
