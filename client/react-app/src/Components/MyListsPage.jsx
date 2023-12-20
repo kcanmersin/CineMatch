@@ -2,7 +2,7 @@ import "./MyListsPage.css";
 import { useState, useEffect } from 'react';
 import ProgramNavbar from "./SubComponents/ProgramNavbar";
 import { Button, Form, Container, Row, Col, Modal } from 'react-bootstrap';
-
+import { Link } from "react-router-dom";
 
 export default function MyListsPage() {
   const [lists, setLists] = useState([]);
@@ -181,8 +181,10 @@ export default function MyListsPage() {
                 ))}
               </div>
               <div className="list-info">
-                <h3>{list.title}</h3>
-                <p>{list.movies.length} Movies</p>
+                <Link to={`/mylists/${list.id}`}>
+                  <h3>{list.title}</h3>
+                  <p>{list.movies.length} Movies</p>
+                </Link>
               </div>
             </div>
             <div className="delete-button-container">

@@ -177,7 +177,7 @@ export default function MainPage(){
                     <Container className="movie-cards-container">
                             <div className="movie-cards">
                                 {matchedPeople.map((user) => (
-                                    <Link to={`/user/${user.username}`} key={user.id}>
+                                    <Link to={`/user/${user.username}`} key={user.username}>
                                         <UserCard {...user} />
                                     </Link>
                                 ))}
