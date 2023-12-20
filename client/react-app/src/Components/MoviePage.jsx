@@ -10,10 +10,11 @@ import "./MoviePage.css"
 
 
 export default function MoviePage(){
-    // TODO: Rate will be displayed
+    // TODO: Rate will be displayed --> update and delete rate
     const { username } = useContext(UserContext)
     const [showModal, setShowModal] = useState(false);
     const [userRate, setUserRate] = useState("Not rated");
+    const [rateId, setRateId] = useState(null);
     const [movieData, setMovieData] = useState(null);
     const [comments, setComments] = useState([]);
     const [lists, setLists] = useState([]);
@@ -45,6 +46,14 @@ export default function MoviePage(){
         .then(response => response.json())
         .then(data => {
             setMovieData(data);
+            if (data.rate_by_current_user) {
+                setUserRate(data.rate_by_current_user.rate_point);
+                setRateId(data.rate_by_current_user.rate_id);
+            } else {
+                setUserRate("Not rated");
+                setRateId(null);
+            }
+            console.log(movieData);
             return fetch(data.comments.all_comment_link);
         })
         .then(response => response.json())
@@ -231,18 +240,13 @@ export default function MoviePage(){
     // convert runtime into hour and minutes
     const hours = Math.floor(runtime / 60);
     const minutes = runtime % 60;
-    // Find the director in the crew array
-    const director = "Stanley Kubrick"; //crew.find(member => member.crew.role === "Director")?.crew.name;
-    // Extracting actors' names
-    const actorsNames = ["Daniel Daniel\nKarambit\nTuco Benedicto Pacífico Juan María Ramírez"]//cast.map(actor => actor.actor_id.actor_name).join(", ");
-
     return (
         <div className="main-page">
             <ProgramNavbar/>
             <div className= "best-match-movie">
                 <div className= "best-match-movie-poster">
                     <img
-                        src={"https://image.tmdb.org/t/p/original" + movieData.poster_path}
+                        src={"https://image.tmdb.org/t/p/original" + poster_path}
                         alt="First Image"
                         className="best-match-movie-poster-image"
                     />
@@ -255,7 +259,14 @@ export default function MoviePage(){
                 }}>
                     <div className="movie-title-director">
                         <div className="name-and-date">{title.toUpperCase()} <span className="movie-date">({release_date})</span></div>
-                        <div className="director-name">Directed by <span className="bold">{director}</span></div>
+                        <div className="director-name">
+                            Directed by {crew.map((crewMember, index) => (
+                                <span key={index} className="bold">
+                                    {crewMember.crew.name}
+                                    {index !== crew.length - 1 ? ', ' : ''}
+                                </span>
+                            ))}
+                        </div>
                     </div>
                 </div>
             </div>
@@ -267,7 +278,18 @@ export default function MoviePage(){
                         <span className="bold">{hours}</span><span className="lighter"> hours </span>
                         <span className="bold">{minutes}</span><span className="lighter"> minutes</span>
                     </p>
-                    <div><p className="starring bold">STARRING</p><p className="lighter">{actorsNames}</p></div>
+                    <div>
+                        <p className="starring bold">STARRING</p>
+                        <p className="lighter">
+                            {cast.map((actor, index) => (
+                                <span key={index}>
+                                    {actor.actor_id.actor_name}
+                                    {index !== cast.length - 1 ? <br /> : ''}
+                                </span>
+                            ))}
+                        </p>
+                    </div>
+
                 </div>
                 <div className="movie-page-desc-comments">
                     <div className="genre-buttons">
