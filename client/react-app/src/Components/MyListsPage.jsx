@@ -1,33 +1,25 @@
-import "./MyListsPage.css";
-import { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import ProgramNavbar from "./SubComponents/ProgramNavbar";
-import { Button, Form, Container, Row, Col, Modal } from 'react-bootstrap';
+import { Button, Form, Modal } from 'react-bootstrap';
 import { Link } from "react-router-dom";
+import { BounceLoader } from 'react-spinners'; // Import BounceLoader
 
 export default function MyListsPage() {
   const [lists, setLists] = useState([]);
   const [moviesData, setMoviesData] = useState({});
-  const [isLoading, setIsLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
   const [showCreateForm, setShowCreateForm] = useState(false);
-  const [isPublic, setIsPublic] = useState(true); // State for the is_public checkbox
+  const [isPublic, setIsPublic] = useState(true);
   const jwtAccess = localStorage.getItem('jwtAccess');
-  const [userId, setUserId] = useState(null); // userId
+  const [userId, setUserId] = useState(null);
   const [showModal, setShowModal] = useState(false);
 
-  const MoviePosterLink= "src/assets/dummyPoster.jpg";
-
-  
-
-  const handleShowModal = () => {
-    setShowModal(true);
-  };
-
-  const handleCloseModal = () => {
-    setShowModal(false);
-  };
+  const handleShowModal = () => setShowModal(true);
+  const handleCloseModal = () => setShowModal(false);
 
   useEffect(() => {
+    setIsLoading(true); // Set loading to true when starting the fetch
     fetch('http://127.0.0.1:8000/auth/users/me/', {
       method: 'GET',
       headers: {
@@ -55,17 +47,16 @@ export default function MyListsPage() {
     .catch(error => {
       console.error('Error:', error);
       setError(error.toString());
-    })
-    .finally(() => {
       setIsLoading(false);
     });
   }, [userId]);
 
   const fetchListImages = (lists) => {
+    let remainingFetches = lists.reduce((acc, list) => acc + list.movies.slice(0, 2).length, 0);
+
     lists.forEach((list) => {
-      // Assuming each movie in list.movies is an object with an 'id' property
       const listMovieIds = list.movies.slice(0, 2).map(movie => movie.id);
-  
+
       Promise.all(listMovieIds.map((movieId) => 
         fetch(`http://127.0.0.1:8000/movie/movie/movies/${movieId}/`, {
           method: 'GET',
@@ -74,19 +65,21 @@ export default function MyListsPage() {
             'Content-Type': 'application/json',
           },
         })
-        .then(response => {
-          if (!response.ok) {
-            throw new Error('Network response was not ok');
-          }
-          return response.json();
-        })
+        .then(response => response.json())
       ))
       .then((movies) => {
         setMoviesData(prevMovies => ({ ...prevMovies, [list.id]: movies }));
+        remainingFetches -= movies.length;
+        if (remainingFetches === 0) {
+          setIsLoading(false);
+        }
       })
       .catch((error) => {
         console.error('Error fetching movie data:', error);
-        setError(error.toString());
+        remainingFetches -= list.movies.slice(0, 2).length;
+        if (remainingFetches === 0) {
+          setIsLoading(false);
+        }
       });
     });
   };
@@ -159,7 +152,15 @@ export default function MyListsPage() {
   
 
   if (isLoading) {
-    return <div>Loading...</div>;
+    return (
+      <div>
+        <ProgramNavbar />
+        <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh' }}>
+          <BounceLoader color="#123abc" loading={isLoading} />
+        </div>
+      </div>
+      
+    );
   }
 
   if (error) {
