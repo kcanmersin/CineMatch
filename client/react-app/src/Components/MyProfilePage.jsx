@@ -74,21 +74,10 @@ export default function MyProfilePage(){
                 const userLists = await allLists.filter(list => list.user === profileInfo.id);
                 const watchedList = userLists.find((list, index) => index === 1);
     
-                if (watchedList) {
-                    const moviePromises = watchedList.movies.map(movie => 
-                        fetch(`http://127.0.0.1:8000/movie/movie/movies/${movie.id}/`, {
-                            method: 'GET',
-                            headers: {
-                                'Authorization': `JWT ${jwtAccess}`,
-                                'Content-Type': 'application/json',
-                            },
-                        }).then(response => response.json())
-                    );
-    
-                    const moviesDetails = await Promise.all(moviePromises);
-                    setWatchedMovies(moviesDetails);
+                if (watchedList && watchedList.movies) {
+                    setWatchedMovies(watchedList.movies); // Directly use the movies from the watched list
                 } else {
-                    console.log('Watched list not found');
+                    console.log('Watched list or movies not found');
                 }
     
             } catch (error) {
@@ -100,29 +89,6 @@ export default function MyProfilePage(){
     }, [jwtAccess, username]);
         
     
-    //const MyProfileBgImage= "src/assets/dummy1.jpg";
-    //const ppLink= "src/assets/pp.jpg";
-    //const username="Michael Corleone";
-
-    
-    //const movieCount="1071";
-    //const followersCount= "1453";
-    //const followingsCount= "1923"
-
-    // Dummy movie data
-    const movieData = [
-        { id: 1, name: "Movie 1", image: "src/assets/dummyPoster.jpg", date: "2022" },
-        { id: 2, name: "Modsdddsdasdasda dasdasd dasdddddfsdvie 2", image: "src/assets/dummyPoster.jpg", date: "2021" },
-        { id: 3, name: "Movie 3", image: "src/assets/dummyPoster.jpg", date: "2020" },
-        { id: 4, name: "Movie 3", image: "src/assets/dummyPoster.jpg", date: "2020" },
-        { id: 5, name: "Movie 3", image: "src/assets/dummyPoster.jpg", date: "2020" },
-        { id: 6, name: "Movie 3", image: "src/assets/dummyPoster.jpg", date: "2020" },
-        { id: 7, name: "Movie 3", image: "src/assets/dummyPoster.jpg", date: "2020" },
-        { id: 8, name: "Movie 3", image: "src/assets/dummyPoster.jpg", date: "2020" },
-        { id: 9, name: "Movie 3", image: "src/assets/dummyPoster.jpg", date: "2020" },
-        { id: 10, name: "Movie 3", image: "src/assets/dummyPoster.jpg", date: "2020" },
-    ];
-
     const handleProfilePictureChange = (e) => {
         const file = e.target.files[0];
         if (file) {
@@ -145,9 +111,6 @@ export default function MyProfilePage(){
         }
       };
       
-    
-    
-
 
     return(
         <div className="main-page">
@@ -196,7 +159,9 @@ export default function MyProfilePage(){
                     <Container className="watched-movies-card-container">
                         <Row>
                             {watchedMovies.map((movie) => (
-                                <MovieCard key={movie.id} {...movie} />
+                                <Link key={movie.id} to={`/moviepage/${movie.id}`}>
+                                    <MovieCard {...movie} />
+                                </Link>
                             ))}
                         </Row>
                     </Container>

@@ -6,6 +6,7 @@ import { Link } from 'react-router-dom';
 import { useParams } from 'react-router-dom';
 import { UserContext } from "./UserContext";
 import ProgramNavbar from "./SubComponents/ProgramNavbar";
+import { BounceLoader } from 'react-spinners';
 import "./MoviePage.css"
 
 
@@ -97,12 +98,6 @@ export default function MoviePage(){
           setIsLoading(false);
         });
       }, [userId, jwtAccess]);
-
-
-    if (!movieData) {
-        return <div>Loading...</div>;
-    }
-
 
     // Function to handle reply submission
     const onReplySubmit = (replyText, parentCommentId) => {
@@ -234,12 +229,26 @@ export default function MoviePage(){
       };
       
 
-
+      
+    if (isLoading || !movieData) {
+    return (
+        <div className="main-page">
+            <ProgramNavbar />
+            <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh' }}>
+                <BounceLoader color="#123abc" loading={true} size={150} />
+            </div>
+        </div>
+    );
+}
+    
 
     const { title, poster_path, release_date, overview, vote_average, runtime, genres, cast, crew, similar_movies } = movieData;
     // convert runtime into hour and minutes
     const hours = Math.floor(runtime / 60);
     const minutes = runtime % 60;
+
+
+    
     return (
         <div className="main-page">
             <ProgramNavbar/>

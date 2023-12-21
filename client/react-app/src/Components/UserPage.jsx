@@ -28,7 +28,7 @@ export default function UserPage(){
     });
 
     const jwtAccess = localStorage.getItem('jwtAccess');
-
+    const bestMatchMoviePoster= "src/assets/dummyPoster.jpg";
     
 
     useEffect(() => {
@@ -98,22 +98,12 @@ export default function UserPage(){
               const allLists = await listsResponse.json();
               const userLists = await allLists.filter(list => list.user === profileInfo.id);
               const watchedList = userLists.find((list, index) => index === 1);
-  
-              if (watchedList) {
-                  const moviePromises = watchedList.movies.map(movie => 
-                      fetch(`http://127.0.0.1:8000/movie/movie/movies/${movie.id}/`, {
-                          method: 'GET',
-                          headers: {
-                              'Authorization': `JWT ${jwtAccess}`,
-                              'Content-Type': 'application/json',
-                          },
-                      }).then(response => response.json())
-                  );
-  
-                  const moviesDetails = await Promise.all(moviePromises);
-                  setWatchedMovies(moviesDetails);
+
+              // set the list's movies
+              if (watchedList && watchedList.movies) {
+                setWatchedMovies(watchedList.movies); // Directly use the movies from the watched list
               } else {
-                  console.log('Watched list not found');
+                  console.log('Watched list or movies not found');
               }
   
           } catch (error) {
@@ -193,7 +183,7 @@ export default function UserPage(){
             <ProgramNavbar/>
             <div className="profile-page-content"
               style={{
-              backgroundImage: `linear-gradient(0deg, rgba(10, 20, 33, 0.4) 0%, rgba(10, 20, 33, 0.4) 100%), linear-gradient(0deg, #0A1421 0%, rgba(0, 0, 0, 0.00) 100%), url(${profileData.bestMatchMoviePoster})`,
+              backgroundImage: `linear-gradient(0deg, rgba(10, 20, 33, 0.4) 0%, rgba(10, 20, 33, 0.4) 100%), linear-gradient(0deg, #0A1421 0%, rgba(0, 0, 0, 0.00) 100%), url(${ bestMatchMoviePoster })`, /*profileData.bestMatchMoviePoster}*/
               backgroundPosition: 'center center',
               backgroundSize: 'cover',
               backgroundRepeat: 'no-repeat',
@@ -232,7 +222,9 @@ export default function UserPage(){
                     <Container className="watched-movies-card-container">
                         <Row>
                             {watchedMovies.map((movie) => (
-                                <MovieCard key={movie.id} {...movie} />
+                              <Link key={movie.id} to={`/moviepage/${movie.id}`}>
+                                  <MovieCard {...movie} />
+                              </Link>
                             ))}
                         </Row>
                     </Container>
