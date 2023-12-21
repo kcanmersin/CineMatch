@@ -1,17 +1,27 @@
 import React, { useState, useEffect } from 'react';
-import { useParams } from 'react-router-dom';
+import { useParams, Link } from 'react-router-dom';
 import MovieCard from './SubComponents/MovieCard';
-import { BounceLoader } from 'react-spinners';  // Import the spinner
+import { BounceLoader } from 'react-spinners';
+import ProgramNavbar from './SubComponents/ProgramNavbar';
 
 function FilterPage() {
     const { listId } = useParams();
     const [movies, setMovies] = useState([]);
-    const [detailedMovies, setDetailedMovies] = useState({});
-    const [loadingDetails, setLoadingDetails] = useState({});
-    const [allMoviesLoaded, setAllMoviesLoaded] = useState(false);  // Track if all movies are loaded
+    const [filteredMovies, setFilteredMovies] = useState(null);
+    const [isLoading, setIsLoading] = useState(true);
+    const [selectedGenres, setSelectedGenres] = useState([]);  // State to manage selected genres
     const jwtAccess = localStorage.getItem('jwtAccess');
 
+    // Define available genres (you could also fetch this from an API)
+    const genreOptions = ["Action", "Drama", "Comedy", "Thriller", "Romance"];
+
     useEffect(() => {
+        // Fetch the list and filter movies when the component mounts
+        setIsLoading(true);
+        fetchListAndFilterMovies();
+    }, [listId]);
+
+    const fetchListAndFilterMovies = () => {
         fetch(`http://127.0.0.1:8000/movie/lists/${listId}/`, {
             method: 'GET',
             headers: {
@@ -21,67 +31,98 @@ function FilterPage() {
         })
         .then(response => response.json())
         .then(data => {
-            setMovies(data.movies);
-            const initialLoadingState = data.movies.reduce((acc, movie) => {
-                acc[movie.id] = true;  // Initialize loading state for each movie
-                return acc;
-            }, {});
-            setLoadingDetails(initialLoadingState);
-            fetchMovieDetails(data.movies);
+            setMovies(data.movies);  // Update the state with the movies from the list
+            handleFilterMovies();    // Immediately apply filters once movies are fetched
         })
         .catch(error => {
             console.error('Error fetching list:', error);
-        });
-    }, [listId]);
-
-    const fetchMovieDetails = (movies) => {
-        const detailPromises = movies.map(movie => {
-            return fetch(`http://127.0.0.1:8000/movie/movie/movies/${movie.id}/`, {
-                method: 'GET',
-                headers: {
-                    'Authorization': `JWT ${jwtAccess}`,
-                    'Content-Type': 'application/json',
-                },
-            })
-            .then(response => response.json())
-            .catch(error => {
-                console.error(`Error fetching details for movie ${movie.id}:`, error);
-            });
-        });
-
-        Promise.all(detailPromises).then(detailsArray => {
-            const newDetailedMovies = {};
-            const newLoadingDetails = {};
-
-            detailsArray.forEach(details => {
-                if (details) {
-                    newDetailedMovies[details.id] = details;
-                    newLoadingDetails[details.id] = false;  // Set loading to false once the data is fetched
-                }
-            });
-
-            setDetailedMovies(newDetailedMovies);
-            setLoadingDetails(newLoadingDetails);
-            setAllMoviesLoaded(true);  // Indicate that all movies are loaded
+            setIsLoading(false);
         });
     };
 
+    const handleFilterMovies = () => {
+        console.log(selectedGenres);
+        const filterCriteria = {
+            list_id: listId,
+            start_date: "2008",
+            end_date: "2023",
+            genres: selectedGenres
+        };
+
+        fetch(`http://127.0.0.1:8000/movie/movie-lists/${listId}/filter/`, {
+            method: 'POST',
+            headers: {
+                'Authorization': `JWT ${jwtAccess}`,
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(filterCriteria)
+        })
+        .then(response => response.json())
+        .then(data => {
+            setFilteredMovies(data);  // Update the state with the filtered movies
+            setIsLoading(false);      // End loading
+        })
+        .catch(error => {
+            console.error('Error filtering movies:', error);
+            setIsLoading(false);
+        });
+    };
+
+    const handleGenreChange = (genre) => {
+        if (selectedGenres.includes(genre)) {
+            setSelectedGenres(selectedGenres.filter(g => g !== genre));  // Remove genre
+        } else {
+            setSelectedGenres([...selectedGenres, genre]);  // Add genre
+        }
+    };
+
+    // Render the genre filter options
+    const renderGenreOptions = () => (
+        <div>
+            {genreOptions.map(genre => (
+                <label key={genre}>
+                    <input
+                        type="checkbox"
+                        checked={selectedGenres.includes(genre)}
+                        onChange={() => handleGenreChange(genre)}
+                    />
+                    {genre}
+                </label>
+            ))}
+            <button onClick={handleFilterMovies}>Apply Filters</button>
+        </div>
+    );
+
+    // If the page is still loading, show the loader
+    if (isLoading) {
+        return (
+            <div>
+                <ProgramNavbar />
+                <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh' }}>
+                    <BounceLoader color="#123abc" loading={true} />
+                </div>
+            </div>
+        );
+    }
+
+    // Determine which movies to display: filtered or all from the list
+    const moviesToDisplay = Array.isArray(filteredMovies) ? filteredMovies : movies;
+
+    // Render the movies once loading is complete
     return (
         <div>
+            <ProgramNavbar />
+            {renderGenreOptions()}  {/* Render the genre filter options */}
             <h1>Filtered Movies</h1>
-            {!allMoviesLoaded ? (
-                <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh' }}>
-                    <BounceLoader color="#123abc" loading={true} />  {/* Centralized spinner */}
-                </div>
-            ) : (
-                <ul>
-                    {movies.map(movie => (
-                        <li key={movie.id}>
-                            {detailedMovies[movie.id] ? <MovieCard {...detailedMovies[movie.id]} /> : <div>Failed to load details</div>}
-                        </li>
-                    ))}
-                </ul>
-            )}
+            <ul>
+            {moviesToDisplay.map(movie => (
+                <li key={movie.id}>
+                    <Link to={`/moviepage/${movie.id}`}>
+                        <MovieCard {...movie} />
+                    </Link>
+                </li>
+            ))}
+            </ul>
         </div>
     );
 }
