@@ -34,6 +34,7 @@ export default function App() {
                 <Route path="/moviepage/:movieId" element={<PrivateRoute isAuthenticated={isAuthenticated}><MoviePage /></PrivateRoute>} />
                 <Route path="/matchedpeople" element={<PrivateRoute isAuthenticated={isAuthenticated}><MatchedPeoplePage /></PrivateRoute>} />
                 <Route path="/mylists/:listId" element={<PrivateRoute isAuthenticated={isAuthenticated}><FilterPage /></PrivateRoute>} />
+                <Route path="/user/:username/lists/:listId" element={<PrivateRoute isAuthenticated={isAuthenticated}><FilterPage /></PrivateRoute>} />
             </Routes>
         </UserProvider>
       

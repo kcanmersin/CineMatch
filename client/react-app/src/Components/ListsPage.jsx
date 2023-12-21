@@ -1,24 +1,20 @@
-import { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import ProgramNavbar from "./SubComponents/ProgramNavbar";
-import { Button, Form, Container, Row, Col, Modal } from 'react-bootstrap';
+import { Link } from "react-router-dom";
+import { BounceLoader } from 'react-spinners';
 import "./MyListsPage.css";
-
 
 export default function ListsPage() {
   const { username } = useParams();
-  const [userId, setUserId] = useState(null);
   const [lists, setLists] = useState([]);
-  const [moviesData, setMoviesData] = useState({});
-  const [isLoading, setIsLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
   const jwtAccess = localStorage.getItem('jwtAccess');
 
-  const MoviePosterLink= "src/assets/dummyPoster.jpg";
-
-  // Fetch the user's ID based on the username
   useEffect(() => {
     setIsLoading(true);
+    // Fetch the user's profile and lists based on the username
     fetch(`http://127.0.0.1:8000/accounts/profile/${username}/`, {
       method: 'GET',
       headers: {
@@ -26,118 +22,81 @@ export default function ListsPage() {
         'Content-Type': 'application/json',
       },
     })
-    .then(response => {
-      if (response.ok) {
-        return response.json();
-      }
-      throw new Error('Network response was not ok.');
-    })
+    .then(response => response.json())
     .then(profileInfo => {
-      setUserId(profileInfo.id); // Store the user's ID
+      fetchUserLists(profileInfo.id);
     })
     .catch(error => {
       console.error('Error:', error);
       setError(error.toString());
-    })
-    .finally(() => {
       setIsLoading(false);
     });
-  }, [jwtAccess, username]);
+  }, [username, jwtAccess]);
 
-
-  // get the list of a specified user --> userId
-  // UseEffect to fetch the user's lists only when userId is not null
-  useEffect(() => {
-    // Check if userId is not null before making the request
-    if (userId !== null) {
-      setIsLoading(true);
-      fetch(`http://127.0.0.1:8000/movie/${userId}/lists/`, {
-        method: 'GET',
-        headers: {
-          'Authorization': `JWT ${jwtAccess}`,
-          'Content-Type': 'application/json',
-        },
-      })
-      .then(response => response.json())
-      .then(data => {
-        setLists(data);
-        fetchListImages(data);
-      })
-      .catch(error => {
-        console.error('Error:', error);
-        setError(error.toString());
-      })
-      .finally(() => {
-        setIsLoading(false);
-      });
-    }
-  }, [userId, jwtAccess]);
-
-
-  const fetchListImages = (lists) => {
-    lists.forEach((list) => {
-        // Check if list.movies is defined and is an array
-        if (Array.isArray(list.movies)) {
-            const listMovieIds = list.movies.slice(0, 2).map(movie => movie.id);
-            Promise.all(listMovieIds.map((movieId) => 
-                fetch(`http://127.0.0.1:8000/movie/movie/movies/${movieId}/`, {
-                    method: 'GET',
-                    headers: {
-                        'Authorization': `JWT ${jwtAccess}`,
-                        'Content-Type': 'application/json',
-                    },
-                })
-                .then(response => {
-                    if (!response.ok) {
-                        throw new Error('Network response was not ok');
-                    }
-                    return response.json();
-                })
-            ))
-            .then((movies) => {
-                setMoviesData(prevMovies => ({ ...prevMovies, [list.id]: movies }));
-            })
-            .catch((error) => {
-                console.error('Error fetching movie data:', error);
-                setError(error.toString());
-            });
-        } else {
-            // Handle the scenario where list.movies is not an array
-            console.error('list.movies is undefined or not an array for list:', list);
-        }
+  const fetchUserLists = (userId) => {
+    fetch(`http://127.0.0.1:8000/movie/lists/`, {
+      method: 'GET',
+      headers: {
+        'Authorization': `JWT ${jwtAccess}`,
+        'Content-Type': 'application/json',
+      },
+    })
+    .then(response => response.json())
+    .then(data => {
+      const userLists = data.filter(list => list.user === userId);
+      setLists(userLists);
+      setIsLoading(false);
+    })
+    .catch(error => {
+      console.error('Error fetching lists:', error);
+      setError(error.toString());
+      setIsLoading(false);
     });
-};
-
+  };
 
   if (isLoading) {
-    return <div>Loading...</div>;
+    return (
+      <div className='main-page'>
+        <ProgramNavbar />
+        <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh' }}>
+          <BounceLoader color="#123abc" loading={isLoading} />
+        </div>
+      </div>
+    );
   }
 
   if (error) {
-    return <div>Error: {error}</div>;
+    return (
+      <div className="main-page">
+        <ProgramNavbar />
+        <div>Error: {error}</div>
+      </div>
+    );
   }
 
   // Filter and display only public lists
-  const publicLists = lists.filter(list => list.is_public === true);
+  const publicLists = lists.filter(list => list.is_public);
 
   return (
     <div className="main-page">
       <ProgramNavbar />
       <div className='list-page-username'>Lists by <span>{username}</span></div>  
       <ul className='movie-lists-container'>
-        {lists.map((list, index) => (
-          <li className= "movie-lists" key={index}>
+        {publicLists.map((list) => (
+          <li className="movie-lists" key={list.id}>
             <div className="poster-info-container">
-              <div className= "movie-lists-posters-container">
-                {moviesData[list.id] && moviesData[list.id].map((movie, movieIndex) => (
-                  <div className= "container-for-shift" key={movieIndex}>
-                    <img src={"https://image.tmdb.org/t/p/original" + movie.poster_path} className="movie-image" />
+              <div className="movie-lists-posters-container">
+                {list.movies.slice(0, 2).map((movie, index) => (
+                  <div className="container-for-shift" key={index}>
+                    <img src={"https://image.tmdb.org/t/p/original" + movie.poster_path} alt={movie.title} className="movie-image" />
                   </div>
                 ))}
               </div>
               <div className="list-info">
-                <h3>{list.title}</h3>
-                <p>{list.movies.length} Movies</p>
+                <Link to={`/user/${username}/lists/${list.id}`}>
+                  <h3>{list.title}</h3>
+                  <p>{list.movies.length} Movies</p>
+                </Link>
               </div>
             </div>
           </li>
@@ -146,3 +105,4 @@ export default function ListsPage() {
     </div>
   );
 }
+

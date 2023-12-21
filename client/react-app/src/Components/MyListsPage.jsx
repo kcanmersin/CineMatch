@@ -136,7 +136,7 @@ export default function MyListsPage() {
     <div className="main-page">
       <ProgramNavbar />
       <ul className='movie-lists-container'>
-        {lists.map((list) => (
+        {lists.map((list, index) => (
           <li className="movie-lists" key={list.id}>
             <div className="poster-info-container">
               <div className="movie-lists-posters-container">
@@ -153,13 +153,16 @@ export default function MyListsPage() {
                 </Link>
               </div>
             </div>
-            <div className="delete-button-container">
-              <Button variant="danger" className="delete-button" onClick={() => handleDeleteList(list.id)}>
-                Delete
-              </Button>
-            </div>
+            {index >= 2 ? (
+              <div className="delete-button-container">
+                <Button variant="danger" className="delete-button" onClick={() => handleDeleteList(list.id)}>
+                  Delete
+                </Button>
+              </div>
+            ) : null}
           </li>
-        ))}
+      ))}
+
       </ul>
       <Button variant="success" style={{margin:'2rem'}} onClick={handleShowModal}>
         Create New List

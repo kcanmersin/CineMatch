@@ -49,7 +49,7 @@ export default function ProgramNavbar() {
 
   const debouncedSearch = debounce(() => {
     fetchSearchResults(searchText);
-  }, 500);
+  }, 100);
 
   useEffect(() => {
     if (searchText) {

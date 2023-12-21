@@ -11,6 +11,7 @@ import UserCard from "./SubComponents/UserCard";
 
 
 export default function MainPage(){
+    // TODO: add matched people 
     const [matchedPeople, setMatchedPeople] = useState([]);
     const [data, setData] = useState([]); // Initialize with an empty array or an appropriate initial value
     const [isLoading, setIsLoading] = useState(true);
@@ -52,7 +53,7 @@ export default function MainPage(){
 
 
     // get the matched people information
-    useEffect(() => {
+    /*useEffect(() => {
         fetch('http://127.0.0.1:8000/accounts/matched-people/', {
           method: 'GET',
           headers: {
@@ -71,7 +72,7 @@ export default function MainPage(){
         .finally(() => {
           setIsLoading(false);
         });
-      }, []);
+      }, []);*/
     
     const bestMatchMoviePoster= "src/assets/dummyPoster.jpg";
     const bestMatchMovieScene= "src/assets/dummy1.jpg";
@@ -89,6 +90,7 @@ export default function MainPage(){
         { id: 5, username: "User6", percentage: 456, image: "src/assets/pp.jpg" },
       ];
 
+      const user = { id:5, username: "diko" };
 
     return(
         <div className="main-page">
@@ -176,11 +178,10 @@ export default function MainPage(){
     
                     <Container className="movie-cards-container">
                             <div className="movie-cards">
-                                {matchedPeople.map((user) => (
                                     <Link to={`/user/${user.username}`} key={user.username}>
                                         <UserCard {...user} />
                                     </Link>
-                                ))}
+                    
                             </div>
                     </Container>
                 </Row>
