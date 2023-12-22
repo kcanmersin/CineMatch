@@ -86,7 +86,6 @@ export default function SigninPage() {
           // store the jwt access and refresh token in localStorage
           localStorage.setItem('jwtAccess', jsonData.access);
           localStorage.setItem('jwtRefresh', jsonData.refresh);
-          localStorage.setItem('isAuthenticated', 'true');
           setIsAuthenticated(true);
           navigate("/mainpage");
         
