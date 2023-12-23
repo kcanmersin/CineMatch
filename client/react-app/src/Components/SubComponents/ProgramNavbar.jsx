@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import debounce from 'lodash.debounce';
 import { Link } from "react-router-dom";
 import Navbar from "react-bootstrap/Navbar";
@@ -9,13 +9,12 @@ import Form from "react-bootstrap/Form";
 import Image from 'react-bootstrap/Image';
 import Container from 'react-bootstrap/Container';
 import Row from 'react-bootstrap/Row';
-import Col from 'react-bootstrap/Col';
 import { AuthContext } from "../../auth/AuthContext";
-import { useContext } from 'react';
 import { UserContext } from "../UserContext";
 import "./ProgramNavbar.css";
 
 export default function ProgramNavbar() {
+  // TODO: her result için link koyulacak
   const user = useContext(UserContext);
   const { logout } = useContext(AuthContext);
   const [sidebarOpen, setSidebarOpen] = useState(false);
@@ -28,39 +27,44 @@ export default function ProgramNavbar() {
   };
 
   const handleLogout = () => {
-      logout();
+    logout();
   };
 
   const handleSearchInput = (event) => {
-    setSearchText(event.target.value);
+    const query = event.target.value;
+    setSearchText(query);
+    if (!query.trim()) {
+      setSearchResults({ movies: [], users: [] }); // Clear results when query is empty
+    }
   };
 
-  const fetchSearchResults = (query) => {
-    fetch(`http://127.0.0.1:8000/movie/movie/search_bar/?search=${query}`)
-      .then(response => response.json())
-      .then(data => {
-        setSearchResults({
-          movies: Array.isArray(data.movies) ? data.movies : [],
-          users: Array.isArray(data.users) ? data.users : []
-        });
-      })
-      .catch(error => console.error('Error:', error));
+  const fetchSearchResults = async (query) => {
+    if (!query.trim()) {
+      setSearchResults({ movies: [], users: [] });
+      return;
+    }
+    try {
+      const response = await fetch(`http://127.0.0.1:8000/movie/movie/search_bar/?search=${query}`);
+      const data = await response.json();
+      setSearchResults({
+        movies: Array.isArray(data.movies) ? data.movies : [],
+        users: Array.isArray(data.users) ? data.users : []
+      });
+    } catch (error) {
+      console.error('Error:', error);
+    }
   };
 
-  const debouncedSearch = debounce(() => {
-    fetchSearchResults(searchText);
-  }, 100);
+  // Use debounce to limit the number of API calls made while typing
+  const debouncedSearch = debounce(fetchSearchResults, 300);
 
   useEffect(() => {
-    if (searchText) {
-      debouncedSearch();
-    }
+    debouncedSearch(searchText);
     return () => {
       debouncedSearch.cancel();
     };
-  }, [searchText]);
+  }, [searchText, debouncedSearch]);
 
-  // Modified displaySearchResults to include both users and movies
   const displaySearchResults = () => {
     if (searchText.trim() === '') {
       return null; // Return null when there is no search text
@@ -90,6 +94,7 @@ export default function ProgramNavbar() {
 
     return results;
   };
+
   return (
     <div>
       <Navbar expand="lg" sticky="top" className="main-navbar flex-nowrap">
