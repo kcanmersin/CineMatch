@@ -134,7 +134,11 @@ class UserProfile(models.Model):
         return Follower.objects.filter(user=other_user, is_followed_by=self.user).exists()
 
     def get_watched_movie_count(self):
-        return self.user.get_movie_list("watched_movies").movies.count()
+        movie_list = self.user.get_movie_list("watched_movies")
+        if movie_list is not None:
+            return movie_list.movies.count()
+        else:
+            return 0
 
     def get_user_info(self):
         user_dict = vars(self.user)
