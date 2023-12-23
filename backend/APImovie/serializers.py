@@ -9,7 +9,16 @@ class MovieSearchSerializer(serializers.ModelSerializer):
         model = Movie
         fields = ('title', 'poster_path', 'release_date')
 
-    
+
+
+
+class MovieSForYouSerializer(serializers.ModelSerializer):
+        
+    class Meta:
+            model = Movie
+            fields = '__all__'
+
+  
 class UserProfileSerializer(serializers.ModelSerializer):
     class Meta:
         model = UserProfile
@@ -153,7 +162,8 @@ class MovieSerializer(serializers.ModelSerializer):
                 except Rate.DoesNotExist:
                     return None
             else:
-                raise ValidationError("User must be authenticated to view their rate.")
+                # User is not authenticated, return None instead of raising an error
+                return None
         return None
     def get_genres(self, obj):
         # Retrieve all genres associated with the movie
@@ -170,21 +180,19 @@ class MovieSerializer(serializers.ModelSerializer):
         return MovieCrewSerializer(movie_crew, many=True).data
     
     def get_similar_movies(self, obj):
-        similar_movie_ids = obj.get_similar_movies()
+        similar_movie_ids, _ = obj.get_similar_movies()  # Assuming this returns a list of IDs
+        
+        # Query for movies with IDs in similar_movie_ids
+        similar_movies = Movie.objects.filter(id__in=similar_movie_ids)
         
         formatted_similar_movies = []
-        for movie_id in similar_movie_ids:
-            try:
-                movie = Movie.objects.get(id=movie_id)
-                
-                formatted_movie = {
-                    'movie_id': movie_id,
-                    'movie_title': movie.title,
-                    'movie_poster_url': movie.poster_path  
-                }
-                formatted_similar_movies.append(formatted_movie)
-            except Movie.DoesNotExist:
-                pass
+        for movie in similar_movies:
+            formatted_movie = {
+                'movie_id': movie.id,
+                'movie_title': movie.title,
+                'movie_poster_url': movie.poster_path  
+            }
+            formatted_similar_movies.append(formatted_movie)
 
         return formatted_similar_movies
 
