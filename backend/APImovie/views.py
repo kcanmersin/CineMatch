@@ -353,7 +353,7 @@ from .models import Movie, Movie_Genre
 class MovieListFilterView(APIView):
     def post(self, request, list_id, *args, **kwargs):
         try:
-            movie_list = Movie.objects.get(id=list_id)
+            movie_list = MovieList.objects.get(id=list_id)
 
             start_date = request.data.get('start_date')
             end_date = request.data.get('end_date')
@@ -364,7 +364,9 @@ class MovieListFilterView(APIView):
 
 
             # Your existing logic for filtering movies based on start_date, end_date, etc.
-            movies = Movie.objects.filter(release_date__gte=start_date, release_date__lte=end_date)
+            #movies = movie_list.objects.filter(release_date__gte=start_date, release_date__lte=end_date)
+
+            movies = movie_list.movies.all().filter(release_date__gte=start_date, release_date__lte=end_date)
 
             #print ("movies: " , movies)
             #print ("genres: " , genres)
@@ -393,6 +395,8 @@ class MovieListFilterView(APIView):
             elif sort_by == 'rating':
                 movies = movies.order_by('-vote_average')
             elif sort_by == 'user_rating':
+                rates = Rate.objects.filter(movie__in=movies).order_by('-rate_point')
+                movies = [rate.movie for rate in rates]
                 # Implement your logic for sorting by user rating
                 pass
             elif sort_by == 'length':

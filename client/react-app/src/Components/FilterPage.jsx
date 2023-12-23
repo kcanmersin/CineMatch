@@ -44,7 +44,7 @@ function FilterPage() {
         console.log(selectedGenres);
         const filterCriteria = {
             list_id: listId,
-            start_date: "2008",
+            start_date: "1900",
             end_date: "2023",
             genres: selectedGenres
         };
