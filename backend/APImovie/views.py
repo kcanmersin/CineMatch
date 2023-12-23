@@ -4,19 +4,46 @@ from .forms import CommentForm
 from rest_framework import viewsets, generics,status
 from .models import Comment, Movie, MovieList, Vote
 from django.views.generic import ListView, DetailView, CreateView
-from .serializers import CommentSerializer, MovieSerializer, MovieListSerializer, VoteSerializer,RateSerializer,MovieSearchSerializer,UserSerializer
+from .serializers import CommentSerializer, MovieSerializer, MovieListSerializer, VoteSerializer,RateSerializer,MovieSearchSerializer,UserSerializer,MovieSForYouSerializer
 from rest_framework.response import Response
 from rest_framework.decorators import action
 from django.shortcuts import render, get_object_or_404
 from .models import Movie, Movie_Genre, Genre, Cast, Actor, Crew, MovieCrew,Rate
 from rest_framework.permissions import AllowAny
 
-from accounts.models import UserAccount
+from accounts.models import UserAccount, UserProfile
 from django.db.models import F
 from rest_framework import filters
 from rest_framework.views import APIView
 from django_filters.rest_framework import DjangoFilterBackend
 
+
+
+
+class ForYouView(APIView):
+    permission_classes = [AllowAny]
+
+    def get(self, request, *args, **kwargs):
+        try:
+            # ID'si 2 olan kullanıcı profilini al
+            user_profile = UserProfile.objects.get(user__id=2)
+            #user_profile = UserProfile.objects.get(user=request.user)
+
+            recommended_movie_ids = user_profile.get_for_you()  # Kullanıcının önerilen filmlerini alır
+
+            # Önerilen filmleri serialize et
+            recommended_movies = []
+            for movie_id in recommended_movie_ids:
+                try:
+                    movie = Movie.objects.get(id=movie_id)
+                    serializer = MovieSForYouSerializer(movie, context={'request': request})
+                    recommended_movies.append(serializer.data)
+                except Movie.DoesNotExist:
+                    continue
+
+            return Response(recommended_movies)
+        except UserProfile.DoesNotExist:
+            return Response({'error': 'User not found'}, status=404)
 class SearchBarCreateView(generics.ListCreateAPIView):
     permission_classes = [AllowAny]
     queryset = Movie.objects.all()
