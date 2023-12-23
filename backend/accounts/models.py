@@ -129,7 +129,15 @@ class UserProfile(models.Model):
 
         if created:
             UserAccount.objects.filter(pk=self.user.pk).update(user_profile=self) 
-
+    def get_for_you(self):
+        from AI.usertomovie import user_to_movie
+        # Kullanıcının tüm oylarını al
+        user_rates = self.user.rates.all()
+        # Oyları bir liste halinde hazırla (örneğin, film ID'si ve puan olarak)
+        rates_data = [(rate.movie.id, rate.rate_point) for rate in user_rates]
+        # Bu veriyi user_to_movie fonksiyonuna gönder
+        return user_to_movie(self.user.id, rates_data)
+        
     def get_follow_status(self, other_user):
         return Follower.objects.filter(user=other_user, is_followed_by=self.user).exists()
 
