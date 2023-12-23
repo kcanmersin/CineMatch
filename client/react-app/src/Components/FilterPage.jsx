@@ -9,17 +9,17 @@ function FilterPage() {
     const [movies, setMovies] = useState([]);
     const [filteredMovies, setFilteredMovies] = useState(null);
     const [isLoading, setIsLoading] = useState(true);
-    const [selectedGenres, setSelectedGenres] = useState([]);  // State to manage selected genres
+    const [selectedGenres, setSelectedGenres] = useState([]); // State to manage selected genres
+    const [sortMethod, setSortMethod] = useState('popularity'); // State to manage sorting method
     const jwtAccess = localStorage.getItem('jwtAccess');
 
-    // Define available genres (you could also fetch this from an API)
     const genreOptions = ["Action", "Drama", "Comedy", "Thriller", "Romance"];
+    const sortOptions = ['popularity', 'alphabetic', 'rating', 'user_rating', 'length', 'release_date']; // Sorting options
 
     useEffect(() => {
-        // Fetch the list and filter movies when the component mounts
         setIsLoading(true);
         fetchListAndFilterMovies();
-    }, [listId]);
+    }, [listId, sortMethod]); // Re-fetch when listId or sortMethod changes
 
     const fetchListAndFilterMovies = () => {
         fetch(`http://127.0.0.1:8000/movie/lists/${listId}/`, {
@@ -32,7 +32,7 @@ function FilterPage() {
         .then(response => response.json())
         .then(data => {
             setMovies(data.movies);  // Update the state with the movies from the list
-            handleFilterMovies();    // Immediately apply filters once movies are fetched
+            handleFilterMovies();    // Immediately apply filters and sorting once movies are fetched
         })
         .catch(error => {
             console.error('Error fetching list:', error);
@@ -41,12 +41,12 @@ function FilterPage() {
     };
 
     const handleFilterMovies = () => {
-        console.log(selectedGenres);
         const filterCriteria = {
             list_id: listId,
             start_date: "1900",
             end_date: "2023",
-            genres: selectedGenres
+            genres: selectedGenres,
+            sort_by: sortMethod // Include the selected sorting method in the filter criteria
         };
 
         fetch(`http://127.0.0.1:8000/movie/movie-lists/${listId}/filter/`, {
@@ -68,6 +68,10 @@ function FilterPage() {
         });
     };
 
+    const handleSortChange = (method) => {
+        setSortMethod(method); // Update the sort method and re-fetch & filter movies
+    };
+
     const handleGenreChange = (genre) => {
         if (selectedGenres.includes(genre)) {
             setSelectedGenres(selectedGenres.filter(g => g !== genre));  // Remove genre
@@ -76,7 +80,6 @@ function FilterPage() {
         }
     };
 
-    // Render the genre filter options
     const renderGenreOptions = () => (
         <div>
             {genreOptions.map(genre => (
@@ -93,7 +96,24 @@ function FilterPage() {
         </div>
     );
 
-    // If the page is still loading, show the loader
+    const renderSortOptions = () => (
+        <div>
+            <h3>Sort by:</h3>
+            {sortOptions.map(option => (
+                <label key={option}>
+                    <input
+                        type="radio"
+                        name="sortMethod"
+                        value={option}
+                        checked={sortMethod === option}
+                        onChange={() => handleSortChange(option)}
+                    />
+                    {option}
+                </label>
+            ))}
+        </div>
+    );
+
     if (isLoading) {
         return (
             <div>
@@ -105,23 +125,22 @@ function FilterPage() {
         );
     }
 
-    // Determine which movies to display: filtered or all from the list
     const moviesToDisplay = Array.isArray(filteredMovies) ? filteredMovies : movies;
 
-    // Render the movies once loading is complete
     return (
         <div>
             <ProgramNavbar />
             {renderGenreOptions()}  {/* Render the genre filter options */}
+            {renderSortOptions()}   {/* Render the sorting options */}
             <h1>Filtered Movies</h1>
             <ul>
-            {moviesToDisplay.map(movie => (
-                <li key={movie.id}>
-                    <Link to={`/moviepage/${movie.id}`}>
-                        <MovieCard {...movie} />
-                    </Link>
-                </li>
-            ))}
+                {moviesToDisplay.map(movie => (
+                    <li key={movie.id}>
+                        <Link to={`/moviepage/${movie.id}`}>
+                            <MovieCard {...movie} />
+                        </Link>
+                    </li>
+                ))}
             </ul>
         </div>
     );
