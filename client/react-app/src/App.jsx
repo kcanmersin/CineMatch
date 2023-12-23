@@ -16,7 +16,9 @@ import MoviePage from './Components/MoviePage';
 import MatchedPeoplePage from './Components/MatchedPeoplePage';
 import FilterPage from './Components/FilterPage';
 import MyStatsPage from './Components/MyStatsPage';
+import StatsPage from './Components/StatsPage';
 import { UserProvider } from './Components/UserContext';
+
 
 export default function App() {
     const { isAuthenticated } = useContext(AuthContext);
@@ -37,6 +39,7 @@ export default function App() {
                 <Route path="/mylists/:listId" element={<PrivateRoute isAuthenticated={isAuthenticated}><FilterPage /></PrivateRoute>} />
                 <Route path="/user/:username/lists/:listId" element={<PrivateRoute isAuthenticated={isAuthenticated}><FilterPage /></PrivateRoute>} />
                 <Route path="/mystats" element={<PrivateRoute isAuthenticated={isAuthenticated}><MyStatsPage /></PrivateRoute>} />
+                <Route path="/user/:username/stats" element={<PrivateRoute isAuthenticated={isAuthenticated}><StatsPage /></PrivateRoute>} />
             </Routes>
         </UserProvider>
       

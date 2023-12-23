@@ -3,9 +3,11 @@ import { Bar, Line } from 'react-chartjs-2';
 import { Chart as ChartJS, CategoryScale, LinearScale, BarElement, LineElement, PointElement, Title, Tooltip, Legend } from 'chart.js';
 import 'chartjs-plugin-datalabels';
 import { UserContext } from "./UserContext";
-import MovieRatingsChart from './SubComponents/MovieRatingsChart'
-import GenreBreakdownChart from './SubComponents/GenreBreakdownChart'
-import MoviesPerYearChart from  './SubComponents/MoviesPerYearChart'
+import MovieRatingsChart from './SubComponents/MovieRatingsChart';
+import GenreBreakdownChart from './SubComponents/GenreBreakdownChart';
+import MoviesPerYearChart from  './SubComponents/MoviesPerYearChart';
+import ProgramNavbar from './SubComponents/ProgramNavbar';
+import { BounceLoader } from 'react-spinners';
 
 // Register the required components for both bar and line charts
 ChartJS.register(
@@ -18,9 +20,9 @@ ChartJS.register(
   Tooltip,
   Legend
 );
-
 export default function MyStatsPage() {
     const { username } = useContext(UserContext);
+    const [userData, setUserData] = useState({});
     const [genreBreakdown, setGenreBreakdown] = useState([]);
     const [moviesPerYear, setMoviesPerYear] = useState([]);
     const [movieRatingsDistribution, setMovieRatingsDistribution] = useState({});
@@ -45,8 +47,9 @@ export default function MyStatsPage() {
                 }
 
                 const data = await response.json();
-                setGenreBreakdown(data.genre_breakdown); // Set the genre breakdown in state
-                setMoviesPerYear(data.movies_per_year);   // Set the movies per year data in state
+                setUserData(data);  // Store all user data
+                setGenreBreakdown(data.genre_breakdown);
+                setMoviesPerYear(data.movies_per_year);
                 setMovieRatingsDistribution(processMovieRatings(data.all_movie_ratings));
             } catch (e) {
                 console.error("Failed to fetch stats:", e);
@@ -82,19 +85,52 @@ export default function MyStatsPage() {
         return distribution;
     };
 
+    const formatHoursToHoursMinutes = (hours) => {
+        const hrs = Math.floor(hours);
+        const mins = Math.round((hours - hrs) * 60);
+        return `${hrs} hours ${mins} minutes`;
+    };
+
     if (isLoading) {
-        return <div>Loading...</div>;
-    }
+        return (
+          <div className='main-page'>
+            <ProgramNavbar />
+            <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh' }}>
+              <BounceLoader color="#123abc" loading={isLoading} />
+            </div>
+          </div>
+        );
+      }
 
     if (error) {
         return <div>Error: {error.message}</div>;
     }
 
     return (
-        <div style={{ width: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+        <div>
+            <ProgramNavbar />
+            <div style={{ width: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+            {/* User Profile Section */}
+            <div style={{ textAlign: 'center', marginBottom: '20px' }}>
+                <img src={userData.profile_photo_url} alt={`${username}'s profile`} style={{ width: '100px', height: '100px', borderRadius: '50%' }} />
+                <h2>{username}</h2>
+                <p>Watched Movies: {userData.watched_movie_count}</p>
+                <p>Followers: {userData.follower_count}</p>
+                <p>Following: {userData.following_count}</p>
+                <p>Member Since: {new Date(userData.signed_up_since).toLocaleDateString()}</p>
+                <p>Total Hours Watched: {formatHoursToHoursMinutes(userData.total_hours_watched)}</p>
+                <p>Average Time per Movie: {formatHoursToHoursMinutes(userData.average_time_per_movie)}</p>
+                <p>Favorite Genre: {userData.favorite_genre?.genre__genre_name}</p>
+                <p>Average Rating: {userData.average_rating}</p>
+            </div>
+
+            {/* Charts */}
             <MovieRatingsChart movieRatingsDistribution={movieRatingsDistribution} />
             <GenreBreakdownChart genreBreakdown={genreBreakdown} />
             <MoviesPerYearChart moviesPerYear={moviesPerYear} />
         </div>
+
+        </div>
+        
     );
 }

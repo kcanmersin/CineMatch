@@ -150,7 +150,9 @@ export default function MyProfilePage(){
                     <Link to="/mylists">
                         <Button variant="success profile-button">LISTS</Button>
                     </Link>
-                    <Button variant="success profile-button">STATS</Button>
+                    <Link to={`/mystats`}>
+                        <Button variant="success profile-button">STATS</Button>
+                    </Link>
                 </div>
                 <div className= "watched-movies">
                     <div className="watched-movies-text">

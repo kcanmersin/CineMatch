@@ -209,7 +209,9 @@ export default function UserPage(){
                     <Link to={`/user/${username}/lists`}>
                         <Button variant="success profile-button">LISTS</Button>
                     </Link>
-                    <Button variant="success profile-button">STATS</Button>
+                    <Link to={`/user/${username}/stats`}>
+                        <Button variant="success profile-button">STATS</Button>
+                    </Link>
                     <Button 
                         variant="success profile-button" 
                         onClick={handleFollow}
