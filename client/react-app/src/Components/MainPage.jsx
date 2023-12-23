@@ -53,7 +53,7 @@ export default function MainPage(){
 
 
     // get the matched people information
-    /*useEffect(() => {
+    useEffect(() => {
         fetch('http://127.0.0.1:8000/accounts/matched-people/', {
           method: 'GET',
           headers: {
@@ -72,7 +72,7 @@ export default function MainPage(){
         .finally(() => {
           setIsLoading(false);
         });
-      }, []);*/
+      }, []);
     
     const bestMatchMoviePoster= "src/assets/dummyPoster.jpg";
     const bestMatchMovieScene= "src/assets/dummy1.jpg";
@@ -81,16 +81,6 @@ export default function MainPage(){
     const bestMatchMovieDesc= "A family heads to an isolated hotel for the winter where a sinister presence influences the father into violence, while his psychic son sees horrific forebodings from both past and future.";
     const bestMatchMoivePoints= "8.8"
 
-
-      const userCards = [
-        { id: 1, username: "kea", percentage: 123, image: "src/assets/pp.jpg" },
-        { id: 2, username: "diko", percentage: 456, image: "src/assets/pp.jpg" },
-        { id: 3, username: "User4", percentage: 456, image: "src/assets/pp.jpg" },
-        { id: 4, username: "User5", percentage: 456, image: "src/assets/pp.jpg" },
-        { id: 5, username: "User6", percentage: 456, image: "src/assets/pp.jpg" },
-      ];
-
-      const user = { id:5, username: "diko" };
 
     return(
         <div className="main-page">
@@ -159,31 +149,31 @@ export default function MainPage(){
                     </div>
                     <Container className="movie-cards-container">
                             <div className="movie-cards">
-                            {forYou.map(movie => (
-                                <Link to={`/moviepage/${movie.id}`} key={movie.id} className="movie-card-link">
-                                    <MovieCard {...movie} />
-                                </Link>
-                            ))}
+                                {forYou.map(movie => (
+                                    <Link to={`/moviepage/${movie.id}`} key={movie.id} className="movie-card-link">
+                                        <MovieCard {...movie} />
+                                    </Link>
+                                ))}
                             </div>
                     </Container>
                 </Row>
                 <Row className="main-page-list">
-                <div className="main-page-list-text">
-                    <Link to="/matchedpeople" className="matched-people-link">
-                        Matched People
-                    </Link>
-                </div>
-
-    
-    
-                    <Container className="movie-cards-container">
-                            <div className="movie-cards">
-                                    <Link to={`/user/${user.username}`} key={user.username}>
-                                        <UserCard {...user} />
-                                    </Link>
+                    <div className="main-page-list-text">
+                        <Link to="/matchedpeople" className="matched-people-link">
+                            Matched People
+                        </Link>
+                    </div>
                     
-                            </div>
+                    <Container className="movie-cards-container">
+                        <div className="movie-cards">
+                            {matchedPeople.map((user, index) => (
+                            <Link to={`/user/${user.username}`} key={`${user.id}-${index}`} className="movie-card-link">
+                                <UserCard {...user} />
+                            </Link>
+                            ))}
+                        </div>
                     </Container>
+
                 </Row>
             </Container>
         </div>

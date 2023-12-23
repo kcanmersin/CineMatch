@@ -15,6 +15,7 @@ import PrivateRoute from './auth/PrivateRoute';
 import MoviePage from './Components/MoviePage';
 import MatchedPeoplePage from './Components/MatchedPeoplePage';
 import FilterPage from './Components/FilterPage';
+import MyStatsPage from './Components/MyStatsPage';
 import { UserProvider } from './Components/UserContext';
 
 export default function App() {
@@ -35,6 +36,7 @@ export default function App() {
                 <Route path="/matchedpeople" element={<PrivateRoute isAuthenticated={isAuthenticated}><MatchedPeoplePage /></PrivateRoute>} />
                 <Route path="/mylists/:listId" element={<PrivateRoute isAuthenticated={isAuthenticated}><FilterPage /></PrivateRoute>} />
                 <Route path="/user/:username/lists/:listId" element={<PrivateRoute isAuthenticated={isAuthenticated}><FilterPage /></PrivateRoute>} />
+                <Route path="/mystats" element={<PrivateRoute isAuthenticated={isAuthenticated}><MyStatsPage /></PrivateRoute>} />
             </Routes>
         </UserProvider>
       

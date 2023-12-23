@@ -130,7 +130,7 @@ export default function ProgramNavbar() {
         <Container className="sidebar-content">
           <Link to="/myprofile"><Row className="link-on-sidebar">PROFILE</Row></Link>
           <Link to="/mylists"><Row className="link-on-sidebar">MY LISTS</Row></Link>
-          <Link to="/mainpage"><Row className="link-on-sidebar">STATS</Row></Link>
+          <Link to="/mystats"><Row className="link-on-sidebar">STATS</Row></Link>
           <Link to="/mainpage"><Row className="link-on-sidebar">LIGHT MODE</Row></Link>
           <Link to="/mainpage" onClick={handleLogout}><Row className="link-on-sidebar">LOG OUT</Row></Link>
         </Container>
