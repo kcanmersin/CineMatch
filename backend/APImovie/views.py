@@ -340,10 +340,7 @@ class MovieRateDetailView(generics.RetrieveUpdateDestroyAPIView):
 
         movie = instance.movie
         movie.vote_count = F('vote_count') - 1
-        if movie.vote_count > 0:
-            movie.vote_average = (F('vote_average') * F('vote_count') - instance.rate_point) / F('vote_count')
-        else:
-            movie.vote_average = 0  # Or any default value if vote_count becomes 0
+        movie.vote_average = (F('vote_average') * F('vote_count') - instance.rate_point) / F('vote_count')
         movie.save()
 
         self.perform_destroy(instance)
