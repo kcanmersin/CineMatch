@@ -1,103 +1,170 @@
-import React, { useContext } from "react";
-import CommentSection from "./SubComponents/CommentSection";
-import {Button, Modal} from "react-bootstrap";
-import { useState, useEffect } from "react";
-import { Link } from 'react-router-dom';
-import { useParams } from 'react-router-dom';
-import { UserContext } from "./UserContext";
-import ProgramNavbar from "./SubComponents/ProgramNavbar";
+import React, { useContext, useState, useEffect } from 'react';
+import { Link, useParams } from 'react-router-dom';
+import { Button, Modal } from 'react-bootstrap';
+import { UserContext } from './UserContext';
+import ProgramNavbar from './SubComponents/ProgramNavbar';
+import CommentSection from './SubComponents/CommentSection';
 import { BounceLoader } from 'react-spinners';
-import "./MoviePage.css"
+import './MoviePage.css';
 
-
-export default function MoviePage(){
-    // TODO: Rate will be displayed --> update and delete rate
-    const { username } = useContext(UserContext)
+export default function MoviePage() {
+    const { username } = useContext(UserContext);
+    const { movieId } = useParams();
     const [showModal, setShowModal] = useState(false);
-    const [userRate, setUserRate] = useState("Not rated");
+    const [userRate, setUserRate] = useState('Not rated');
     const [rateId, setRateId] = useState(null);
+    const [hasRated, setHasRated] = useState(false);
     const [movieData, setMovieData] = useState(null);
     const [comments, setComments] = useState([]);
     const [lists, setLists] = useState([]);
     const [userId, setUserId] = useState(null);
-    const [isLoading, setIsLoading] = useState(false);
+    const [isLoading, setIsLoading] = useState(true);
+    const [userRating, setUserRating] = useState(0);
     const jwtAccess = localStorage.getItem('jwtAccess');
     const [lastUpdate, setLastUpdate] = useState(Date.now());
-    const [userRating, setUserRating] = useState(0);
-    const { movieId } = useParams();
 
-
-    const handleShowModal = () => {
-        setShowModal(true);
-    };
-    
-    const handleCloseModal = () => {
-        setShowModal(false);
-    };
-
-    // logic part
-    useEffect(() => {
-        fetch(`http://127.0.0.1:8000/movie/movie/movies/${movieId}/`, {
-            method: 'GET',
-            headers: {
-                'Authorization': `JWT ${jwtAccess}`,
-                'Content-Type': 'application/json'
-            },
-        })
-        .then(response => response.json())
-        .then(data => {
+    const fetchMovieData = async () => {
+        setIsLoading(true);
+        try {
+            const response = await fetch(`http://127.0.0.1:8000/movie/movie/movies/${movieId}/`, {
+                method: 'GET',
+                headers: {
+                    'Authorization': `JWT ${jwtAccess}`,
+                    'Content-Type': 'application/json',
+                },
+            });
+            const data = await response.json();
             setMovieData(data);
+
             if (data.rate_by_current_user) {
                 setUserRate(data.rate_by_current_user.rate_point);
                 setRateId(data.rate_by_current_user.rate_id);
+                setHasRated(true);
             } else {
                 setUserRate("Not rated");
-                setRateId(null);
+                setHasRated(false);
             }
-            console.log(movieData);
-            return fetch(data.comments.all_comment_link);
-        })
-        .then(response => response.json())
-        .then(commentsData => {
-            setComments(commentsData);
 
-        })
-        .catch(error => {
-            console.error("Error fetching data: ", error);
-        });
+            const commentsResponse = await fetch(data.comments.all_comment_link);
+            const commentsData = await commentsResponse.json();
+            setComments(commentsData);
+        } catch (error) {
+            console.error("Error fetching movie data:", error);
+        } finally {
+            setIsLoading(false);
+        }
+    };
+
+    useEffect(() => {
+        fetchMovieData();
     }, [movieId, lastUpdate]);
 
     useEffect(() => {
-        fetch('http://127.0.0.1:8000/auth/users/me/', {
-          method: 'GET',
-          headers: {
-            'Authorization': `JWT ${jwtAccess}`,
-            'Content-Type': 'application/json',
-          },
-        })
-        .then(response => response.json())
-        .then(data => {
-          setUserId(data.id);
-          return fetch('http://127.0.0.1:8000/movie/lists/', {
-            method: 'GET',
-            headers: {
-              'Authorization': `JWT ${jwtAccess}`,
-              'Content-Type': 'application/json',
-            },
-          });
-        })
-        .then(response => response.json())
-        .then(data => {
-          const userLists = data.filter(list => list.user === userId);
-          setLists(userLists);
-        })
-        .catch(error => {
-          console.error('Error:', error);
-        })
-        .finally(() => {
-          setIsLoading(false);
-        });
-      }, [userId, jwtAccess]);
+        const fetchUserData = async () => {
+            try {
+                const response = await fetch('http://127.0.0.1:8000/auth/users/me/', {
+                    method: 'GET',
+                    headers: {
+                        'Authorization': `JWT ${jwtAccess}`,
+                        'Content-Type': 'application/json',
+                    },
+                });
+                const data = await response.json();
+                setUserId(data.id);
+                const listsResponse = await fetch('http://127.0.0.1:8000/movie/lists/', {
+                    method: 'GET',
+                    headers: {
+                        'Authorization': `JWT ${jwtAccess}`,
+                        'Content-Type': 'application/json',
+                    },
+                });
+                const listsData = await listsResponse.json();
+                const userLists = listsData.filter(list => list.user === userId);
+                setLists(userLists);
+            } catch (error) {
+                console.error('Error:', error);
+            }
+        };
+        fetchUserData();
+    }, [userId, jwtAccess]);
+
+    const handleRatingSubmit = async (rating) => {
+        try {
+            const response = await fetch(`http://127.0.0.1:8000/movie/rate_list/${movieId}/rates/`, {
+                method: 'POST',
+                headers: {
+                    'Authorization': `JWT ${jwtAccess}`,
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ username: username, rate_point: parseFloat(rating) }),
+            });
+
+            if (response.ok) {
+                const data = await response.json();
+                setUserRate(data.rate_point);
+                setRateId(data.id);
+                setHasRated(true);
+                setLastUpdate(Date.now());
+                console.log('Rating submitted successfully:', data);
+            } else {
+                throw new Error(`HTTP error! Status: ${response.status}`);
+            }
+        } catch (error) {
+            console.error('Error submitting rating:', error);
+        }
+    };
+
+    const handleUpdateRating = async (newRating) => {
+        if (!rateId) return;
+
+        try {
+            const response = await fetch(`http://127.0.0.1:8000/movie/rate_list/${movieId}/rates/${rateId}/`, {
+                method: 'PUT',
+                headers: {
+                    'Authorization': `JWT ${jwtAccess}`,
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ rate_point: parseFloat(newRating) }),
+            });
+
+            if (response.ok) {
+                const data = await response.json();
+                setUserRate(data.rate_point);
+                setLastUpdate(Date.now());
+                console.log('Rating updated successfully:', data);
+            } else {
+                throw new Error(`HTTP error! Status: ${response.status}`);
+            }
+        } catch (error) {
+            console.error('Error updating rating:', error);
+        }
+    };
+
+    const handleRemoveRating = async () => {
+        if (!rateId) return;
+
+        try {
+            const response = await fetch(`http://127.0.0.1:8000/movie/rate_list/${movieId}/rates/${rateId}/`, {
+                method: 'DELETE',
+                headers: {
+                    'Authorization': `JWT ${jwtAccess}`,
+                    'Content-Type': 'application/json',
+                },
+            });
+
+            if (response.ok) {
+                setUserRate('Not rated');
+                setRateId(null);
+                setHasRated(false);
+                setLastUpdate(Date.now());
+                console.log('Rating removed successfully');
+            } else {
+                throw new Error(`HTTP error! Status: ${response.status}`);
+            }
+        } catch (error) {
+            console.error('Error removing rating:', error);
+        }
+    };
 
     // Function to handle reply submission
     const onReplySubmit = (replyText, parentCommentId) => {
@@ -199,47 +266,20 @@ export default function MoviePage(){
         });
     };
 
-    const handleRatingSubmit = (rating) => {
-        // Create the rating data to send to the server
-        const ratingData = {
-          username: username, // Replace with the actual movie ID
-          rate_point: parseFloat(rating), // Convert the rating to a number if needed
-        };
-      
-        // Send the rating data to the server
-        fetch(`http://127.0.0.1:8000/movie/rate_list/${movieId}/rates/`, {
-          method: 'POST',
-          headers: {
-            'Authorization': `JWT ${jwtAccess}`,
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify(ratingData)
-        })
-        .then(response => {
-          if (response.ok) {
-            // Rating submitted successfully, you can handle UI updates here if needed
-            console.log('Rating submitted successfully');
-          } else {
-            throw new Error(`HTTP error! Status: ${response.status}`);
-          }
-        })
-        .catch(error => {
-          console.error('Error submitting rating:', error);
-        });
-      };
-      
-
+    const handleShowModal = () => setShowModal(true);
+    const handleCloseModal = () => setShowModal(false);
       
     if (isLoading || !movieData) {
-    return (
-        <div className="main-page">
-            <ProgramNavbar />
-            <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh' }}>
-                <BounceLoader color="#123abc" loading={true} size={150} />
+        return (
+            <div className="main-page">
+                <ProgramNavbar />
+                <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh' }}>
+                    <BounceLoader color="#123abc" loading={true} size={150} />
+                </div>
             </div>
-        </div>
-    );
-}
+        );
+
+    }
     
 
     const { title, poster_path, release_date, overview, vote_average, runtime, genres, cast, crew, similar_movies } = movieData;
@@ -318,21 +358,34 @@ export default function MoviePage(){
                         className="add-to-a-list-button">
                         Add to a List
                     </Button>
-                    <div className="rating-section">
-  <h2>Rate This Movie</h2>
-  <div className="user-rating">
-    <p>Your Rating:</p>
-    <input
-      type="number"
-      min="0"
-      max="10"
-      step="0.1"
-      value={userRating}
-      onChange={(e) => setUserRating(e.target.value)}
-    />
-    <button onClick={() => handleRatingSubmit(userRating)}>Submit</button>
-  </div>
-</div>
+                    <div className="movie-rating-controls">
+                {hasRated ? (
+                    <>
+                        <input
+                            type="number"
+                            min="0"
+                            max="10"
+                            step="0.1"
+                            value={userRating}
+                            onChange={(e) => setUserRating(e.target.value)}
+                        />
+                        <button onClick={() => handleUpdateRating(userRating)}>Update Rating</button>
+                        <button onClick={handleRemoveRating}>Remove Rating</button>
+                    </>
+                ) : (
+                    <>
+                        <input
+                            type="number"
+                            min="0"
+                            max="10"
+                            step="0.1"
+                            value={userRating}
+                            onChange={(e) => setUserRating(e.target.value)}
+                        />
+                        <button onClick={() => handleRatingSubmit(userRating)}>Submit Rating</button>
+                    </>
+                )}
+            </div>
                     <Modal show={showModal} onHide={handleCloseModal}>
                         <Modal.Header closeButton>
                             <Modal.Title>LISTS</Modal.Title>

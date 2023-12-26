@@ -15,7 +15,7 @@ export default function UserPage(){
     const { username } = useParams();
     const [yourUserId, setYourUserId] = useState(null);
     const [watchedMovies, setWatchedMovies] = useState([]);
-    const [followState, setFollowState] = useState("Follow");
+    const [followState, setFollowState] = useState(null);
     const [isLoading, setIsLoading] = useState(true); // New loading state
     const [profileData, setProfileData] = useState({
         id: null,
@@ -70,6 +70,7 @@ export default function UserPage(){
               }
   
               const profileInfo = await profileResponse.json();
+              console.log(profileInfo)
   
               // Update state with profile information
               setProfileData({
@@ -79,7 +80,8 @@ export default function UserPage(){
                 followingCount: profileInfo.following_count,
                 watchedMovieCount: profileInfo.watched_movie_count,
                 bestMatchMoviePoster: profileInfo.best_match_movie_poster,
-                profilePictureUrl: profileInfo.profile_picture_url
+                profilePictureUrl: profileInfo.profile_picture_url,
+                followStatus: profileInfo.follow_status,
             });
             setFollowState(profileInfo.follow_status ? "Unfollow": "Follow");
   
@@ -120,64 +122,59 @@ export default function UserPage(){
 
   const handleFollow = () => {
     setIsLoading(true); // Begin loading state
-  
+
     // Create a follow object with follower_id and following_id
     const followData = {
-      follower_id: yourUserId, // Replace with the follower's user ID
-      following_id: profileData.id, // Use the user ID of the profile being viewed
+        follower_id: yourUserId, // Replace with the follower's user ID
+        following_id: profileData.id, // Use the user ID of the profile being viewed
     };
-  
+
     // Send a POST request to the follow endpoint
     fetch('http://127.0.0.1:8000/accounts/follow/', {
-      method: 'POST',
-      headers: {
-        'Authorization': `JWT ${jwtAccess}`,
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(followData),
+        method: 'POST',
+        headers: {
+            'Authorization': `JWT ${jwtAccess}`,
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(followData),
     }).then(response => response.json())
       .then(data => {
-        if (data.status) {
-          console.log('Follow/unfollow action:', data.status);
-          // Fetch the updated profile to reflect the new follow state accurately
-          return fetch(`http://127.0.0.1:8000/accounts/profile/${username}/`, {
+        console.log(data);
+        // Assuming data.status is "following" if now following, and something else if not.
+        if (data.status === "Following") {
+            setFollowState("Unfollow");
+        } else {
+            setFollowState("Follow");
+        }
+
+        // Always refetch the profile after a follow/unfollow action to ensure the data is fresh.
+        return fetch(`http://127.0.0.1:8000/accounts/profile/${username}/`, {
             method: 'GET',
             headers: {
-              'Authorization': `JWT ${jwtAccess}`,
-              'Content-Type': 'application/json',
+                'Authorization': `JWT ${jwtAccess}`,
+                'Content-Type': 'application/json',
             },
-          });
-        } else {
-          // If the server doesn't confirm the action, log and handle the error
-          console.error('Follow/unfollow request failed');
-          setIsLoading(false); // End loading state
-          return null;
-        }
+        });
       })
-      .then(updatedProfileResponse => {
-        if (updatedProfileResponse) {
-          return updatedProfileResponse.json();
-        }
-        return null;
-      })
+      .then(updatedProfileResponse => updatedProfileResponse.json())
       .then(updatedProfileInfo => {
+        console.log(updatedProfileInfo);
         if (updatedProfileInfo) {
-          // Update the state with the new follow state and count
-          setProfileData(prevData => ({
-            ...prevData,
-            followerCount: updatedProfileInfo.follower_count,
-            followStatus: updatedProfileInfo.follow_status,
-          }));
-          setFollowState(updatedProfileInfo.follow_status === "following" ? "Follow" : "unFollow");
+            // Update the state with the new follow state and count
+            setProfileData(prevData => ({
+                ...prevData,
+                followerCount: updatedProfileInfo.follower_count,
+                followStatus: updatedProfileInfo.follow_status,
+            }));
         }
         setIsLoading(false); // End loading state
       })
       .catch(error => {
-        // Handle network or other errors
         console.error('Follow/unfollow request failed', error);
         setIsLoading(false); // End loading state
       });
-  };
+};
+
   
 
 
