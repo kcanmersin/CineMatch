@@ -15,7 +15,7 @@
 # ]
 
 from rest_framework.routers import DefaultRouter
-from .views import ForYouView,SearchBarCreateView,MovieDetailView,  MovieListFilterView, MovieRateListCreateView,MovieRateDetailView, MovieViewSet, VoteView, MovieListCreateView, MovieListDetailView, MovieListViewSet, MovieListRetrieveAddView, GenreMovieListView, UsersMovieListView, MovieCommentListCreateView, MovieCommentDetailView, MovieListDeleteView
+from .views import CrewMovieDetail, ActorMovieDetail,ForYouView,SearchBarCreateView,MovieDetailView,  MovieListFilterView, MovieRateListCreateView,MovieRateDetailView, MovieViewSet, VoteView, MovieListCreateView, MovieListDetailView, MovieListViewSet, MovieListRetrieveAddView, GenreMovieListView, UsersMovieListView, MovieCommentListCreateView, MovieCommentDetailView, MovieListDeleteView
 from django.urls import path, include
 
 movie_router = DefaultRouter()
@@ -46,4 +46,8 @@ urlpatterns = [
     path('rate_list/<int:movie_id>/rates/<int:rate_id>/', MovieRateDetailView.as_view(), name='movie_rate_list_detail'),
     #path('movie/movie_filter/', MovieFilterListCreateView.as_view(), name="movie-filter-list"),
     path('movie-lists/<int:list_id>/filter/', MovieListFilterView.as_view(), name='movie-list-filter'),
+
+    path('movie_detail/actors_movies/<int:pk>/', ActorMovieDetail.as_view(), name='actor-movie-detail'),
+    path('movie_detail/crews_movies/<int:pk>/', CrewMovieDetail.as_view(), name='crew-movie-detail'),
+
 ]
