@@ -18,8 +18,40 @@ from rest_framework.views import APIView
 from django_filters.rest_framework import DjangoFilterBackend
 
 
+class ActorMovieDetail(APIView):
+    permission_classes = [AllowAny]
 
+    def get(self, request, pk, format=None):
+        # Ensure request is not None
+        if request is None:
+            return Response({"error": "Request object is None."}, status=status.HTTP_400_BAD_REQUEST)
 
+        # Get all cast entries for the actor
+        cast_entries = Cast.objects.filter(actor_id=pk)
+
+        # Get all movie instances from these cast entries
+        movies = [cast_entry.movie_id for cast_entry in cast_entries]
+
+        # Serialize the movie data
+        serializer = MovieSearchSerializer(movies, many=True, context={'request': request})
+        return Response(serializer.data, status=status.HTTP_200_OK)
+class CrewMovieDetail(APIView):
+    permission_classes = [AllowAny]
+
+    def get(self, request, pk, format=None):
+        # Ensure request is not None
+        if request is None:
+            return Response({"error": "Request object is None."}, status=status.HTTP_400_BAD_REQUEST)
+
+        # Get all movie crew entries for the crew member
+        movie_crew_entries = MovieCrew.objects.filter(crew_id=pk)
+
+        # Get all movie instances from these movie crew entries
+        movies = [movie_crew_entry.movie for movie_crew_entry in movie_crew_entries]
+
+        # Serialize the movie data
+        serializer = MovieSearchSerializer(movies, many=True, context={'request': request})
+        return Response(serializer.data, status=status.HTTP_200_OK)
 class ForYouView(APIView):
     permission_classes = [AllowAny]
 
