@@ -404,9 +404,10 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
 from .models import Movie, Movie_Genre
-
+from django.db.models import Q
 
 class MovieListFilterView(APIView):
+    permission_classes = [AllowAny]
     def post(self, request, list_id, *args, **kwargs):
         try:
             movie_list = MovieList.objects.get(id=list_id)
@@ -434,14 +435,35 @@ class MovieListFilterView(APIView):
                 #print ("movies: " , movies)
 
             if actors:
-                actor_ids = Actor.objects.filter(actor_name__in=actors).values_list('id', flat=True)
-                cast_movie_ids = Cast.objects.filter(actor_id__in=actor_ids).values_list('movie_id', flat=True)
-                movies = movies.filter(id__in=cast_movie_ids)
+                # Strip whitespace from each actor name and filter out empty strings
+                actors = [actor_name.strip() for actor_name in actors if actor_name.strip()]
+
+                # Construct a query to match any actor name that contains any string from the actors list
+                if actors:  # Check again in case the list becomes empty after stripping
+                    actor_query = Q(actor_name__istartswith=actors[0])
+                    for actor_name in actors[1:]:
+                        actor_query |= Q(actor_name__istartswith=actor_name)
+
+                    actor_ids = Actor.objects.filter(actor_query).values_list('id', flat=True)
+                    cast_movie_ids = Cast.objects.filter(actor_id__in=actor_ids).values_list('movie_id', flat=True)
+                    movies = movies.filter(id__in=cast_movie_ids)
+
 
             if crews:
-                crew_ids = Crew.objects.filter(name__in=crews).values_list('id', flat=True)
-                movie_crew_movie_ids = MovieCrew.objects.filter(crew_id__in=crew_ids).values_list('movie_id', flat=True)
-                movies = movies.filter(id__in=movie_crew_movie_ids) 
+    # Strip whitespace from each crew name and filter out empty strings
+                crews = [crew_name.strip() for crew_name in crews if crew_name.strip()]
+
+                # Construct a query to match any crew name that contains any string from the crews list
+                if crews:  # Check again in case the list becomes empty after stripping
+                    crew_query = Q(name__istartswith=crews[0])
+                    for crew_name in crews[1:]:
+                        crew_query |= Q(name__istartswith=crew_name)
+
+                    crew_ids = Crew.objects.filter(crew_query).values_list('id', flat=True)
+                    movie_crew_movie_ids = MovieCrew.objects.filter(crew_id__in=crew_ids).values_list('movie_id', flat=True)
+                    movies = movies.filter(id__in=movie_crew_movie_ids)
+
+
 
 
             if sort_by == 'popularity':
