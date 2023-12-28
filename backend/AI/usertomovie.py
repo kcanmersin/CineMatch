@@ -52,8 +52,9 @@ def recommend_for_new_user_content_based(user_ratings, all_movies, cosine_sim, t
     return recommended_movies[['original_title', 'id']]
 
 def recommend_for_user(user_ratings, all_movies, ratings, cosine_sim, svd_model, top_n=10):
-    if len(user_ratings) == 0:
-        return random_popular_movies(all_movies, top_n=10)
+    if not user_ratings:
+        # If user_ratings is empty, return random popular movies
+        return random_popular_movies(all_movies, top_n=top_n)['id'].tolist()
     
     user_id = user_ratings[0][0]
 
