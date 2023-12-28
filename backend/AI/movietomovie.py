@@ -53,8 +53,60 @@ def movie_to_movie(movieId):
     recommended_movie_titles = recommended_movies['title'].tolist()
 
     return recommended_movie_ids, recommended_movie_titles
+"""""""""""     below code may be better
+#%%
+import pandas as pd
+import numpy as np
+from sklearn.metrics.pairwise import cosine_similarity
+
+def load_movielens_data(ratings_path, movies_path):
+    # Load ratings and movie details
+    ratings = pd.read_csv(ratings_path)
+    movies = pd.read_csv(movies_path)
+    return ratings, movies
+
+def movie_to_movie_recommendation(movie_id, cosine_sim, movies, top_n=10):
+    # Get the index of the movie in the movies DataFrame
+    idx = movies[movies['tmdbId'] == movie_id].index[0]
+
+    # Get the top N similar movies based on cosine similarity
+    sim_scores = list(enumerate(cosine_sim[idx]))
+    sim_scores = sorted(sim_scores, key=lambda x: x[1], reverse=True)[1:top_n+1]
+
+    # Get movie indices and similarity scores
+    movie_indices = [i[0] for i in sim_scores]
+    similarity_scores = [i[1] for i in sim_scores]
+
+    # Get movie details for recommended movies
+    recommended_movies = movies.iloc[movie_indices][['original_title', 'tmdbId']]
+
+    # Add similarity scores to the recommendations
+    recommended_movies['similarity_score'] = similarity_scores
+
+    return recommended_movies
+
+def get_similiar_movies(movie_id,cosine_sim,movies,top_n=10):
+    movies = movie_to_movie_recommendation(movie_id,cosine_sim,movies)
+    movies.drop(columns=['original_title','similarity_score'],inplace=True)
+
+    return movies
+
+# Example usage
+ratings, movies = load_movielens_data('data/ratings.csv', 'data/movieCineMatch.csv')
+#%%
+# Load cosine similarity matrix
+cosine_sim = pd.read_pickle("pickle_files/cosine_sim.pkl")
+
+# Example movie ID for which you want to find recommendations
+target_movie_id = 157336
+
+# Get movie-to-movie recommendations
+movie_recommendations = get_similiar_movies(target_movie_id, cosine_sim, movies)
+# we may need reset index !!!
 
 
+# %%
+"""""""""""
 # def movie_to_movie(movieId):
 #     BASE_DIR = Path(__file__).resolve().parent.parent
 
