@@ -1,9 +1,16 @@
-FROM nginx:1.19.0-alpine
-COPY nginx-setup.conf /etc/nginx/conf.d/default.conf
-#COPY  ../client/react-app/dist /var/www/html
-EXPOSE 80
-CMD ["nginx", "-g", "daemon off;"]
+# FROM nginx:1.19.0-alpine
+# COPY nginx-setup.conf /etc/nginx/conf.d/default.conf
+# #COPY  ../client/react-app/dist /var/www/html
+# EXPOSE 80
+# CMD ["nginx", "-g", "daemon off;"]
 
+FROM nginx:stable-alpine
+
+#RUN rm /etc/nginx/conf.d/default.conf
+
+COPY nginx-setup.conf /etc/nginx/conf.d/nginx.conf
+
+CMD [ "nginx", "-g", "daemon off;" ]
 
 
 # FROM nginx:1.19.0-alpine

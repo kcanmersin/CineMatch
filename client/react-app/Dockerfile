@@ -1,13 +1,23 @@
 
 # Stage 1: Building the app
-FROM node:alpine as build-stage
+# FROM node:alpine as build-stage
 
-WORKDIR /app
-COPY . .
+# WORKDIR /app
+# COPY . .
 
-# Install dependencies and build the static files
-RUN npm install --prefix /app
-RUN npm run build --prefix /app
+# # Install dependencies and build the static files
+# RUN npm install --prefix /app
+# RUN npm run build --prefix /app
+
+FROM node:alpine 
+
+WORKDIR /client/react-app
+
+COPY package*.json ./
+
+RUN npm install
+
+CMD [ "npm", "run", "deploy" ]
 
 
 
