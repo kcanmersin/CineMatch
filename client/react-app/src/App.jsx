@@ -5,7 +5,7 @@ import { AuthContext } from './auth/AuthContext'; // Import AuthContext and Auth
 import 'bootstrap/dist/css/bootstrap.min.css';
 import FirstPage from './Components/FirstPage';
 import SignupPage from './Components/SignupPage';
-import SigninPage from './Components/SigninPage';
+import SigninPage from './Components/SignInPage';
 import MainPage from './Components/MainPage';
 import MyListsPage from './Components/MyListsPage';
 import MyProfilePage from './Components/MyProfilePage';

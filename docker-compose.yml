@@ -1,0 +1,135 @@
+# # version: "3.8"
+
+# # services:
+# #   django:
+# #     build: ./backend
+# #     container_name: dev-django
+# #     command: python manage.py runserver 0.0.0.0:8000
+# #     ports:
+# #       - 8001:8000
+# #     env_file:
+# #       - ./.env.dev
+# #     volumes:
+# #       - ./backend/:/srv/app
+# #       - static:/srv/app/static
+# #       - media:/srv/app/media
+# #     depends_on:
+# #       - db
+      
+# #   react:
+# #     build: ./client/react-app
+# #     container_name: dev-react
+# #     command: npm start
+# #     ports:
+# #       - 3001:3000
+# #     env_file:
+# #       - ./.env.dev
+# #     tty: true
+# #     environment:
+# #       - CHOKIDAR_USEPOLLING=true
+# #     volumes:
+# #       - ./client/react-app/:/srv/app
+# #       - node_modules:/srv/app/node_modules
+# #     depends_on:
+# #       - django
+
+# #   db:
+# #     image: postgres:16.1-alpine
+# #     #image: nouchka/sqlite3:latest
+# #     container_name: dev-db
+# #     ports:
+# #       - 5432:5432
+# #     env_file: ./.env.dev
+# #     volumes:
+# #       - postgres_data:/var/lib/postgresql/data
+
+# #   nginx:
+# #     build: ./nginx
+# #     container_name: dev-nginx
+# #     ports:
+# #       - 8080:80
+# #     restart: always
+# #     volumes:
+# #       - static:/srv/app/static
+# #       - media:/srv/app/media
+# #     depends_on:
+# #       - django
+# #       - react
+# #       - db
+
+# # volumes:
+# #   node_modules:
+# #   postgres_data:
+# #   media:
+# #   static:
+
+
+# version: "3"
+
+# services:
+#   backend:
+#     build:
+#       context: ./backend
+#     command: gunicorn backend.wsgi --bind 0.0.0.0:8000
+#     ports:
+#       - "8000:8000"
+  
+#   frontend:
+#     build:
+#       context: ./client/react-app
+#     volumes:
+#       - react_build:/react-app/build
+
+#   nginx:
+#     image: nginx:latest
+
+#     ports:
+#       - "80:8080"
+
+#     volumes:
+#       - ./nginx/nginx-setup.conf:/etc/nginx/conf.d/default.conf:ro
+#       - react_build:/var/www/react
+
+#     depends_on:
+#       - backend
+#       - frontend
+  
+# volumes:
+#   react_build:
+
+version: '3.7'
+
+services:
+  backend:
+    volumes:
+      - static:/static
+    env_file:
+      - .env.dev
+    build:
+      context: ./backend
+    ports:
+      - "8000:8000"
+  
+  frontend:
+    build:
+      context: ./client/react-app
+    volumes:
+      - frontend:/app/build
+  
+  nginx:
+    build:
+      context: ./nginx
+    volumes:
+      - static:/static
+      - frontend:/var/www/frontend
+    ports:
+      - "80:80"
+      # - "80:5173"
+      # - "5173:80"
+    depends_on:
+      - backend
+      - frontend
+
+volumes:
+  static:
+  frontend:

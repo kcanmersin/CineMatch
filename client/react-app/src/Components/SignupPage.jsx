@@ -75,8 +75,9 @@ export default function SignupPage() {
     e.preventDefault();
     if (isFormValid) {
       try {
-        const response = await fetch('http://127.0.0.1:8000/auth/users/', {
-          method: 'POST',
+        const response = await fetch('http://172.18.0.1:8000/auth/users/', {
+//          const response = await fetch('http://127.0.0.1:8000/auth/users/', {
+            method: 'POST',
           headers: {
             'Content-Type': 'application/json',
           },
