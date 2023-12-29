@@ -1,3 +1,47 @@
+#%%
+import pandas as pd 
+import numpy as np
+from surprise import Dataset, Reader, SVD
+# %%
+import pandas as pd
+import numpy as np
+from sklearn.metrics.pairwise import cosine_similarity
+
+def create_user_item_matrix(ratings):
+    user_item_matrix = ratings.pivot(index='userId', columns='tmdbId', values='rating')
+    user_item_matrix = user_item_matrix.fillna(0)  # Fill NaN with 0
+    return user_item_matrix
+
+def calculate_cosine_similarity(user_item_matrix):
+    cosine_sim = cosine_similarity(user_item_matrix)
+    return pd.DataFrame(cosine_sim, index=user_item_matrix.index, columns=user_item_matrix.index)
+
+def find_similar_users(user_id, cosine_sim_matrix, top_n=10):
+    if user_id not in cosine_sim_matrix.index:
+        raise ValueError(f"User ID {user_id} is not in the dataset")
+
+    # Get similarity scores for the user and sort them
+    sim_scores = cosine_sim_matrix.loc[user_id].sort_values(ascending=False)
+
+    # Get top n most similar users and their scores
+    top_users = sim_scores.iloc[1:top_n+1]  # Exclude the user itself
+    return top_users
+
+#%%
+# real users ratings
+ratings = pd.read_csv('ratings.csv')  # Assuming columns are ['userId', 'tmdbId', 'rating']
+#%%
+user_item_matrix = create_user_item_matrix(ratings)
+cosine_sim_matrix = calculate_cosine_similarity(user_item_matrix)
+# %% 
+user_id = 1  # Example user ID
+similar_users_scores = find_similar_users(user_id, cosine_sim_matrix, top_n=10)
+print("Similar Users and their Similarity Scores:")
+print(similar_users_scores)
+# %%
+
+
+''''''''' below  code is takes long to run
 # %%
 import pandas as pd
 import numpy as np
@@ -69,3 +113,4 @@ svd_model = pd.read_pickle('pickle_files/svd_model.pkl')
 user_id = 1
 similar_users = find_similar_users(user_id, svd_model, ratings)
 print(similar_users)
+'''''''''
