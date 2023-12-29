@@ -1,3 +1,20 @@
+
+# Stage 1: Building the app
+FROM node:alpine as build-stage
+
+WORKDIR /app
+COPY . .
+
+# Install dependencies and build the static files
+RUN npm install --prefix /app
+RUN npm run build --prefix /app
+
+
+
+
+
+
+
 # # pull official base image
 # FROM node:lts-slim
 
@@ -49,23 +66,13 @@
 # CMD ["nginx", "-g", "daemon off;"]
 
 
-# Stage 1: Building the app
-FROM node:alpine as build-stage
-
-WORKDIR /app
-COPY . .
-
-# Install dependencies and build the static files
-RUN npm install
-RUN npm run build
-
 # Stage 2: Serve the app using Nginx
 #FROM nginx:1.19.0-alpine
 
 
 
 # Copy the built static files from the build stage
-#COPY --from=build-stage app/dist /usr/share/nginx/html
+# COPY --from=build-stage app/dist /usr/share/nginx/html
 
 # COPY . /app
 # WORKDIR /app
@@ -74,10 +81,10 @@ RUN npm run build
 
 # COPY ./dist .
 
-FROM nginx:1.19.0-alpine
-COPY nginx-setup.conf /etc/nginx/conf.d/default.conf
-COPY --from=builder /app/dist /var/www/html
-EXPOSE 80
-CMD ["nginx", "-g", "daemon off;"]
+# FROM nginx:1.19.0-alpine
+# COPY nginx-setup.conf /etc/nginx/conf.d/default.conf
+# COPY --from=builder /app/dist /var/www/html
+# EXPOSE 80
+# CMD ["nginx", "-g", "daemon off;"]
 
 

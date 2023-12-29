@@ -1,3 +1,43 @@
+
+version: '3.7'
+
+services:
+  backend:
+    volumes:
+      - static:/static
+    env_file:
+      - .env.dev
+    build:
+      context: ./backend
+    ports:
+      - "8000:8000"
+  
+  frontend:
+    build:
+      context: ./client/react-app
+    volumes:
+      - frontend:/app/build
+  
+  nginx:
+    build:
+      context: ./nginx
+    volumes:
+      - static:/static
+      - frontend:/var/www/html #frontend
+    ports:
+      - "80:80"
+      # - "80:5173"
+      # - "5173:80"
+    depends_on:
+      - backend
+      - frontend
+
+volumes:
+  static:
+  frontend:
+
+
+  
 # # version: "3.8"
 
 # # services:
@@ -96,40 +136,3 @@
   
 # volumes:
 #   react_build:
-
-version: '3.7'
-
-services:
-  backend:
-    volumes:
-      - static:/static
-    env_file:
-      - .env.dev
-    build:
-      context: ./backend
-    ports:
-      - "8000:8000"
-  
-  frontend:
-    build:
-      context: ./client/react-app
-    volumes:
-      - frontend:/app/build
-  
-  nginx:
-    build:
-      context: ./nginx
-    volumes:
-      - static:/static
-      - frontend:/var/www/frontend
-    ports:
-      - "80:80"
-      # - "80:5173"
-      # - "5173:80"
-    depends_on:
-      - backend
-      - frontend
-
-volumes:
-  static:
-  frontend:

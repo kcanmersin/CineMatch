@@ -1,3 +1,30 @@
+
+FROM python:3.8.18-bookworm
+
+RUN pip install --upgrade pip
+
+RUN pip3 install --upgrade pip setuptools
+
+RUN pip install docopt
+
+RUN pip install psycopg2
+
+RUN pip install odfpy
+
+RUN pip install MarkupPy
+
+RUN pip install future
+
+COPY ./requirements.txt .
+RUN pip install -r requirements.txt
+
+COPY . /app
+WORKDIR /app
+
+COPY ./entrypoint.sh .
+ENTRYPOINT ["sh", "/app/entrypoint.sh"]
+
+
 # # pull official base image
 # # FROM python:latest-alpine AS build
 # # # set work directory
@@ -137,28 +164,3 @@
 #FROM python:3.12.1-bullseye
 
 #FROM python:3.9.1-slim-buster
-
-FROM python:3.8.18-bookworm
-
-RUN pip install --upgrade pip
-
-RUN pip3 install --upgrade pip setuptools
-
-RUN pip install docopt
-
-RUN pip install psycopg2
-
-RUN pip install odfpy
-
-RUN pip install MarkupPy
-
-RUN pip install future
-
-COPY ./requirements.txt .
-RUN pip install -r requirements.txt
-
-COPY . /app
-WORKDIR /app
-
-COPY ./entrypoint.sh .
-ENTRYPOINT ["sh", "/app/entrypoint.sh"]

@@ -1,3 +1,11 @@
+FROM nginx:1.19.0-alpine
+COPY nginx-setup.conf /etc/nginx/conf.d/default.conf
+#COPY  ../client/react-app/dist /var/www/html
+EXPOSE 80
+CMD ["nginx", "-g", "daemon off;"]
+
+
+
 # FROM nginx:1.19.0-alpine
 
 # # COPY ../client/react-app/dist/ /usr/share/nginx/html
@@ -26,18 +34,13 @@
 
 
 # Stage 1: Build React app
-FROM node:16-alpine AS builder
-WORKDIR /app
-COPY client/react-app/package*.json ./
-RUN npm install
-COPY ../client/react-app ./
-RUN npm run build
+#FROM node:16-alpine AS builder
+#WORKDIR /app
+#COPY client/react-app/package*.json ./
+#RUN npm install --prefix /app
+#COPY ../client/react-app ./
+#RUN npm run build --prefix /app
 
 # Stage 2: Nginx
-FROM nginx:1.19.0-alpine
-COPY nginx-setup.conf /etc/nginx/conf.d/default.conf
-COPY --from=builder /app/build /var/www/html
-EXPOSE 80
-CMD ["nginx", "-g", "daemon off;"]
 
 
