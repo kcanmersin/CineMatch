@@ -3,6 +3,7 @@ from django.db import models
 from django.contrib.auth.models import AbstractBaseUser, PermissionsMixin, BaseUserManager
 
 def person_to_person_rate(user_id_1, user_id_2):
+    # from AI.usertouser import 
     return 90.0
 
 def person_to_movie_rate(user_id, movie_id):
@@ -77,7 +78,15 @@ class UserAccount(AbstractBaseUser, PermissionsMixin):
             MovieList.objects.create(title="watched_movies", user=self)
 
     def get_best_matched_users(self):
-        return [1, 2]
+        from AI import usertouser
+        # Get the top 10 similar users
+        similar_users = usertouser.user_to_user_fun(self.id)
+        # Get the similarity scores
+        similarity_scores = similar_users.values
+        # Get the IDs of the similar users
+        similar_user_ids = similar_users.index
+        # Return the rate of similarity and ids of the similar users
+        return similarity_scores, similar_user_ids
 
     def get_username(self):
         return self.username
@@ -140,7 +149,7 @@ class UserProfile(models.Model):
         return user_to_movie(rates_data)
         
     def get_follow_status(self, other_user):
-        return Follower.objects.filter(user=other_user, is_followed_by=self.user).exists()
+        return Follower.objects.filter(user=self.user, is_followed_by=other_user).exists()
 
     def get_watched_movie_count(self):
         movie_list = self.user.get_movie_list("watched_movies")
