@@ -1,7 +1,7 @@
 #%%
 import pandas as pd 
 import numpy as np
-from surprise import Dataset, Reader, SVD
+#from surprise import Dataset, Reader, SVD
 # %%
 import pandas as pd
 import numpy as np
@@ -24,17 +24,22 @@ def find_similar_users(user_id, cosine_sim_matrix, top_n=10):
     sim_scores = cosine_sim_matrix.loc[user_id].sort_values(ascending=False)
 
     # Get top n most similar users and their scores
-    top_users = sim_scores.iloc[1:top_n+1]  # Exclude the user itself
+    top_users = sim_scores.iloc[1:min(top_n+1, len(sim_scores))]  # Exclude the user itself and limit if needed
+
     return top_users
 
 #%%
+
 # real users ratings
-ratings = pd.read_csv('ratings.csv')  # Assuming columns are ['userId', 'tmdbId', 'rating']
+#ratings = pd.read_csv('ratings.csv')  # Assuming columns are ['userId', 'tmdbId', 'rating']
+ratings=[(1,1,5),(1,2,5),(2,1,5),(2,4,5),(3,4,5),(3,6,5),(4,7,5),(4,8,5),(5,9,5)]
+ratings=pd.DataFrame(ratings,columns=['userId','tmdbId','rating'])
+
 #%%
 user_item_matrix = create_user_item_matrix(ratings)
 cosine_sim_matrix = calculate_cosine_similarity(user_item_matrix)
 # %% 
-user_id = 1  # Example user ID
+user_id = 2  # Example user ID
 similar_users_scores = find_similar_users(user_id, cosine_sim_matrix, top_n=10)
 print("Similar Users and their Similarity Scores:")
 print(similar_users_scores)
