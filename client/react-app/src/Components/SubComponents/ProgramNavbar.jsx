@@ -75,19 +75,23 @@ export default function ProgramNavbar() {
     // Add user results
     for (let i = 0; i < users.length && results.length < 5; i++) {
       results.push(
-        <div key={'user-' + users[i].id}>
-          <p>User: {users[i].username}</p>
-          <img src={"http://127.0.0.1:8000" + users[i].profile.profile_picture} alt={users[i].username} />
+        <div className= "search-movie-result" key={'user-' + users[i].id}>
+          <img className= "search-user-result-image" src={"http://127.0.0.1:8000" + users[i].profile.profile_picture} alt={users[i].username} />
+          <div className="search-movie-result-text">User: {users[i].username}</div>
         </div>
       );
     }
 
     // Add movie results
     for (let i = 0; i < movies.length && results.length < 5; i++) {
+      const title= movies[i].title.toUpperCase();
       results.push(
-        <div key={'movie-' + movies[i].title}>
-          <p>{movies[i].title} ({movies[i].release_date})</p>
-          <img src={"https://image.tmdb.org/t/p/original" + movies[i].poster_path} alt={movies[i].title} />
+        <div className= "search-movie-result" key={'movie-' + movies[i].title}>
+          <img  className= "search-movie-result-image" src={"https://image.tmdb.org/t/p/original" + movies[i].poster_path} alt={movies[i].title} />
+          <div className="search-movie-result-text">
+            <div className="search-movie-title">{title}</div>
+            <div className="search-movie-date">({movies[i].release_date})</div>
+          </div>
         </div>
       );
     }

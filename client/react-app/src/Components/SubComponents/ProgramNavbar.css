@@ -74,6 +74,43 @@
     padding-bottom: 10px;
 }
 
+.search-results{
+    position: absolute;
+    top: 3rem;
+    background-color: #010B18;
+    z-index: 1000;
+    width: 100%;
+}
+
+.search-movie-result{ 
+    display: flex;
+    height: 10rem;
+    border:1px solid #CECECE
+}
+
+.search-movie-result-text{
+    position: relative;
+    margin-top: 0.3rem;
+    margin-left: 1rem;
+    font-size: 1.5rem;
+    text-align: left;
+    color:#CECECE;
+}
+
+.search-movie-date{
+    font-size: 1.5rem;
+    color: rgba(206, 206, 206, 0.75);
+}
+
+.search-user-result-image{
+    margin: 0.5rem;
+    border-radius: 50%;  /* Set border-radius to 50% for a circular shape */
+    width: 9rem;
+    height: 9rem;
+    object-fit: cover; /* Maintain aspect ratio and cover the entire container */
+    border: 0.1rem solid #CECECE;
+}
+
 @media(max-width: 690px){
     .navbar-username{
         display: none;
