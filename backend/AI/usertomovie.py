@@ -113,7 +113,7 @@ def user_to_movie(user_ratings):
     movies = pd.read_csv(str(BASE_DIR / 'AI' / 'movies_out.csv'))
 
     try:
-        cosine_sim = pd.read_pickle(str(BASE_DIR / 'AI' / 'cosine_sim.pkl'))
+        cosine_sim = pd.read_pickle(str(BASE_DIR / 'AI' / 'pickle_files' / 'cosine_sim.pkl'))
     except:
         print("cosine_sim.pkl not found")
 

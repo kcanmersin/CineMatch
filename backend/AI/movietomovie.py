@@ -39,7 +39,7 @@ def movie_to_movie(movieId):
 
     # Load the movies data and cosine similarity matrix
     movies_cine_match = pd.read_csv(str(BASE_DIR / 'AI' / 'movies_out.csv'))
-    cosine_sim = load_cosine_similarity_matrix(str(BASE_DIR / 'AI' / 'cosine_sim.pkl'))
+    cosine_sim = load_cosine_similarity_matrix(str(BASE_DIR / 'AI' / 'pickle_files' / 'cosine_sim.pkl'))
 
     # If the cosine similarity matrix is not loaded, return empty results
     if cosine_sim is None:
