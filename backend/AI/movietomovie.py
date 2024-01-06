@@ -1,5 +1,4 @@
-# movietomovie.py d
-
+# movietomovie.py malesat
 import pandas as pd
 #import torch
 import joblib
