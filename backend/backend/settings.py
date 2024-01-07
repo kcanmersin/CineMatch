@@ -124,6 +124,10 @@ DATABASES = {
     }
 }
 
+import dj_database_url
+DATABASES['default'] = dj_database_url.parse('postgres://cinematcheu_user:yLHF6prqsGkyzDg4nvQ2t57GUdWKd3yQ@dpg-cmdfc6ud3nmc73djmv90-a.oregon-postgres.render.com/cinematcheu')
+
+
 # DATABASES = {
 #     "default": {
 #         "ENGINE": os.environ.get("SQL_ENGINE", "django.db.backends.sqlite3"),
