@@ -125,7 +125,7 @@ DATABASES = {
 }
 
 import dj_database_url
-DATABASES['default'] = dj_database_url.parse('postgres://cinematcheu_user:yLHF6prqsGkyzDg4nvQ2t57GUdWKd3yQ@dpg-cmdfc6ud3nmc73djmv90-a.oregon-postgres.render.com/cinematcheu')
+DATABASES['default'] = dj_database_url.parse('postgres://cinematchfr_user:KVKMAal90pm4OIde4IcqbUsIBYfvrAoP@dpg-cmdfeuo21fec73d33khg-a.frankfurt-postgres.render.com/cinematchfr')
 
 
 # DATABASES = {
