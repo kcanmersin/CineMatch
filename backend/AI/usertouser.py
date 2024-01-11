@@ -7,6 +7,9 @@ import pandas as pd
 import numpy as np
 from sklearn.metrics.pairwise import cosine_similarity
 
+import psycopg2 
+import os
+
 def create_user_item_matrix(ratings):
     user_item_matrix = ratings.pivot(index='userId', columns='tmdbId', values='rating')
     user_item_matrix = user_item_matrix.fillna(0)  # Fill NaN with 0
@@ -16,34 +19,95 @@ def calculate_cosine_similarity(user_item_matrix):
     cosine_sim = cosine_similarity(user_item_matrix)
     return pd.DataFrame(cosine_sim, index=user_item_matrix.index, columns=user_item_matrix.index)
 
-def find_similar_users(user_id, cosine_sim_matrix, top_n=10):
+
+def read_ratings_from_database():
+    
+    #db_host = os.environ.get('DB_HOST')
+    #db_name = os.environ.get('DB_NAME')
+    #db_user = os.environ.get('DB_USER')
+    #db_password = os.environ.get('DB_PASSWORD')
+
+    db_host = 'dpg-cmdfeuo21fec73d33khg-a.frankfurt-postgres.render.com'
+    db_name = 'cinematchfr'
+    db_user = 'cinematchfr_user'
+    db_password = 'KVKMAal90pm4OIde4IcqbUsIBYfvrAoP'
+
+    # Connect to the PostgreSQL database server
+    with psycopg2.connect(host=db_host, database=db_name, user=db_user, password=db_password) as conn:
+        with conn.cursor() as cur:
+            # Fetch entire ratings dataset
+            sql_query = """SELECT "user_id", "movie_id", "rate_point" FROM "APImovie_rate";"""
+            cur.execute(sql_query)
+            ratings = cur.fetchall()
+
+    # Convert to DataFrame
+    ratings_df = pd.DataFrame(ratings, columns=['userId', 'tmdbId', 'rating'])
+
+    return ratings_df
+
+def find_similar_users(user_id, top_n=10):
+
+    ratings = read_ratings_from_database()
+    user_item_matrix = create_user_item_matrix(ratings)
+    cosine_sim_matrix = calculate_cosine_similarity(user_item_matrix)
+
     if user_id not in cosine_sim_matrix.index:
-        raise ValueError(f"User ID {user_id} is not in the dataset")
+        return pd.DataFrame(columns=['similar_userId', 'similarity_score'])
 
-    # Get similarity scores for the user and sort them
-    sim_scores = cosine_sim_matrix.loc[user_id].sort_values(ascending=False)
+    # Extract the similarity scores for the given user
+    sim_scores = cosine_sim_matrix.loc[user_id]
 
-    # Get top n most similar users and their scores
-    top_users = sim_scores.iloc[1:min(top_n+1, len(sim_scores))]  # Exclude the user itself and limit if needed
+    # Convert to DataFrame for easier manipulation
+    sim_scores = sim_scores.to_frame(name='similarity_score')
+
+    # Reset index to turn the user IDs into a regular column
+    sim_scores.reset_index(inplace=True)
+
+    # Rename columns for clarity
+    sim_scores.rename(columns={'userId': 'similar_userId'}, inplace=True)
+
+    # make similiarty score between 0 - 100  and round to 2 decimal places
+    sim_scores['similarity_score'] = sim_scores['similarity_score'].apply(lambda x: round(x*100,2))
+
+    # Filter out the user themselves and any zero similarity scores
+    sim_scores = sim_scores[(sim_scores['similar_userId'] != user_id) & (sim_scores['similarity_score'] > 0)]
+
+    # Sort by similarity score in descending order and select top N
+    top_users = sim_scores.sort_values(by='similarity_score', ascending=False).head(top_n)
 
     return top_users
 
-#%%
-
-# real users ratings
-#ratings = pd.read_csv('ratings.csv')  # Assuming columns are ['userId', 'tmdbId', 'rating']
-ratings=[(1,1,5),(1,2,5),(2,1,5),(2,4,5),(3,4,5),(3,6,5),(4,7,5),(4,8,5),(5,9,5)]
-ratings=pd.DataFrame(ratings,columns=['userId','tmdbId','rating'])
 
 #%%
-user_item_matrix = create_user_item_matrix(ratings)
-cosine_sim_matrix = calculate_cosine_similarity(user_item_matrix)
-# %% 
-user_id = 2  # Example user ID
-similar_users_scores = find_similar_users(user_id, cosine_sim_matrix, top_n=10)
-print("Similar Users and their Similarity Scores:")
-print(similar_users_scores)
+#ratings = read_ratings_from_database()
+#user_item_matrix = create_user_item_matrix(ratings)
+#cosine_sim_matrix = calculate_cosine_similarity(user_item_matrix)
+
+#print(ratings)
+#print('---------------------')
+#print(user_item_matrix)
+#print('---------------------')
+#print(cosine_sim_matrix)
+
+#%%
+
+
+#user_id_list = ratings['userId'].unique()
+#for user_id in user_id_list:
+#    similar_users = find_similar_users(user_id)
+#    # print the user id and the similar users
+#    print( 'user_id: ', user_id)
+#    
+#    print(similar_users)
+#    print('---------------------')
+
+
 # %%
+
+def user_to_user_fun(id):
+    user_id = id  # Example user ID
+    similar_users_scores = find_similar_users(user_id)
+    return similar_users_scores
 
 
 ''''''''' below  code is takes long to run
