@@ -22,7 +22,8 @@ function FilterPage() {
     }, [listId, sortMethod]); // Re-fetch when listId or sortMethod changes
 
     const fetchListAndFilterMovies = () => {
-        fetch(`http://127.0.0.1:8000/movie/lists/${listId}/`, {
+        fetch(
+            `${import.meta.env.VITE_BASE_URL}movie/lists/${listId}/`, {
             method: 'GET',
             headers: {
                 'Authorization': `JWT ${jwtAccess}`,
@@ -49,7 +50,7 @@ function FilterPage() {
             sort_by: sortMethod // Include the selected sorting method in the filter criteria
         };
 
-        fetch(`http://127.0.0.1:8000/movie/movie-lists/${listId}/filter/`, {
+        fetch(`${import.meta.env.VITE_BASE_URL}movie/movie-lists/${listId}/filter/`, {
             method: 'POST',
             headers: {
                 'Authorization': `JWT ${jwtAccess}`,

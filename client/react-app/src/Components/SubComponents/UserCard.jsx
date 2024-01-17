@@ -1,11 +1,11 @@
 import React from "react";
 
-const UserCard = ({ id, username, percentage, image }) => (
-  <div key={id} className="user-card">
-    <img src={image} alt={username} className="user-card-image" />
+const UserCard = ({ id, username, rate_ratio, profile_picture }) => (
+  <div key={username} className="user-card">
+    <img src={profile_picture} alt={username} className="user-card-image" />
     <div className="user-card-body">
       <div className="user-card-username">{username}</div>
-      <div className="user-card-number">{percentage}</div>
+      <div className="user-card-number">{rate_ratio}</div>
     </div>
   </div>
 );

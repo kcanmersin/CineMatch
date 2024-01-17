@@ -11,6 +11,7 @@ import  { useContext } from 'react';
 export default function SigninPage() {
 
   const { setIsAuthenticated } = useContext(AuthContext);
+  `${import.meta.env.VITE_BASE_URL}auth/users/`
   
   // to redirect other pages
   const navigate = useNavigate();
@@ -25,8 +26,7 @@ export default function SigninPage() {
 
   const handleForgotPasswordClick = async () => {
     try {
-      const response = await fetch(
-        "http://127.0.0.1:8000/auth/users/reset_password/",
+      const response = await fetch(`${import.meta.env.VITE_BASE_URL}auth/users/reset_password`,
         {
           method: "POST",
           headers: {
@@ -71,7 +71,8 @@ export default function SigninPage() {
 
 
       try {
-        const response = await fetch('http://127.0.0.1:8000/auth/jwt/create', {
+        const response = await fetch(
+          `${import.meta.env.VITE_BASE_URL}auth/jwt/create`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',

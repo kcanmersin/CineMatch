@@ -111,6 +111,11 @@
     border: 0.1rem solid #CECECE;
 }
 
+
+.first-search-result {
+    background-color: greenyellow;
+}
+
 @media(max-width: 690px){
     .navbar-username{
         display: none;
@@ -135,4 +140,5 @@
         width: 100vw;
     }
 }
+
 

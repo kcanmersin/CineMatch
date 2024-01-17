@@ -19,7 +19,7 @@ export default function MyListsPage() {
 
   useEffect(() => {
     setIsLoading(true);
-    fetch('http://127.0.0.1:8000/auth/users/me/', {
+    fetch(`${import.meta.env.VITE_BASE_URL}auth/users/me/`, {
       method: 'GET',
       headers: {
         'Authorization': `JWT ${jwtAccess}`,
@@ -39,7 +39,7 @@ export default function MyListsPage() {
   }, []);
 
   const fetchUserLists = (userId) => {
-    fetch(`http://127.0.0.1:8000/movie/lists/`, {
+    fetch(`${import.meta.env.VITE_BASE_URL}movie/lists/`, {
       method: 'GET',
       headers: {
         'Authorization': `JWT ${jwtAccess}`,
@@ -63,7 +63,7 @@ export default function MyListsPage() {
     event.preventDefault();
     setIsLoading(true);
   
-    fetch('http://127.0.0.1:8000/movie/lists/create/', {
+    fetch(`${import.meta.env.VITE_BASE_URL}movie/lists/create/`, {
       method: 'POST',
       headers: {
         'Authorization': `JWT ${jwtAccess}`,
@@ -93,7 +93,7 @@ export default function MyListsPage() {
   const handleDeleteList = (listId) => {
     setIsLoading(true);
 
-    fetch(`http://127.0.0.1:8000/movie/movie-lists/${listId}/delete/`, {
+    fetch(`${import.meta.env.VITE_BASE_URL}movie/movie-lists/${listId}/delete/`, {
       method: 'DELETE',
       headers: {
         'Authorization': `JWT ${jwtAccess}`,
@@ -135,35 +135,45 @@ export default function MyListsPage() {
   return (
     <div className="main-page">
       <ProgramNavbar />
-      <ul className='movie-lists-container'>
-        {lists.map((list, index) => (
-          <li className="movie-lists" key={list.id}>
-            <div className="poster-info-container">
-              <div className="movie-lists-posters-container">
-                {list.movies.slice(0, 2).map((movie, index) => (
-                  <div className="container-for-shift" key={index}>
-                    <img src={"https://image.tmdb.org/t/p/original" + movie.poster_path} alt={movie.title} className="movie-image" />
-                  </div>
-                ))}
-              </div>
-              <div className="list-info">
-                <Link to={`/mylists/${list.id}`}>
-                  <h3>{list.title}</h3>
-                  <p>{list.movies.length} Movies</p>
-                </Link>
-              </div>
-            </div>
-            {index >= 2 ? (
-              <div className="delete-button-container">
-                <Button variant="danger" className="delete-button" onClick={() => handleDeleteList(list.id)}>
-                  Delete
-                </Button>
-              </div>
-            ) : null}
-          </li>
-      ))}
+        <ul className='movie-lists-container'>
+          {lists.map((list, index) => {
+            // Transforming the list title
+            let displayTitle = list.title;
+            if (list.title === 'watchlist') {
+              displayTitle = 'WatchList';
+            } else if (list.title === 'watched_movies') {
+              displayTitle = 'Watched Movies';
+            }
 
-      </ul>
+            return (
+              <li className="movie-lists" key={list.id}>
+                <div className="poster-info-container">
+                  <div className="movie-lists-posters-container">
+                    {list.movies.slice(0, 2).map((movie, movieIndex) => (
+                      <div className="container-for-shift" key={movieIndex}>
+                        <img src={"https://image.tmdb.org/t/p/original" + movie.poster_path} alt={movie.title} className="movie-image" />
+                      </div>
+                    ))}
+                  </div>
+                  <div className="list-info">
+                    <Link to={`/mylists/${list.id}`}>
+                      <h3>{displayTitle}</h3>
+                      <p>{list.movies.length} Movies</p>
+                    </Link>
+                  </div>
+                </div>
+                {/* Conditionally render delete button */}
+                {list.title !== 'watchlist' && list.title !== 'watched_movies' ? (
+                  <div className="delete-button-container">
+                    <Button variant="danger" className="delete-button" onClick={() => handleDeleteList(list.id)}>
+                      Delete
+                    </Button>
+                  </div>
+                ) : null}
+              </li>
+            );
+          })}
+        </ul>
       <Button variant="success" style={{margin:'2rem'}} onClick={handleShowModal}>
         Create New List
       </Button>

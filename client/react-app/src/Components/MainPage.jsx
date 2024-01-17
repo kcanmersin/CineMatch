@@ -10,109 +10,170 @@ import MovieCard from "./SubComponents/MovieCard";
 import UserCard from "./SubComponents/UserCard";
 
 
-export default function MainPage(){
-    // TODO: add matched people 
+export default function MainPage(){ 
     const [matchedPeople, setMatchedPeople] = useState([]);
-    const [data, setData] = useState([]); // Initialize with an empty array or an appropriate initial value
-    const [isLoading, setIsLoading] = useState(true);
-    const [error, setError] = useState(null);
     const jwtAccess = localStorage.getItem("jwtAccess");
-    //const [moviesData, setMoviesData] = useState([]);
+    const [bestMatchMovie, setBestMatchMovie] = useState(null);
     const [mostPopular, setMostPopular] = useState([]);
     const [bestRated, setBestRated] = useState([]);
     const [forYou, setForYou] = useState([]);
 
-    // fetch the movie data
-    const fetchMovieData = async (movieIds, setState) => {
-        try {
-            const movies = await Promise.all(movieIds.map(async (movieId) => {
-                const response = await fetch(`http://127.0.0.1:8000/movie/movie/movies/${movieId}/`, {
-                    method: 'GET',
-                    headers: {
-                        'Authorization': `JWT ${jwtAccess}`,
-                        'Content-Type': 'application/json',
-                    },
-                });
 
-                if (!response.ok) {
-                    throw new Error('Network response was not ok');
-                }
-                return response.json();
-            }));
-            setState(movies);
+
+    // Function to fetch "best rate" movies from the "movie/best-rated" endpoint
+    const fetchBestRatedMovies = async () => {
+        try {
+            const response = await fetch(`${import.meta.env.VITE_BASE_URL}movie/lists/16/`, {
+                method: 'GET',
+                headers: {
+                    'Authorization': `JWT ${jwtAccess}`, // Replace 'jwtAccess' with your JWT token variable
+                    'Content-Type': 'application/json',
+                },
+            });
+
+            if (!response.ok) {
+                // If the response is not 2xx, throw an error
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+
+            const movies = await response.json(); // Assuming the response is an array of movies
+            setBestRated(movies.movies);
         } catch (error) {
-            console.error('Error fetching movie data:', error);
-            setError(error.toString());
+            console.error('Error fetching For You movies:', error);
+
         }
     };
+
+
+    // Function to fetch "most popular" movies from the "movie/most-popular" endpoint
+    const fetchMostPopularMovies = async () => {
+        try {
+            const response = await fetch(`${import.meta.env.VITE_BASE_URL}movie/lists/17/`, {
+                method: 'GET',
+                headers: {
+                    'Authorization': `JWT ${jwtAccess}`, // Replace 'jwtAccess' with your JWT token variable
+                    'Content-Type': 'application/json',
+                },
+            });
+
+            if (!response.ok) {
+                // If the response is not 2xx, throw an error
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+
+            const movies = await response.json(); // Assuming the response is an array of movies
+            setMostPopular(movies.movies);
+        } catch (error) {
+            console.error('Error fetching For You movies:', error);
+        }
+    };
+
+    // Function to fetch "For You" movies from the "movie/for-you" endpoint
+    const fetchForYouMovies = async () => {
+        try {
+            const response = await fetch(`${import.meta.env.VITE_BASE_URL}movie/movie/for-you/`, {
+                method: 'GET',
+                headers: {
+                    'Authorization': `JWT ${jwtAccess}`, // Replace 'jwtAccess' with your JWT token variable
+                    'Content-Type': 'application/json',
+                },
+            });
+
+            if (!response.ok) {
+                // If the response is not 2xx, throw an error
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+
+            const movies = await response.json(); // Assuming the response is an array of movies
+            setForYou(movies);
+            if (movies.length > 0) {
+                setBestMatchMovie(movies[0]); // Set the first movie as the best match
+            }
+        } catch (error) {
+            console.error('Error fetching For You movies:', error);
+        }
+    };
+
+    // useEffect hook to call the all functions when the component mounts
     useEffect(() => {
-        fetchMovieData([24, 11, 22, 70, 111], setMostPopular);
-        fetchMovieData([15, 14, 13, 68, 69], setBestRated);
-        fetchMovieData([71, 75, 76, 77, 78], setForYou);
+        fetchMostPopularMovies();
+        fetchBestRatedMovies();
+        fetchForYouMovies();
+        fetchMatchedPeople();
+        
     }, []);
 
-
-    // get the matched people information
-    useEffect(() => {
-        fetch('http://127.0.0.1:8000/accounts/matched-people/', {
-          method: 'GET',
-          headers: {
-            'Authorization': `JWT ${jwtAccess}`, // Replace 'jwtAccess' with your JWT token variable
-            'Content-Type': 'application/json',
-          },
-        })
-        .then(response => response.json())
-        .then(data => {
-          setMatchedPeople(data.best_matched_people);
-        })
-        .catch(error => {
-          console.error('Error:', error);
-          setError(error.toString());
-        })
-        .finally(() => {
-          setIsLoading(false);
-        });
-      }, []);
     
-    const bestMatchMoviePoster= "src/assets/dummyPoster.jpg";
-    const bestMatchMovieScene= "src/assets/dummy1.jpg";
-    const bestMatchMovieName= "The Shining";
-    const bestMatchMovieYear= "1980";
-    const bestMatchMovieDesc= "A family heads to an isolated hotel for the winter where a sinister presence influences the father into violence, while his psychic son sees horrific forebodings from both past and future.";
-    const bestMatchMoivePoints= "8.8"
+    // Function to fetch matched people
+    const fetchMatchedPeople = async () => {
+        try {
+            const response = await fetch(`${import.meta.env.VITE_BASE_URL}accounts/matched-people/`, {
+                method: 'GET',
+                headers: {
+                    'Authorization': `JWT ${jwtAccess}`,
+                    'Content-Type': 'application/json',
+                },
+            });
+            const data = await response.json();
+            if (response.ok) {
+                setMatchedPeople(data.best_matched_people);
+            } else {
+                throw new Error('Network response was not ok');
+            }
+        } catch (error) {
+            console.error('Error:', error);
+        } 
+    };
 
 
     return(
         <div className="main-page">
             <ProgramNavbar/>
             <div className="best-match-movie">
-                <div className= "best-match-movie-poster">
-                    <img
-                        src={bestMatchMoviePoster}
-                        alt="First Image"
-                        className="best-match-movie-poster-image"
-                    />
-                </div>
-                <div className= "best-match-movie-scene" style={{
-                    backgroundImage: `linear-gradient(0deg, #0A1421 12.5%, rgba(0, 0, 0, 0.00) 100%),url(${bestMatchMovieScene})`,
-                    backgroundPosition: 'center center',
-                    backgroundSize: 'cover',
-                    backgroundRepeat: 'no-repeat',
-                }}>
-                <div className= "descriptive-text">
-                    <div className= "best-match-text">BEST MATCH</div>
-                    <div className= "best-match-movie-name">{bestMatchMovieName} ({bestMatchMovieYear})</div>
-                    {/*<Link to={`/movie/${bestMatchMovieId}`} className="best-match-movie-name-link">
-                        <div className="best-match-movie-name">
-                            {bestMatchMovieName} ({bestMatchMovieYear})
+                    {bestMatchMovie ? (
+                        <>
+                        <Link to={`/moviepage/${bestMatchMovie.id}`}>
+                        <div className="best-match-movie">
+                        <div className="best-match-movie-poster">
+                            <img
+                            src={"https://image.tmdb.org/t/p/original" + bestMatchMovie.poster_path}
+                            alt="First Image"
+                            className="best-match-movie-poster-image"
+                            />
                         </div>
-                    </Link>*/}
-                    <div className= "best-match-movie-desc">{bestMatchMovieDesc}</div>
-                </div>
-                <div className= "best-match-movie-points"><span className="true-points">{bestMatchMoivePoints}</span>/10</div>
-                <div className="star"><SVGStar/></div>
-                </div>
-            </div>
+                        <div
+                            className="best-match-movie-scene"
+                            style={{
+                            backgroundImage: `linear-gradient(0deg, #0A1421 12.5%, rgba(0, 0, 0, 0.00) 100%),url(${"https://image.tmdb.org/t/p/original" + bestMatchMovie.background_path})`,
+                            backgroundPosition: 'center center',
+                            backgroundSize: 'cover',
+                            backgroundRepeat: 'no-repeat',
+                            }}
+                        >
+                            <div className="descriptive-text">
+                            <div className="best-match-text">BEST MATCH</div>
+                            <div className="best-match-movie-name">
+                                {bestMatchMovie.title
+                                    .split(' ')
+                                    .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+                                    .join(' ')} ({bestMatchMovie.release_date})
+                            </div>
+                            <div className="best-match-movie-desc">{bestMatchMovie.description}</div>
+                            </div>
+                            <div className="best-match-movie-points">
+                            <span className="true-points">{parseFloat(bestMatchMovie.vote_average).toFixed(1)}/10</span>
+                            </div>
+                            <div className="star"><SVGStar /></div>
+                        </div>
+                        </div>
+                        </Link>
+                        </>
+                    ) : (
+                        // Render a loading message or placeholder when bestMatchMovie is null
+                        <div>Loading best match movie...</div>
+                    )}
+            </div>         
+                    
             <Container className="rest-of-the-page">
                 <Row className="main-page-list">
                     <div className="main-page-list-text">
@@ -120,12 +181,12 @@ export default function MainPage(){
                     </div>
                     <Container className="movie-cards-container">
                             <div className="movie-cards">
-                            {mostPopular.map(movie => (
-                                <Link to={`/moviepage/${movie.id}`} key={movie.id} className="movie-card-link">
-                                    <MovieCard {...movie} />
-                                </Link>
-                            ))}
-                            
+                                {Array.isArray(mostPopular) && mostPopular.map(movie => (
+                                    // Your render logic here
+                                    <Link to={`/moviepage/${movie.id}`} key={movie.id} className="movie-card-link">
+                                        <MovieCard {...movie} />
+                                    </Link>
+                                ))}       
                             </div>
                     </Container>
                 </Row>
@@ -135,11 +196,11 @@ export default function MainPage(){
                     </div>
                     <Container className="movie-cards-container">
                             <div className="movie-cards">
-                            {bestRated.map(movie => (
-                                <Link to={`/moviepage/${movie.id}`} key={movie.id} className="movie-card-link">
-                                    <MovieCard {...movie} />
-                                </Link>
-                            ))}
+                                {Array.isArray(bestRated) && bestRated.map(movie => (
+                                    <Link to={`/moviepage/${movie.id}`} key={movie.id} className="movie-card-link">
+                                        <MovieCard {...movie} />
+                                    </Link>
+                                ))}
                             </div>
                     </Container>
                 </Row>
@@ -171,7 +232,7 @@ export default function MainPage(){
                                 <UserCard {...user} />
                             </Link>
                             ))}
-                        </div>
+                            </div> 
                     </Container>
 
                 </Row>

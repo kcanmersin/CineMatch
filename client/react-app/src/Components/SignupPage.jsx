@@ -7,7 +7,6 @@ import Button from "react-bootstrap/esm/Button";
 
 
 export default function SignupPage() {
-
   function capitalizeFirstLetter(str) {
     if (typeof str === 'string' && str !== null && str !== undefined) {
       // Capitalize the first letter
@@ -75,12 +74,11 @@ export default function SignupPage() {
     e.preventDefault();
     if (isFormValid) {
       try {
-//        const response = await fetch('http://172.18.0.1:8000/auth/users/', {
-          const response = await fetch('http://127.0.0.1:8000/auth/users/', {
+        const response = await fetch(`${import.meta.env.VITE_BASE_URL}auth/users/`, {
             method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
+            headers: {
+              'Content-Type': 'application/json',
+            },
           body: JSON.stringify(formData),
         });
     

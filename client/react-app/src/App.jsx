@@ -17,6 +17,10 @@ import MatchedPeoplePage from './Components/MatchedPeoplePage';
 import FilterPage from './Components/FilterPage';
 import MyStatsPage from './Components/MyStatsPage';
 import StatsPage from './Components/StatsPage';
+import MyFollowersPage from './Components/MyFollowersPage';
+import MyFollowingsPage from './Components/MyFollowingsPage';
+import UserFollowersPage from './Components/UserFollowersPage';
+import UserFollowingsPage from './Components/UserFollowingsPage';
 import { UserProvider } from './Components/UserContext';
 
 
@@ -40,6 +44,10 @@ export default function App() {
                 <Route path="/user/:username/lists/:listId" element={<PrivateRoute isAuthenticated={isAuthenticated}><FilterPage /></PrivateRoute>} />
                 <Route path="/mystats" element={<PrivateRoute isAuthenticated={isAuthenticated}><MyStatsPage /></PrivateRoute>} />
                 <Route path="/user/:username/stats" element={<PrivateRoute isAuthenticated={isAuthenticated}><StatsPage /></PrivateRoute>} />
+                <Route path="/myfollowers" element={<PrivateRoute isAuthenticated={isAuthenticated}><MyFollowersPage /></PrivateRoute>} />
+                <Route path="/myfollowings" element={<PrivateRoute isAuthenticated={isAuthenticated}><MyFollowingsPage /></PrivateRoute>} />
+                <Route path="/user/:username/followers" element={<PrivateRoute isAuthenticated={isAuthenticated}><UserFollowersPage /></PrivateRoute>} />
+                <Route path="/user/:username/followings" element={<PrivateRoute isAuthenticated={isAuthenticated}><UserFollowingsPage /></PrivateRoute>} />
             </Routes>
         </UserProvider>
       

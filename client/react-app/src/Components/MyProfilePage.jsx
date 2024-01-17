@@ -7,6 +7,8 @@ import Container from "react-bootstrap/esm/Container";
 import MovieCard from "./SubComponents/MovieCard";
 import Row from "react-bootstrap/Row";
 import { UserContext } from "./UserContext";
+import { BounceLoader } from "react-spinners";
+
 
 
 export default function MyProfilePage(){
@@ -19,7 +21,7 @@ export default function MyProfilePage(){
         watchedMovieCount: 0,
         bestMatchMoviePoster: ''
     });
-
+    const [isLoading, setIsLoading] = useState(true);
     const [watchedMovies, setWatchedMovies] = useState([]);
     const jwtAccess = localStorage.getItem('jwtAccess');
 
@@ -28,11 +30,12 @@ export default function MyProfilePage(){
             if (!username) {
                 return; // Exit if username is not defined.
             }
-    
+            
+            setIsLoading(true);
     
             try {
                 // Fetch profile data
-                const profileResponse = await fetch(`http://127.0.0.1:8000/accounts/profile/${username}/`, {
+                const profileResponse = await fetch(`${import.meta.env.VITE_BASE_URL}accounts/profile/${username}/`, {
                     method: 'GET',
                     headers: {
                         'Authorization': `JWT ${jwtAccess}`,
@@ -53,12 +56,12 @@ export default function MyProfilePage(){
                     followerCount: profileInfo.follower_count,
                     followingCount: profileInfo.following_count,
                     watchedMovieCount: profileInfo.watched_movie_count,
-                    bestMatchMoviePoster: profileInfo.best_match_movie_poster,
+                    bestMatchMoviePoster: profileInfo.best_matched_movie_poster,
                     profilePictureUrl: profileInfo.profile_picture_url
                 });
     
                 // Fetch lists
-                const listsResponse = await fetch(`http://127.0.0.1:8000/movie/lists/`, {
+                const listsResponse = await fetch(`${import.meta.env.VITE_BASE_URL}movie/lists/`, {
                     method: 'GET',
                     headers: {
                         'Authorization': `JWT ${jwtAccess}`,
@@ -72,16 +75,18 @@ export default function MyProfilePage(){
     
                 const allLists = await listsResponse.json();
                 const userLists = await allLists.filter(list => list.user === profileInfo.id);
-                const watchedList = userLists.find((list, index) => index === 1);
+                const watchedList = userLists.find((list) => list.title === "watched_movies");
     
                 if (watchedList && watchedList.movies) {
                     setWatchedMovies(watchedList.movies); // Directly use the movies from the watched list
                 } else {
                     console.log('Watched list or movies not found');
                 }
+                setIsLoading(false);
     
             } catch (error) {
                 console.error('Error:', error);
+                setIsLoading(false);
             }
         };
     
@@ -95,7 +100,7 @@ export default function MyProfilePage(){
           const formData = new FormData();
           formData.append("profile_picture", file);
       
-          fetch('http://127.0.0.1:8000/accounts/change-profile-photo/', {
+          fetch(`${import.meta.env.VITE_BASE_URL}accounts/change-profile-photo/`, {
             method: 'PATCH',
             headers: {
               Authorization: `JWT ${jwtAccess}`,
@@ -110,6 +115,17 @@ export default function MyProfilePage(){
             .catch(error => console.error('Error updating profile picture:', error));
         }
       };
+
+    if (isLoading) {
+        return (
+            <div className="main-page">
+                <ProgramNavbar />
+                <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh' }}>
+                    <BounceLoader color="#123abc" loading={isLoading} />
+                </div>
+            </div>
+        );
+    }
       
 
     return(
@@ -139,10 +155,15 @@ export default function MyProfilePage(){
                 </label>
                     <div className="user-name">{username}</div>
                 </div>
+                
                 <div className="follow-stats">
                     <div><span style={{fontWeight: 'bold'}}>{profileData.watchedMovieCount}</span> MOVIES</div>
-                    <div><span style={{fontWeight: 'bold'}}>{profileData.followerCount}</span> FOLLOWERS</div>
-                    <div><span style={{fontWeight: 'bold'}}>{profileData.followingCount}</span> FOLLOWINGS</div>
+                    <Link to="/myfollowers">
+                        <div><span style={{fontWeight: 'bold'}}>{profileData.followerCount}</span> FOLLOWERS</div>
+                    </Link>
+                    <Link to="/myfollowings">
+                        <div><span style={{fontWeight: 'bold'}}>{profileData.followingCount}</span> FOLLOWINGS</div>
+                    </Link>
                 </div>
             </div>
             <div className="rest-myprofile-page">

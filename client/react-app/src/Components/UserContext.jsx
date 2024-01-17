@@ -7,6 +7,7 @@ export const UserProvider = ({ children }) => {
     const [user, setUser] = useState({
         username: "Loading...",
         profilePictureUrl: "",
+        userId: null
     });
 
     const setProfilePicture = (newUrl) => {
@@ -17,7 +18,7 @@ export const UserProvider = ({ children }) => {
 
     useEffect(() => {
         // Fetch user data
-        fetch('http://127.0.0.1:8000/auth/users/me/', {
+        fetch(`${import.meta.env.VITE_BASE_URL}auth/users/me/`, {
             method: 'GET',
             headers: {
                 'Authorization': `JWT ${jwtAccess}`,
@@ -26,12 +27,14 @@ export const UserProvider = ({ children }) => {
         })
         .then(response => response.json())
         .then(data => {
+            
             setUser(prev => ({
                 ...prev,
                 username: data.username,
+                userId: data.id
             }));
 
-            return fetch(`http://127.0.0.1:8000/accounts/profile/${data.username}`, {
+            return fetch(`${import.meta.env.VITE_BASE_URL}accounts/profile/${data.username}/` , {
                 method: 'GET',
                 headers: {
                     'Authorization': `JWT ${jwtAccess}`,

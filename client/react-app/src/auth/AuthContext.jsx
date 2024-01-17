@@ -2,7 +2,6 @@ import { createContext, useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 export const AuthContext = createContext(null);
-const API_BASE_URL = 'http://127.0.0.1:8000';
 
 export const AuthProvider = ({ children }) => {
   // TODO : add loader to this page also
@@ -32,7 +31,7 @@ export const AuthProvider = ({ children }) => {
 
     const verifyToken = async (token) => {
         try {
-            const response = await fetch(`${API_BASE_URL}/auth/jwt/verify`, {
+            const response = await fetch(`${import.meta.env.VITE_BASE_URL}auth/jwt/verify/` , {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ token }),
@@ -46,7 +45,8 @@ export const AuthProvider = ({ children }) => {
 
     const refreshTokenRequest = async (refreshToken) => {
         try {
-            const response = await fetch(`${API_BASE_URL}/auth/jwt/refresh`, {
+            const response = await fetch(
+                `${import.meta.env.VITE_BASE_URL}auth/jwt/refresh/`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ refresh: refreshToken }),

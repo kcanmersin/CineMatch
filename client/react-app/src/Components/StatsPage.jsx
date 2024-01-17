@@ -37,7 +37,8 @@ export default function StatsPage() {
         const fetchStats = async () => {
             setIsLoading(true);
             try {
-                const response = await fetch(`http://127.0.0.1:8000/accounts/profile/${username}/stats/`, {
+                const response = await fetch(
+                    `${import.meta.env.VITE_BASE_URL}accounts/profile/${username}/stats/`, {
                     method: 'GET',
                     headers: {
                         'Authorization': `JWT ${jwtAccess}`,

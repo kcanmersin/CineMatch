@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useContext } from "react";
+import { useState, useEffect, useContext } from "react";
 import debounce from 'lodash.debounce';
 import { Link } from "react-router-dom";
 import Navbar from "react-bootstrap/Navbar";
@@ -14,12 +14,12 @@ import { UserContext } from "../UserContext";
 import "./ProgramNavbar.css";
 
 export default function ProgramNavbar() {
-  // TODO: her result için link koyulacak
   const user = useContext(UserContext);
   const { logout } = useContext(AuthContext);
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [searchText, setSearchText] = useState('');
   const [searchResults, setSearchResults] = useState({ movies: [], users: [] });
+  const [firstSearchResult, setFirstSearchResult] = useState(null); 
 
   const toggleSidebar = () => {
     setSidebarOpen(!sidebarOpen);
@@ -44,7 +44,7 @@ export default function ProgramNavbar() {
       return;
     }
     try {
-      const response = await fetch(`http://127.0.0.1:8000/movie/movie/search_bar/?search=${query}`);
+      const response = await fetch(`${import.meta.env.VITE_BASE_URL}movie/movie/search_bar/?search=${query}`);
       const data = await response.json();
       setSearchResults({
         movies: Array.isArray(data.movies) ? data.movies : [],
@@ -65,35 +65,75 @@ export default function ProgramNavbar() {
     };
   }, [searchText, debouncedSearch]);
 
+
+  useEffect(() => {
+    // Update the first search result when searchResults change
+    if (searchResults.users.length > 0) {
+      setFirstSearchResult(`/user/${searchResults.users[0].username}`);
+    } else if (searchResults.movies.length > 0) {
+      setFirstSearchResult(`/moviepage/${searchResults.movies[0].id}`);
+    }
+  }, [searchResults]);
+
+
+  // Function to navigate to the first search result's page
+  const navigateToFirstResult = () => {
+    if (firstSearchResult) {
+      window.location.href = firstSearchResult; // Redirect to the first result's URL
+    }
+  };
+
+  // reset the search
+  const resetSearch = () => {
+    setSearchText('');
+    setSearchResults({ movies: [], users: [] });
+  };
+  
+
   const displaySearchResults = () => {
     if (searchText.trim() === '') {
       return null; // Return null when there is no search text
     }
     const results = [];
     const { users, movies } = searchResults;
+    // Filter out the current user from the users array
+    const filteredUsers = users.filter(u => u.username !== user.username);
+
+    // Check if there are no results
+    if (filteredUsers.length === 0 && movies.length === 0) {
+      return <div className="no-search-results">No results found</div>;
+    }
+
+    let isFirstResult = true; // flag for displaying first result as grey background
 
     // Add user results
-    for (let i = 0; i < users.length && results.length < 5; i++) {
+    for (let i = 0; i < filteredUsers.length && results.length < 5; i++) {
       results.push(
-        <div className= "search-movie-result" key={'user-' + users[i].id}>
-          <img className= "search-user-result-image" src={"http://127.0.0.1:8000" + users[i].profile.profile_picture} alt={users[i].username} />
-          <div className="search-movie-result-text">User: {users[i].username}</div>
-        </div>
+        <Link to={`/user/${users[i].username}`} key={'user-' + users[i].id} onClick={resetSearch}>
+          <div className="search-movie-result" style={isFirstResult ? { backgroundColor: 'grey' } : null}>
+            <img className="search-user-result-image" src={import.meta.env.VITE_BASE_URL + filteredUsers[i].profile.profile_picture.slice(1)} alt={filteredUsers[i].username} />
+            <div className="search-movie-result-text">User: {filteredUsers[i].username}</div>
+          </div>
+        </Link>
       );
+      if (isFirstResult) isFirstResult = false;
     }
 
     // Add movie results
     for (let i = 0; i < movies.length && results.length < 5; i++) {
-      const title= movies[i].title.toUpperCase();
+      const title = movies[i].title.toUpperCase();
       results.push(
-        <div className= "search-movie-result" key={'movie-' + movies[i].title}>
-          <img  className= "search-movie-result-image" src={"https://image.tmdb.org/t/p/original" + movies[i].poster_path} alt={movies[i].title} />
-          <div className="search-movie-result-text">
-            <div className="search-movie-title">{title}</div>
-            <div className="search-movie-date">({movies[i].release_date})</div>
+        <Link to={`/moviepage/${movies[i].id}`} key={'movie-' + movies[i].title} onClick={resetSearch} >
+          <div className="search-movie-result" style={isFirstResult ? { backgroundColor: 'grey' } : null}>
+            <img className="search-movie-result-image" src={"https://image.tmdb.org/t/p/original" + movies[i].poster_path} alt={movies[i].title} />
+            <div className="search-movie-result-text">
+              <div className="search-movie-title">{title}</div>
+              <div className="search-movie-date">({movies[i].release_date})</div>
+            </div>
           </div>
-        </div>
+        </Link>
       );
+      if (isFirstResult) isFirstResult = false;
     }
 
     return results;
@@ -112,9 +152,10 @@ export default function ProgramNavbar() {
             type="text"
             placeholder="Search for movie..."
             className="mr-sm-2 flex-grow-1 navbar-search-bar"
+            value={searchText}
             onChange={handleSearchInput}
           />
-          <Button variant="outline-info" className="navbar-button">Search</Button>
+          <Button variant="outline-info" className="navbar-button" onClick={navigateToFirstResult}>Search</Button>
         </Form>
         <Nav.Link as={Link} to="/myprofile">
           <Image 

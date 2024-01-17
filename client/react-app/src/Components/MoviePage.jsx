@@ -26,7 +26,7 @@ export default function MoviePage() {
     const fetchMovieData = async () => {
         setIsLoading(true);
         try {
-            const response = await fetch(`http://127.0.0.1:8000/movie/movie/movies/${movieId}/`, {
+            const response = await fetch(`${import.meta.env.VITE_BASE_URL}movie/movie/movies/${movieId}/`, {
                 method: 'GET',
                 headers: {
                     'Authorization': `JWT ${jwtAccess}`,
@@ -62,7 +62,7 @@ export default function MoviePage() {
     useEffect(() => {
         const fetchUserData = async () => {
             try {
-                const response = await fetch('http://127.0.0.1:8000/auth/users/me/', {
+                const response = await fetch(`${import.meta.env.VITE_BASE_URL}auth/users/me/`, {
                     method: 'GET',
                     headers: {
                         'Authorization': `JWT ${jwtAccess}`,
@@ -71,7 +71,7 @@ export default function MoviePage() {
                 });
                 const data = await response.json();
                 setUserId(data.id);
-                const listsResponse = await fetch('http://127.0.0.1:8000/movie/lists/', {
+                const listsResponse = await fetch(`${import.meta.env.VITE_BASE_URL}movie/lists/`, {
                     method: 'GET',
                     headers: {
                         'Authorization': `JWT ${jwtAccess}`,
@@ -79,18 +79,20 @@ export default function MoviePage() {
                     },
                 });
                 const listsData = await listsResponse.json();
-                const userLists = listsData.filter(list => list.user === userId);
+                // Revised filter condition
+                const userLists = listsData.filter(list => list.user === userId && !list.movies.some(movie => movie.id === +movieId));
                 setLists(userLists);
             } catch (error) {
                 console.error('Error:', error);
             }
         };
         fetchUserData();
-    }, [userId, jwtAccess]);
+    }, [userId, jwtAccess, movieId]);
+    
 
     const handleRatingSubmit = async (rating) => {
         try {
-            const response = await fetch(`http://127.0.0.1:8000/movie/rate_list/${movieId}/rates/`, {
+            const response = await fetch(`${import.meta.env.VITE_BASE_URL}movie/rate_list/${movieId}/rates/`, {
                 method: 'POST',
                 headers: {
                     'Authorization': `JWT ${jwtAccess}`,
@@ -118,7 +120,7 @@ export default function MoviePage() {
         if (!rateId) return;
 
         try {
-            const response = await fetch(`http://127.0.0.1:8000/movie/rate_list/${movieId}/rates/${rateId}/`, {
+            const response = await fetch(`${import.meta.env.VITE_BASE_URL}movie/rate_list/${movieId}/rates/${rateId}/`, {
                 method: 'PUT',
                 headers: {
                     'Authorization': `JWT ${jwtAccess}`,
@@ -144,7 +146,7 @@ export default function MoviePage() {
         if (!rateId) return;
 
         try {
-            const response = await fetch(`http://127.0.0.1:8000/movie/rate_list/${movieId}/rates/${rateId}/`, {
+            const response = await fetch(`${import.meta.env.VITE_BASE_URL}movie/rate_list/${movieId}/rates/${rateId}/`, {
                 method: 'DELETE',
                 headers: {
                     'Authorization': `JWT ${jwtAccess}`,
@@ -175,7 +177,7 @@ export default function MoviePage() {
             parent_comment: parentCommentId,
         };
 
-        fetch(`http://127.0.0.1:8000/movie/comment_list/${movieId}/`, {
+        fetch(`${import.meta.env.VITE_BASE_URL}movie/comment_list/${movieId}/`, {
             method: 'POST',
             headers: {
                 'Authorization': `JWT ${jwtAccess}`,
@@ -185,7 +187,6 @@ export default function MoviePage() {
         })
         .then(response => response.json())
         .then(data => {
-            //console.log('Reply submitted:', data);
             setLastUpdate(Date.now());
             // Update your comments state or handle the UI update as needed
         })
@@ -202,7 +203,7 @@ export default function MoviePage() {
             parent_comment: null, // null for a top-level comment
         };
 
-        fetch(`http://127.0.0.1:8000/movie/comment_list/${movieId}/`, {
+        fetch(`${import.meta.env.VITE_BASE_URL}movie/comment_list/${movieId}/`, {
             method: 'POST',
             headers: {
                 'Authorization': `JWT ${jwtAccess}`,
@@ -229,11 +230,11 @@ export default function MoviePage() {
         }
 
 
-        const url = `http://127.0.0.1:8000/movie/movie-lists/`;
+        const url = `${import.meta.env.VITE_BASE_URL}movie/movie-lists/`;
 
         const requestData = {
             movie_list_id: listId,
-            movie_id: movieId, // Ensure this matches the expected format of your backend
+            movie_id: movieId,
         };
 
         fetch(url, {
@@ -309,12 +310,15 @@ export default function MoviePage() {
                     <div className="movie-title-director">
                         <div className="name-and-date">{title.toUpperCase()} <span className="movie-date">({release_date})</span></div>
                         <div className="director-name">
-                            Directed by {crew.map((crewMember, index) => (
-                                <span key={index} className="bold">
-                                    {crewMember.crew.name}
-                                    {index !== crew.length - 1 ? ', ' : ''}
-                                </span>
-                            ))}
+                        Directed by {
+                            crew.filter(crewMember => crewMember.crew.role === "Directing")
+                                .map((crewMember, index, filteredArray) => (
+                                    <span key={index} className="bold">
+                                        {crewMember.crew.name}
+                                        {index !== filteredArray.length - 1 ? ', ' : ''}
+                                    </span>
+                                ))
+                        }
                         </div>
                     </div>
                 </div>
@@ -390,13 +394,24 @@ export default function MoviePage() {
                         <Modal.Header closeButton>
                             <Modal.Title>LISTS</Modal.Title>
                         </Modal.Header>
-                        <Modal.Body className= "list-select-modal-body">
+                        <Modal.Body className="list-select-modal-body">
                             <select id="listSelector">
-                                {lists.map((list) => (
-                                    <option key={list.id} value={list.id}>
-                                        {list.title}
-                                    </option>
-                                ))}
+                                {lists.map((list) => {
+                                    let displayTitle;
+                                    if (list.title === 'watchlist') {
+                                        displayTitle = 'WatchList';
+                                    } else if (list.title === 'watched_movies') {
+                                        displayTitle = 'Watched Movies';
+                                    } else {
+                                        displayTitle = list.title; // Default to the original title
+                                    }
+
+                                    return (
+                                        <option key={list.id} value={list.id}>
+                                            {displayTitle}
+                                        </option>
+                                    );
+                                })}
                             </select>
                             <Button
                                 variant="primary"
@@ -406,9 +421,13 @@ export default function MoviePage() {
                                 Add
                             </Button>
                         </Modal.Body>
-                    </Modal>         
+                    </Modal>
+        
                     <div className="similar-movies">
-                        <div className="movies-like-text">Movies like <span className="bold">{title}</span></div>
+                        <div className="movies-like-text">Movies like <span className="bold">{title.split(' ')
+                                                            .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+                                                            .join(' ')}</span>
+                        </div>
                         <div className="similar-movies-list">
                             {similar_movies.map((movie) => (
                                 <Link to={`/moviepage/${movie.movie_id}`} key={movie.movie_id}>

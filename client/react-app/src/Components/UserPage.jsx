@@ -6,12 +6,10 @@ import Button from "react-bootstrap/esm/Button";
 import Container from "react-bootstrap/esm/Container";
 import MovieCard from "./SubComponents/MovieCard";
 import Row from "react-bootstrap/Row";
-
+import { BounceLoader } from 'react-spinners';
 
 export default function UserPage(){
 
-    // TODO: add matched percentage below username
-    // TODO: follow mechanism is the problem, fix it
     const { username } = useParams();
     const [yourUserId, setYourUserId] = useState(null);
     const [watchedMovies, setWatchedMovies] = useState([]);
@@ -29,8 +27,6 @@ export default function UserPage(){
     });
 
     const jwtAccess = localStorage.getItem('jwtAccess');
-    const bestMatchMoviePoster= "src/assets/dummyPoster.jpg";
-    
 
     useEffect(() => {
       const fetchData = async () => {
@@ -42,7 +38,7 @@ export default function UserPage(){
   
           try {
               // Fetch the current user's ID
-              const userResponse = await fetch('http://127.0.0.1:8000/auth/users/me/', {
+              const userResponse = await fetch(`${import.meta.env.VITE_BASE_URL}auth/users/me/`, {
                 method: 'GET',
                 headers: {
                     'Authorization': `JWT ${jwtAccess}`,
@@ -57,7 +53,7 @@ export default function UserPage(){
             const userData = await userResponse.json();
             setYourUserId(userData.id);
               // Fetch profile data
-              const profileResponse = await fetch(`http://127.0.0.1:8000/accounts/profile/${username}/`, {
+              const profileResponse = await fetch(`${import.meta.env.VITE_BASE_URL}accounts/profile/${username}/`, {
                   method: 'GET',
                   headers: {
                       'Authorization': `JWT ${jwtAccess}`,
@@ -70,7 +66,6 @@ export default function UserPage(){
               }
   
               const profileInfo = await profileResponse.json();
-              console.log(profileInfo)
   
               // Update state with profile information
               setProfileData({
@@ -79,14 +74,15 @@ export default function UserPage(){
                 followerCount: profileInfo.follower_count,
                 followingCount: profileInfo.following_count,
                 watchedMovieCount: profileInfo.watched_movie_count,
-                bestMatchMoviePoster: profileInfo.best_match_movie_poster,
+                bestMatchMoviePoster: profileInfo.best_matched_movie_poster,
                 profilePictureUrl: profileInfo.profile_picture_url,
                 followStatus: profileInfo.follow_status,
             });
             setFollowState(profileInfo.follow_status ? "Unfollow": "Follow");
   
               // Fetch lists
-              const listsResponse = await fetch(`http://127.0.0.1:8000/movie/lists/`, {
+              const listsResponse = await fetch(
+                `${import.meta.env.VITE_BASE_URL}movie/lists/`, {
                   method: 'GET',
                   headers: {
                       'Authorization': `JWT ${jwtAccess}`,
@@ -100,11 +96,12 @@ export default function UserPage(){
   
               const allLists = await listsResponse.json();
               const userLists = await allLists.filter(list => list.user === profileInfo.id);
-              const watchedList = userLists.find((list, index) => index === 1);
+              const watchedList = userLists.find((list) => list.title === "watched_movies");
+
 
               // set the list's movies
               if (watchedList && watchedList.movies) {
-                setWatchedMovies(watchedList.movies); // Directly use the movies from the watched list
+                setWatchedMovies(watchedList.movies); 
               } else {
                   console.log('Watched list or movies not found');
               }
@@ -119,7 +116,6 @@ export default function UserPage(){
       fetchData();
   }, [jwtAccess, username, followState]);
   
-
   const handleFollow = () => {
     setIsLoading(true); // Begin loading state
 
@@ -130,7 +126,7 @@ export default function UserPage(){
     };
 
     // Send a POST request to the follow endpoint
-    fetch('http://127.0.0.1:8000/accounts/follow/', {
+    fetch(`${import.meta.env.VITE_BASE_URL}accounts/follow/`, {
         method: 'POST',
         headers: {
             'Authorization': `JWT ${jwtAccess}`,
@@ -148,7 +144,7 @@ export default function UserPage(){
         }
 
         // Always refetch the profile after a follow/unfollow action to ensure the data is fresh.
-        return fetch(`http://127.0.0.1:8000/accounts/profile/${username}/`, {
+        return fetch(`${import.meta.env.VITE_BASE_URL}accounts/profile/${username}/`, {
             method: 'GET',
             headers: {
                 'Authorization': `JWT ${jwtAccess}`,
@@ -176,14 +172,23 @@ export default function UserPage(){
 };
 
   
-
+if (isLoading) {
+    return (
+        <div className="main-page">
+            <ProgramNavbar />
+            <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh' }}>
+                <BounceLoader color="#123abc" loading={isLoading} />
+            </div>
+        </div>
+    );
+}
 
     return(
         <div className="main-page">
             <ProgramNavbar/>
             <div className="profile-page-content"
               style={{
-              backgroundImage: `linear-gradient(0deg, rgba(10, 20, 33, 0.4) 0%, rgba(10, 20, 33, 0.4) 100%), linear-gradient(0deg, #0A1421 0%, rgba(0, 0, 0, 0.00) 100%), url(${ bestMatchMoviePoster })`, /*profileData.bestMatchMoviePoster}*/
+              backgroundImage: `linear-gradient(0deg, rgba(10, 20, 33, 0.4) 0%, rgba(10, 20, 33, 0.4) 100%), linear-gradient(0deg, #0A1421 0%, rgba(0, 0, 0, 0.00) 100%), url(${ profileData.bestMatchMoviePoster })`,
               backgroundPosition: 'center center',
               backgroundSize: 'cover',
               backgroundRepeat: 'no-repeat',
@@ -194,11 +199,18 @@ export default function UserPage(){
                         src={profileData.profilePictureUrl}
                     />
                     <div className="user-name">{username}</div>
+                    <p className="user-name">{"%" + parseFloat(profileData.matchRate).toFixed(1) + "MATCHED"}</p>
+
                 </div>
                 <div className="follow-stats">
                     <div><span style={{fontWeight: 'bold'}}>{profileData.watchedMovieCount}</span> MOVIES</div>
-                    <div><span style={{fontWeight: 'bold'}}>{profileData.followerCount}</span> FOLLOWERS</div>
-                    <div><span style={{fontWeight: 'bold'}}>{profileData.followingCount}</span> FOLLOWINGS</div>
+                    <Link to={`/user/${username}/followers`}>
+  <div><span style={{ fontWeight: 'bold' }}>{profileData.followerCount}</span> FOLLOWERS</div>
+</Link>
+<Link to={`/user/${username}/followings`}>
+  <div><span style={{ fontWeight: 'bold' }}>{profileData.followingCount}</span> FOLLOWINGS</div>
+</Link>
+
                 </div>
             </div>
             <div className="rest-myprofile-page">
