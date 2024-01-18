@@ -24,6 +24,7 @@ export default function MoviePage() {
     const jwtAccess = localStorage.getItem('jwtAccess');
     const [lastUpdate, setLastUpdate] = useState(Date.now());
     const [showRatingModal, setShowRatingModal] = useState(false);
+    const [all_comment_link, set_all_comment_link] = useState(null);
         
 
     const fetchMovieData = async () => {
@@ -49,6 +50,7 @@ export default function MoviePage() {
             }
 
             const commentsResponse = await fetch(data.comments.all_comment_link);
+            set_all_comment_link(data.comments.all_comment_link);
             const commentsData = await commentsResponse.json();
             setComments(commentsData);
         } catch (error) {
@@ -109,8 +111,7 @@ export default function MoviePage() {
                 setUserRate(data.rate_point);
                 setRateId(data.id);
                 setHasRated(true);
-                setLastUpdate(Date.now());
-                console.log('Rating submitted successfully:', data);
+                setShowRatingModal(false);
             } else {
                 throw new Error(`HTTP error! Status: ${response.status}`);
             }
@@ -135,8 +136,7 @@ export default function MoviePage() {
             if (response.ok) {
                 const data = await response.json();
                 setUserRate(data.rate_point);
-                setLastUpdate(Date.now());
-                console.log('Rating updated successfully:', data);
+                setShowRatingModal(false);
             } else {
                 throw new Error(`HTTP error! Status: ${response.status}`);
             }
@@ -161,8 +161,7 @@ export default function MoviePage() {
                 setUserRate('Not rated');
                 setRateId(null);
                 setHasRated(false);
-                setLastUpdate(Date.now());
-                console.log('Rating removed successfully');
+                setShowRatingModal(false);
             } else {
                 throw new Error(`HTTP error! Status: ${response.status}`);
             }
@@ -189,9 +188,11 @@ export default function MoviePage() {
             body: JSON.stringify(replyData)
         })
         .then(response => response.json())
-        .then(data => {
-            setLastUpdate(Date.now());
-            // Update your comments state or handle the UI update as needed
+        .then(async (data) => {
+            const commentsResponse = await fetch(all_comment_link);
+            const commentsData = await commentsResponse.json();
+            setComments(commentsData);
+            
         })
         .catch(error => {
             console.error('Error submitting reply:', error);
@@ -215,10 +216,11 @@ export default function MoviePage() {
             body: JSON.stringify(commentData)
         })
         .then(response => response.json())
-        .then(data => {
-            setLastUpdate(Date.now());
-            //console.log('Comment submitted:', data);
-            // Update your comments state with the new comment
+        .then(async(data) => {
+            
+            const commentsResponse = await fetch(all_comment_link);
+            const commentsData = await commentsResponse.json();
+            setComments(commentsData);
         })
         .catch(error => {
             console.error('Error submitting comment:', error);

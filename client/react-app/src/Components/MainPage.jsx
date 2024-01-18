@@ -126,6 +126,7 @@ export default function MainPage(){
     };
 
 
+
     return(
         <div className="main-page">
             <ProgramNavbar/>
@@ -158,7 +159,7 @@ export default function MainPage(){
                                     .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
                                     .join(' ')} ({bestMatchMovie.release_date})
                             </div>
-                            <div className="best-match-movie-desc">{bestMatchMovie.description}</div>
+                            <div className="best-match-movie-desc">{bestMatchMovie.overview}</div>
                             </div>
                             <div className="best-match-movie-points">
                             <span className="true-points">{parseFloat(bestMatchMovie.vote_average).toFixed(1)}/10</span>

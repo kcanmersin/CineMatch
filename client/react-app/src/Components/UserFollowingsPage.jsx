@@ -71,10 +71,10 @@ export default function UserFollowingsPage() {
                     {Array.isArray(followings) && followings.length > 0 ? (
                         <ul>
                             {followings.map(person => (
-                                <li key={person.is_followed_by.username}>
-                                    <Link to={`/user/${person.is_followed_by.username}`} className="user-link">
-                                        <img src={person.is_followed_by.profile_picture} alt={`${person.is_followed_by.username}'s profile`} />
-                                        <p>Username: {person.is_followed_by.username}</p>
+                                <li key={person.user.username}>
+                                    <Link to={`/user/${person.user.username}`} className="user-link">
+                                        <img src={person.user.profile_picture} alt={`${person.user.username}'s profile`} />
+                                        <p>Username: {person.user.username}</p>
                                     </Link>
                                 </li>
                             ))}
