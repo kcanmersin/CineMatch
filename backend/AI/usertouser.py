@@ -11,7 +11,10 @@ import psycopg2
 import os
 
 def create_user_item_matrix(ratings):
-    user_item_matrix = ratings.pivot(index='userId', columns='tmdbId', values='rating')
+    # Drop duplicate ratings if any
+    ratings = ratings.drop_duplicates(subset=['userId', 'tmdbId'], keep='first')
+    
+    user_item_matrix = ratings.pivot(index='userId', columns='tmdbId', values='rating') 
     user_item_matrix = user_item_matrix.fillna(0)  # Fill NaN with 0
     return user_item_matrix
 
