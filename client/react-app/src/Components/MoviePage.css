@@ -114,6 +114,8 @@
 
 .add-to-a-list-button{
     margin-bottom: 2rem;
+    margin-left: 30%;
+    margin-right: 30%;
 }
 
 
@@ -136,7 +138,23 @@
 
 .comment-amount{
     color: rgb(0,255,56);
-    border-bottom: 1px solid rgb(0,255,56);;
+    border-bottom: 1px solid rgb(0,255,56);
+}
+
+.rate-button{
+    background-color: rgb(252,186,3);
+    border-color: rgb(252,186,3);
+}
+
+
+.rate-button:hover{
+    background-color: rgb(222,156,0);
+    border-color: rgb(222,156,0);
+}
+
+.rate-button:active{
+    background-color: rgb(222,156,0);
+    border-color: rgb(222,156,0);
 }
 
 
@@ -151,4 +169,13 @@
 .matched-people-link:hover {
     text-decoration: underline; /* Underline on hover, for example */
     /* Add any other hover styling properties you need */
+}
+
+.movie-page-buttons{
+    display: flex;
+    flex-direction: column;
+}
+
+.modal-footer{
+    border-top: 0;
 }

@@ -5,6 +5,7 @@ import { UserContext } from './UserContext';
 import ProgramNavbar from './SubComponents/ProgramNavbar';
 import CommentSection from './SubComponents/CommentSection';
 import { BounceLoader } from 'react-spinners';
+import { Form } from 'react-bootstrap';
 import './MoviePage.css';
 
 export default function MoviePage() {
@@ -22,6 +23,8 @@ export default function MoviePage() {
     const [userRating, setUserRating] = useState(0);
     const jwtAccess = localStorage.getItem('jwtAccess');
     const [lastUpdate, setLastUpdate] = useState(Date.now());
+    const [showRatingModal, setShowRatingModal] = useState(false);
+        
 
     const fetchMovieData = async () => {
         setIsLoading(true);
@@ -357,39 +360,74 @@ export default function MoviePage() {
                     </div>
                 </div>
                 <div className="movie-page-buttons-similars">
+                    <div className='movie-page-buttons'>
                     <Button variant="success"
                         onClick={handleShowModal}
                         className="add-to-a-list-button">
                         Add to a List
                     </Button>
-                    <div className="movie-rating-controls">
-                {hasRated ? (
-                    <>
-                        <input
-                            type="number"
-                            min="0"
-                            max="10"
-                            step="0.1"
-                            value={userRating}
-                            onChange={(e) => setUserRating(e.target.value)}
-                        />
-                        <button onClick={() => handleUpdateRating(userRating)}>Update Rating</button>
-                        <button onClick={handleRemoveRating}>Remove Rating</button>
-                    </>
-                ) : (
-                    <>
-                        <input
-                            type="number"
-                            min="0"
-                            max="10"
-                            step="0.1"
-                            value={userRating}
-                            onChange={(e) => setUserRating(e.target.value)}
-                        />
-                        <button onClick={() => handleRatingSubmit(userRating)}>Submit Rating</button>
-                    </>
-                )}
+                    <Button variant="success" onClick={() => setShowRatingModal(true)} className="add-to-a-list-button rate-button">
+                        {hasRated ? 'Rated' : 'Rate'}
+                    </Button>
+                    </div>
+                    <div className="similar-movies">
+                        <div className="movies-like-text">Movies like <span className="bold">{title.split(' ')
+                                                            .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+                                                            .join(' ')}</span>
+                        </div>
+                        <div className="similar-movies-list">
+                            {similar_movies.map((movie) => (
+                                <Link to={`/moviepage/${movie.movie_id}`} key={movie.movie_id}>
+                                    <div className="similar-movie">
+                                        <img className="similar-movie-poster" src={"https://image.tmdb.org/t/p/original" + movie.movie_poster_url} alt={movie.movie_title} />
+                                        <p className="similar-movie-title">
+                                        {movie.movie_title
+                                            .split(' ')
+                                            .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+                                            .join(' ')}
+                                        </p>
+                                    </div>
+                                </Link>
+                            ))}
+                        </div>
+                    </div>
+                </div>
             </div>
+            <Modal show={showRatingModal} onHide={() => setShowRatingModal(false)}>
+                <Modal.Header closeButton>
+                    <Modal.Title>Rate this Movie</Modal.Title>
+                </Modal.Header>
+                <Modal.Body>
+                    <Form>
+                        <Form.Group controlId="ratingInput">
+                            <Form.Control
+                                type="number"
+                                min="0"
+                                max="10"
+                                step="0.1"
+                                value={userRating}
+                                onChange={(e) => setUserRating(e.target.value)}
+                            />
+                        </Form.Group>
+                        <Modal.Footer className= "modal-footer">
+                            {hasRated ? (
+                                <>
+                                    <Button variant="primary" onClick={() => handleUpdateRating(userRating)}>
+                                        Update Rating
+                                    </Button>
+                                    <Button variant="danger" onClick={handleRemoveRating}>
+                                        Remove Rating
+                                    </Button>
+                                </>
+                            ) : (
+                                <Button variant="primary" onClick={() => handleRatingSubmit(userRating)}>
+                                    Submit Rating
+                                </Button>
+                            )}
+                        </Modal.Footer>
+                    </Form>
+                </Modal.Body>
+            </Modal>
                     <Modal show={showModal} onHide={handleCloseModal}>
                         <Modal.Header closeButton>
                             <Modal.Title>LISTS</Modal.Title>
@@ -421,31 +459,7 @@ export default function MoviePage() {
                                 Add
                             </Button>
                         </Modal.Body>
-                    </Modal>
-        
-                    <div className="similar-movies">
-                        <div className="movies-like-text">Movies like <span className="bold">{title.split(' ')
-                                                            .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
-                                                            .join(' ')}</span>
-                        </div>
-                        <div className="similar-movies-list">
-                            {similar_movies.map((movie) => (
-                                <Link to={`/moviepage/${movie.movie_id}`} key={movie.movie_id}>
-                                    <div className="similar-movie">
-                                        <img className="similar-movie-poster" src={"https://image.tmdb.org/t/p/original" + movie.movie_poster_url} alt={movie.movie_title} />
-                                        <p className="similar-movie-title">
-                                        {movie.movie_title
-                                            .split(' ')
-                                            .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
-                                            .join(' ')}
-                                        </p>
-                                    </div>
-                                </Link>
-                            ))}
-                        </div>
-                    </div>
-                </div>
-            </div>
+            </Modal>
         </div>
     );
     
