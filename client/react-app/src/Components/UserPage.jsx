@@ -114,64 +114,49 @@ export default function UserPage(){
       };
   
       fetchData();
-  }, [jwtAccess, username, followState]);
+  }, [jwtAccess, username]);
   
-  const handleFollow = () => {
-    setIsLoading(true); // Begin loading state
-
-    // Create a follow object with follower_id and following_id
+  const handleFollow = async () => {
     const followData = {
-        follower_id: yourUserId, // Replace with the follower's user ID
-        following_id: profileData.id, // Use the user ID of the profile being viewed
+        follower_id: yourUserId,
+        following_id: profileData.id,
     };
 
-    // Send a POST request to the follow endpoint
-    fetch(`${import.meta.env.VITE_BASE_URL}accounts/follow/`, {
-        method: 'POST',
-        headers: {
-            'Authorization': `JWT ${jwtAccess}`,
-            'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(followData),
-    }).then(response => response.json())
-      .then(data => {
-        console.log(data);
-        // Assuming data.status is "following" if now following, and something else if not.
-        if (data.status === "Following") {
-            setFollowState("Unfollow");
-        } else {
-            setFollowState("Follow");
-        }
-
-        // Always refetch the profile after a follow/unfollow action to ensure the data is fresh.
-        return fetch(`${import.meta.env.VITE_BASE_URL}accounts/profile/${username}/`, {
-            method: 'GET',
+    try {
+        const response = await fetch(`${import.meta.env.VITE_BASE_URL}accounts/follow/`, {
+            method: 'POST',
             headers: {
                 'Authorization': `JWT ${jwtAccess}`,
                 'Content-Type': 'application/json',
             },
+            body: JSON.stringify(followData),
         });
-      })
-      .then(updatedProfileResponse => updatedProfileResponse.json())
-      .then(updatedProfileInfo => {
-        console.log(updatedProfileInfo);
-        if (updatedProfileInfo) {
-            // Update the state with the new follow state and count
+
+        const data = await response.json();
+        console.log(data);
+
+        // Update follow state and follower count
+        if (data.status === "Following") {
+            setFollowState("Unfollow");
             setProfileData(prevData => ({
                 ...prevData,
-                followerCount: updatedProfileInfo.follower_count,
-                followStatus: updatedProfileInfo.follow_status,
+                followerCount: prevData.followerCount + 1,
+                followStatus: true,
+            }));
+        } else {
+            setFollowState("Follow");
+            setProfileData(prevData => ({
+                ...prevData,
+                followerCount: Math.max(0, prevData.followerCount - 1),
+                followStatus: false,
             }));
         }
-        setIsLoading(false); // End loading state
-      })
-      .catch(error => {
+    } catch (error) {
         console.error('Follow/unfollow request failed', error);
-        setIsLoading(false); // End loading state
-      });
+    } 
 };
 
-  
+
 if (isLoading) {
     return (
         <div className="main-page">
