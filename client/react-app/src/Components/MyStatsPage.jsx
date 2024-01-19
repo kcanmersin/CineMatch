@@ -107,30 +107,30 @@ export default function MyStatsPage() {
     }
 
     return (
-        <div>
+        <div className='main-page'>
             <ProgramNavbar />
-            <div style={{ width: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-            {/* User Profile Section */}
-            <div style={{ textAlign: 'center', marginBottom: '20px' }}>
-                <img src={userData.profile_photo_url} alt={`${username}'s profile`} style={{ width: '100px', height: '100px', borderRadius: '50%' }} />
-                <h2>{username}</h2>
-                <p>Watched Movies: {userData.watched_movie_count}</p>
-                <p>Followers: {userData.follower_count}</p>
-                <p>Following: {userData.following_count}</p>
-                <p>Member Since: {new Date(userData.signed_up_since).toLocaleDateString()}</p>
-                <p>Total Hours Watched: {formatHoursToHoursMinutes(userData.total_hours_watched)}</p>
-                <p>Average Time per Movie: {formatHoursToHoursMinutes(userData.average_time_per_movie)}</p>
-                <p>Favorite Genre: {userData.favorite_genre?.genre__genre_name}</p>
-                <p>Average Rating: {userData.average_rating}</p>
+            <div className='stats-page'>
+            <div className='user-info'>
+                <img className= "stats-user-profile-image" src={userData.profile_photo_url} alt={`${username}'s profile`}/>
+                <div className='stats-page-user-name'>{username}</div>
+                <div className='stats-page-user-info'>{userData.watched_movie_count}<span className='faint-text'> WATCHED MOVIES</span></div>
+                <div className='stats-page-user-info'>{userData.follower_count}<span className='faint-text'> FOLLOWERS</span></div>
+                <div className='stats-page-user-info'>{userData.following_count}<span className='faint-text'> FOLLOWINGS</span></div>
+                <div className='stats-page-user-info'><span className='faint-text'>Member Since</span><span className='right-aligned'>   {new Date(userData.signed_up_since).toLocaleDateString()}</span></div>
+                <div className='stats-page-user-info'><span className='faint-text'>Total Hours Watched</span><span className='right-aligned'>   {formatHoursToHoursMinutes(userData.total_hours_watched)}</span></div>
+                <div className='stats-page-user-info'><span className='faint-text'>Average Time per Movie</span><span className='right-aligned'>  {formatHoursToHoursMinutes(userData.average_time_per_movie)}</span></div>
+                <div className='stats-page-user-info'><span className='faint-text'>Favorite Genre</span><span className='right-aligned'>{userData.favorite_genre?.genre__genre_name}</span></div>
+                <div className='stats-page-user-info'><span className='faint-text'>Average Rating</span><span className='right-aligned'>{userData.average_rating}</span></div>
             </div>
 
-            {/* Charts */}
+            <div className='graphs'>
             <MovieRatingsChart movieRatingsDistribution={movieRatingsDistribution} />
             <GenreBreakdownChart genreBreakdown={genreBreakdown} />
             <MoviesPerYearChart moviesPerYear={moviesPerYear} />
+            </div>
         </div>
-
         </div>
+       
         
     );
 }
