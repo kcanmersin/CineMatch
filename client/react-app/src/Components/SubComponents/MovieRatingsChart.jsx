@@ -1,5 +1,6 @@
 import React from 'react';
 import { Bar } from 'react-chartjs-2';
+import './MovieRatingsChart.css'
 
 export default function MovieRatingsChart({ movieRatingsDistribution }){
     const ratingsChartData = {
@@ -7,8 +8,8 @@ export default function MovieRatingsChart({ movieRatingsDistribution }){
         datasets: [{
             label: 'Number of Ratings',
             data: Object.values(movieRatingsDistribution),
-            backgroundColor: 'rgba(53, 162, 235, 0.5)',
-            borderColor: 'rgba(53, 162, 235, 1)',
+            backgroundColor: 'rgb(252,186,3)',
+            borderColor: 'rgb(252,186,3)',
             borderWidth: 1,
         }],
     };
@@ -21,21 +22,34 @@ export default function MovieRatingsChart({ movieRatingsDistribution }){
                 title: {
                     display: true,
                     text: 'Number of Movies',
+                    color: '#cecece'
                 },
                 ticks: {
-                    // Ensure y-axis labels are natural numbers
+                    
                     callback: function(value) {
                         if (value % 1 === 0) {
                             return value;
                         }
-                    }
-                }
+                    },
+
+                    color: '#cecece'
+                },
+                grid: {
+                    display:false,
+                },
             },
             x: {
                 title: {
                     display: true,
                     text: 'Ratings',
-                }
+                    color: '#cecece'
+                },
+                ticks: {
+                    color: '#cecece', 
+                },
+                grid: {
+                    display:false,
+                },
             }
         },
         plugins: {
@@ -43,15 +57,22 @@ export default function MovieRatingsChart({ movieRatingsDistribution }){
                 position: 'top',
             },
             title: {
-                display: true,
+                display: false,
                 text: 'Movie Ratings Distribution',
+            },
+            
+        },
+
+        elements: {
+            bar: {
+                borderRadius: 3, // Set the border radius for curved bars
             },
         },
     };
 
     return (
-        <div style={{ width: '40%', marginTop: '20px' }}>
-            <h2>Movie Ratings Distribution</h2>
+        <div className='movie-rating-stats'>
+            <div className="chart-text">Movie Ratings Distribution</div>
             <Bar data={ratingsChartData} options={ratingsChartOptions} />
         </div>
     );

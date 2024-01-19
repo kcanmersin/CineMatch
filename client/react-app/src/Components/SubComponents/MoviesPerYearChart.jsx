@@ -6,11 +6,11 @@ export default function MoviesPerYearChart({ moviesPerYear }){
     const moviesPerYearChartData = {
         labels: moviesPerYear.map(item => item.release_date.toString()),
         datasets: [{
-            label: 'Movies per Year',
+            label: 'Movies',
             data: moviesPerYear.map(item => item.movie_count),
             fill: false,
-            borderColor: 'rgb(75, 192, 192)',
-            tension: 0.1
+            borderColor: '#cecece',
+            tension: 1
         }],
     };
 
@@ -22,19 +22,26 @@ export default function MoviesPerYearChart({ moviesPerYear }){
                 title: {
                     display: true,
                     text: 'Number of Movies',
+                    color: '#cecece'
                 },
                 ticks: {
                     callback: function(value) {
                         if (Number.isInteger(value)) {
                             return value;
                         }
-                    }
+                    },
+                    color:'#cecece'
                 }
             },
             x: {
                 title: {
                     display: true,
                     text: 'Year',
+                    color: '#cecece'
+                },
+                ticks: {
+                    
+                    color:'#cecece'
                 }
             }
         },
@@ -43,15 +50,15 @@ export default function MoviesPerYearChart({ moviesPerYear }){
                 position: 'top',
             },
             title: {
-                display: true,
+                display: false,
                 text: 'Movies per Year',
             },
         },
     };
 
     return (
-        <div style={{ width: '40%', marginTop: '20px' }}>
-            <h2>Movies per Year</h2>
+        <div className='movie-rating-stats'>
+            <div className="chart-text">Movies Per Year</div>
             <Line data={moviesPerYearChartData} options={moviesPerYearChartOptions} />
         </div>
     );

@@ -161,7 +161,7 @@
 /* Add your desired styling for the link */
 .matched-people-link {
     text-decoration: none; /* Remove underline by default */
-    color: rgb(0,255,56);; /* Change the link color to match your design */
+    color: rgb(0,255,56); /* Change the link color to match your design */
     /* Add any other styling properties you need */
 }
 

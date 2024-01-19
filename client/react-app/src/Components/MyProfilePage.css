@@ -27,6 +27,16 @@
     font-size: 2vw;
 }
 
+.user-name-percentage{
+    position: relative;
+    color: #00FF38;
+    font-weight: bolder;
+    left: 8%;
+    top: 5em;
+    font-size: 1vw;
+    margin-left: 1em;
+}
+
 .follow-stats{
     position: relative;
     color: #cecece;
@@ -63,6 +73,8 @@
     padding-right: 0;
     padding-left: 0;
     max-width: none;
+    display: flex;
+    flex-wrap: wrap;
 }
 
 .watched-movies{
@@ -93,6 +105,24 @@
     font-weight: bold;
     flex-shrink: 0;
     align-self: flex-start;
+}
+
+.user-name a,
+.follow-stats a,
+.profile-button a,
+.watched-movies-text a,
+.movie-card a {
+    color: inherit; /* Set the color to inherit to use the parent color */
+    text-decoration: none; /* Remove underline for all links */
+}
+
+/* Add this block to specifically style visited links */
+.user-name a:visited,
+.follow-stats a:visited,
+.profile-button a:visited,
+.watched-movies-text a:visited,
+.movie-card a:visited {
+    color: inherit; /* Set the color to inherit for visited links */
 }
 
 @media (max-width: 950px){

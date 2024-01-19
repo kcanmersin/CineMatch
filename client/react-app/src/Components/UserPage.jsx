@@ -184,7 +184,7 @@ if (isLoading) {
                         src={profileData.profilePictureUrl}
                     />
                     <div className="user-name">{username}</div>
-                    <p className="user-name">{"%" + parseFloat(profileData.matchRate).toFixed(1) + "MATCHED"}</p>
+                    <div className="user-name-percentage">{"%" + parseFloat(profileData.matchRate).toFixed(1) + " MATCHED"}</div>
 
                 </div>
                 <div className="follow-stats">
@@ -211,7 +211,7 @@ if (isLoading) {
                         onClick={handleFollow}
                         disabled={isLoading} // Disable button while loading
                     >
-                        {followState}
+                        {followState.toUpperCase()}
                     </Button>
                 </div>
                 <div className= "watched-movies">
@@ -219,13 +219,13 @@ if (isLoading) {
                         WATCHED MOVIES
                     </div>
                     <Container className="watched-movies-card-container">
-                        <Row>
+                       
                             {watchedMovies.map((movie) => (
                               <Link key={movie.id} to={`/moviepage/${movie.id}`}>
                                   <MovieCard {...movie} />
                               </Link>
                             ))}
-                        </Row>
+                        
                     </Container>
                 </div>
             </div>

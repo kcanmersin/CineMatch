@@ -1,0 +1,21 @@
+.movie-rating-stats{
+    width: 40rem;
+    margin-top: 3rem;
+    margin-bottom: 2rem;
+    margin-left: 4rem;
+    background-color: #010b18;
+    border-radius: 2%;
+    padding: 5%;
+}
+
+.chart-text{
+    color: #cecece;
+    font-size: 1.5rem;
+}
+
+@media (max-width: 1200px) {
+    .movie-rating-stats{
+        align-self: center;
+    }
+}
+

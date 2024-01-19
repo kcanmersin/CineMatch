@@ -180,13 +180,11 @@ export default function MyProfilePage(){
                         WATCHED MOVIES
                     </div>
                     <Container className="watched-movies-card-container">
-                        <Row>
                             {watchedMovies.map((movie) => (
                                 <Link key={movie.id} to={`/moviepage/${movie.id}`}>
                                     <MovieCard {...movie} />
                                 </Link>
                             ))}
-                        </Row>
                     </Container>
                 </div>
             </div>

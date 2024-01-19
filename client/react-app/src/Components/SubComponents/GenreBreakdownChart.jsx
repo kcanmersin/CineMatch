@@ -8,8 +8,8 @@ export default function GenreBreakdownChart({ genreBreakdown }){
         datasets: [{
             label: 'Genre Count',
             data: genreBreakdown.map(item => item.genre_count),
-            backgroundColor: 'rgba(255, 99, 132, 0.5)',
-            borderColor: 'rgb(255, 99, 132)',
+            backgroundColor: 'rgb(0,255,56)',
+            borderColor: 'rgb(0,255,56)',
             borderWidth: 1,
         }],
     };
@@ -39,7 +39,7 @@ export default function GenreBreakdownChart({ genreBreakdown }){
                 position: 'right',
             },
             title: {
-                display: true,
+                display: false,
                 text: 'Genre Breakdown',
             },
         },
@@ -50,19 +50,38 @@ export default function GenreBreakdownChart({ genreBreakdown }){
                 },
                 grid: {
                     display: false,
-                }
+                },
+                ticks: {
+                    callback: function(value) {
+                        if (value % 1 === 0) {
+                            return value;
+                        }
+                    },
+                    color: '#cecece', 
+                },
             },
             y: {
                 grid: {
                     display: false,
-                }
+                },
+                ticks: {
+                    
+                    color: '#cecece', 
+                },
+                
             }
-        }
-    };
+        },
+        elements: {
+            bar: {
+                borderRadius: 3, // Set the border radius for curved bars
+            },
+        },
+
+    }
 
     return (
-        <div style={{ width: '40%' }}>
-            <h2>Genre Breakdown</h2>
+        <div className='movie-rating-stats'>
+            <div className="chart-text">Genre Breakdown</div>
             <Bar data={genreChartData} options={genreChartOptions} />
         </div>
     );

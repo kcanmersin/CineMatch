@@ -1,0 +1,53 @@
+.user-info{
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    top: 0;
+    text-align: left;
+    white-space: pre;
+    margin: 3vw;
+    overflow:auto;
+    height: fit-content;
+    color: #cecece;
+    font-size: 1rem;
+}
+
+.stats-page{
+    display: flex;
+    flex-wrap: wrap;
+}
+
+.stats-user-profile-image{
+    border-radius: 50%;
+    object-fit: cover;
+    height: 10rem;
+    width: 10rem;
+}
+
+.stats-page-user-name{
+    font-size: 2rem;
+}
+
+.faint-text{
+    color: rgba(206,206,206,0.5);
+}
+
+.right-aligned{
+    float: right;
+}
+
+.stats-page-user-info{
+    margin-bottom: 1rem;
+}
+
+.graphs{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+@media (max-width: 1200px) {
+    .stats-page{
+        display:block;
+    }
+}
