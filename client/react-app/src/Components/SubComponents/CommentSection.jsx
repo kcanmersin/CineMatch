@@ -1,5 +1,5 @@
 /* eslint-disable react/prop-types */
-import React, { useState } from "react";
+import { useState } from "react";
 import "./CommentSection.css";
 import Button from "react-bootstrap/Button";
 import Form from "react-bootstrap/Form";
@@ -65,8 +65,14 @@ const NewCommentForm = ({ onSubmit }) => {
     );
 };
 
-const Comment = ({ comment, replies, showReplyButton, onReplySubmit }) => {
+const Comment = ({ comment, replies, showReplyButton, onReplySubmit, onDeleteComment, username}) => {
+    const isUserComment = comment.user.username === username;
     const [showReplyForm, setShowReplyForm] = useState(false);
+
+
+    const handleDeleteClick = () => {
+        onDeleteComment(comment.id);
+    };
 
     const handleReplyClick = () => {
         setShowReplyForm(true);
@@ -95,26 +101,37 @@ const Comment = ({ comment, replies, showReplyButton, onReplySubmit }) => {
                     Reply
                 </Button>
             )}
-            {showReplyForm && (
-                <>
-                    <ReplyForm onSubmit={onReplySubmit} onCancel={handleCancelReply} parentCommentId={comment.id} />
-                </>
+            {isUserComment && (
+                <Button variant="danger" onClick={handleDeleteClick} className="delete-button">
+                    Delete
+                </Button>
             )}
+
+            {showReplyForm && (
+                <ReplyForm onSubmit={onReplySubmit} onCancel={handleCancelReply} parentCommentId={comment.id} />
+            )}
+
             {replies && replies.length > 0 && (
                 <div className="replies">
                     {replies.map((reply) => (
-                        <Comment key={reply.id} comment={reply} replies={[]} showReplyButton={false} onReplySubmit={onReplySubmit} />
+                        <Comment
+                            key={reply.id}
+                            comment={reply}
+                            replies={[]} // Assuming replies of replies are not handled
+                            showReplyButton={true}
+                            onReplySubmit={onReplySubmit}
+                            onDeleteComment={onDeleteComment}
+                            username={username}
+                        />
                     ))}
                 </div>
             )}
-            <Button variant="danger" className="delete-button">
-                    Delete
-            </Button>
+            
         </div>
     );
 };
 
-const CommentSection = ({ comments, onReplySubmit, onCommentSubmit }) => {
+const CommentSection = ({ comments, onReplySubmit, onCommentSubmit, onDeleteComment, username }) => {
     const topLevelComments = comments.filter((comment) => comment.parent_comment === null);
     const repliesMap = comments
         .filter((comment) => comment.parent_comment !== null)
@@ -128,7 +145,7 @@ const CommentSection = ({ comments, onReplySubmit, onCommentSubmit }) => {
     return (
         <div className="comment-section">
             {topLevelComments.map((comment) => (
-                <Comment key={comment.id} comment={comment} replies={repliesMap[comment.id]} showReplyButton={true} onReplySubmit={onReplySubmit} />
+                <Comment key={comment.id} comment={comment} replies={repliesMap[comment.id]} showReplyButton={true} onReplySubmit={onReplySubmit} onDeleteComment={onDeleteComment}  username={username} />
             ))}
             <NewCommentForm onSubmit={onCommentSubmit} />
         </div>
