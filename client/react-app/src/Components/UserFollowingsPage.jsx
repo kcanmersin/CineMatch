@@ -1,6 +1,8 @@
 import { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { BounceLoader } from 'react-spinners';
+import "./MyFollowingsPage.css"
+import ProgramNavbar from "./SubComponents/ProgramNavbar";
 
 export default function UserFollowingsPage() {
     const { username } = useParams(); 
@@ -58,7 +60,8 @@ export default function UserFollowingsPage() {
     }, [username, jwtAccess]);
 
     return (
-        <div>
+        <div className="main-page">
+            <ProgramNavbar/>
             {isLoading ? (
                 <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh' }}>
                     <BounceLoader color="#123abc" loading={isLoading} />
@@ -67,14 +70,14 @@ export default function UserFollowingsPage() {
                 <p>Error: {error}</p>
             ) : (
                 <div>
-                    <h1>{username + "'s Followings"}</h1>
+                    <div className='list-page-username'>{username + "'s Followings"}</div>
                     {Array.isArray(followings) && followings.length > 0 ? (
-                        <ul>
+                        <ul className='movie-lists-container'>
                             {followings.map(person => (
-                                <li key={person.user.username}>
+                                <li className="movie-lists" key={person.user.username}>
                                     <Link to={`/user/${person.user.username}`} className="user-link">
-                                        <img src={person.user.profile_picture} alt={`${person.user.username}'s profile`} />
-                                        <p>Username: {person.user.username}</p>
+                                        <img className="user-profile-image-list" src={person.user.profile_picture} alt={`${person.user.username}'s profile`} />
+                                        <p style={{color: '#cecece'}}>Username: {person.user.username}</p>
                                     </Link>
                                 </li>
                             ))}

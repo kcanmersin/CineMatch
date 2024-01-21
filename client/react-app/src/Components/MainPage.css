@@ -137,14 +137,14 @@
     height: auto;
 }
 
-
 .user-card {
     display: flex;
     flex-direction: column;
     align-items: center;
-    margin-right: 8%;
+    margin-right: 5rem;
     margin-top: 1%;
     margin-bottom: 10%;
+    width: 10rem;
 }
   
 .user-card-image {

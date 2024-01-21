@@ -2,6 +2,8 @@ import { useState, useEffect, useContext } from "react";
 import { Link } from "react-router-dom";
 import { UserContext } from "./UserContext";
 import { BounceLoader } from 'react-spinners';
+import "./MyFollowingsPage.css"
+import ProgramNavbar from "./SubComponents/ProgramNavbar";
 
 export default function MyFollowersPage() {
     const { userId } = useContext(UserContext);
@@ -35,7 +37,7 @@ export default function MyFollowersPage() {
 
     if (isLoading) {
         return (
-            <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh' }}>
+            <div className="main-page" style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh' }}>
                 <BounceLoader color="#123abc" loading={isLoading} />
             </div>
         );
@@ -43,10 +45,11 @@ export default function MyFollowersPage() {
 
     // Render
     return (
-        <div>
-            <h1>My Followers</h1>
+        <div className="main-page">
+            <ProgramNavbar/>
+            <div className='list-page-username'>My Followers</div>
             {isLoading ? (
-                <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh' }}>
+                <div className="main-page" style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh' }}>
                     <BounceLoader color="#123abc" loading={isLoading} />
                 </div>
             ) : error ? (
@@ -54,12 +57,12 @@ export default function MyFollowersPage() {
             ) : (
                 <div>
                     {Array.isArray(followers) && followers.length > 0 ? (
-                        <ul>
+                        <ul className='movie-lists-container'>
                             {followers.map(person => (
-                                <li key={person.is_followed_by.id}>
+                                <li className="movie-lists" key={person.is_followed_by.id}>
                                     <Link to={`/user/${person.is_followed_by.username}`} className="user-link">
-                                        <img src={person.is_followed_by.profile_picture} alt={`${person.is_followed_by.username}'s profile`} />
-                                        <p>Username: {person.is_followed_by.username}</p>
+                                        <img className="user-profile-image-list" src={person.is_followed_by.profile_picture} alt={`${person.is_followed_by.username}'s profile`} />
+                                        <p style={{color: '#cecece'}}>Username: {person.is_followed_by.username}</p>
                                     </Link>
                                 </li>
                             ))}

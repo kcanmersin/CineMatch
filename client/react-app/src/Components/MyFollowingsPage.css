@@ -1,0 +1,10 @@
+.user-profile-image-list{
+    width: 5rem;
+    height: 5rem;
+    border-radius: 50%;
+    margin-bottom: 0.5rem;
+}
+
+.movie-lists a{
+    color: inherit;
+}

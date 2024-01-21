@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { BounceLoader } from 'react-spinners';
+import ProgramNavbar from "./SubComponents/ProgramNavbar";
 
 export default function UserFollowersPage() {
     const { username } = useParams();
@@ -59,23 +60,24 @@ export default function UserFollowersPage() {
     }, [username, jwtAccess]);
 
     return (
-        <div>
+        <div className="main-page">
+            <ProgramNavbar/>
             {isLoading ? (
-                <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh' }}>
+                <div className="main-page" style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh' }}>
                     <BounceLoader color="#123abc" loading={isLoading} />
                 </div>
             ) : error ? (
                 <p>Error: {error}</p>
             ) : ( 
                 <div>
-                    <h1>{username + "'s Followers"}</h1>
+                    <div className='list-page-username'>{username + "'s Followers"}</div>
                     {Array.isArray(followers) && followers.length > 0 ? (
-                        <ul>
+                         <ul className='movie-lists-container'>
                             {followers.map(person => (
-                                <li key={person.user.id}>
+                                <li className="movie-lists" key={person.user.id}>
                                     <Link to={`/user/${person.is_followed_by.username}`} className="user-link">
-                                        <img src={person.is_followed_by.profile_picture} alt={`${person.is_followed_by.username}'s profile`} />
-                                        <p>Username: {person.is_followed_by.username}</p>
+                                        <img className="user-profile-image-list" src={person.is_followed_by.profile_picture} alt={`${person.is_followed_by.username}'s profile`} />
+                                        <p style={{color: '#cecece'}}>Username: {person.is_followed_by.username}</p>
                                     </Link>
                                 </li>
                             ))}

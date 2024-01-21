@@ -2,6 +2,8 @@ import { useState, useEffect, useContext } from "react";
 import { Link } from "react-router-dom";
 import { UserContext } from "./UserContext";
 import { BounceLoader } from 'react-spinners';
+import "./MyFollowingsPage.css"
+import ProgramNavbar from "./SubComponents/ProgramNavbar";
 
 export default function MyFollowingsPage() {
     const { userId } = useContext(UserContext);
@@ -35,7 +37,7 @@ export default function MyFollowingsPage() {
 
     if (isLoading) {
         return (
-            <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh' }}>
+            <div className="main-page" style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh' }}>
                 <BounceLoader color="#123abc" loading={isLoading} />
             </div>
         );
@@ -43,7 +45,7 @@ export default function MyFollowingsPage() {
 
     if (error) {
         return (
-            <div>
+            <div className="main-page">
                 <h1>My Followings</h1>
                 <p>Error: {error}</p>
             </div>
@@ -51,15 +53,16 @@ export default function MyFollowingsPage() {
     }
 
     return (
-        <div>
-            <h1>My Followings</h1>
+        <div className="main-page">
+            <ProgramNavbar/>
+            <div className='list-page-username'>My Followings</div>
             {followings.length > 0 ? (
-                <ul>
+                <ul className='movie-lists-container'>
                     {followings.map(person => (
-                        <li key={person.user.id}>
+                        <li className="movie-lists" key={person.user.id}>
                             <Link to={`/user/${person.user.username}`} className="user-link">
-                                <img src={person.user.profile_picture} alt={`${person.user.username}'s profile`} />
-                                <p>Username: {person.user.username}</p>
+                                <img className="user-profile-image-list"src={person.user.profile_picture} alt={`${person.user.username}'s profile`} />
+                                <p style={{color: '#cecece'}}>Username: {person.user.username}</p>
                             </Link>
                         </li> 
                     ))}
