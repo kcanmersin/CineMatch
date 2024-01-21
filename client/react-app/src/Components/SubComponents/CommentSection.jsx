@@ -107,6 +107,9 @@ const Comment = ({ comment, replies, showReplyButton, onReplySubmit }) => {
                     ))}
                 </div>
             )}
+            <Button variant="danger" className="delete-button">
+                    Delete
+            </Button>
         </div>
     );
 };
