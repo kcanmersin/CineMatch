@@ -227,6 +227,30 @@ export default function MoviePage() {
         });
     };
 
+
+
+    const onDeleteComment = async (commentId) => {
+        try {
+            const response = await fetch(`${import.meta.env.VITE_BASE_URL}movie/comment_detail/movie/${movieId}/comment/${commentId}/`, {
+                method: 'DELETE',
+                headers: {
+                    'Authorization': `JWT ${jwtAccess}`,
+                    'Content-Type': 'application/json',
+                },
+            });
+
+            if (response.ok) {
+                // Update the comments state to reflect the deletion
+                setComments(comments.filter(comment => comment.id !== commentId));
+            } else {
+                throw new Error(`HTTP error! Status: ${response.status}`);
+            }
+        } catch (error) {
+            console.error('Error deleting comment:', error);
+        }
+    };
+
+
     // Function to handle adding a movie to a list
     const handleAddToList = (listId) => {
         if (!listId) {
@@ -358,7 +382,7 @@ export default function MoviePage() {
                     <p style={{color: "#cecece", marginBottom: "5rem"}}>{overview}</p>
                     <div className="comments-section">
                         <h2 className="comment-amount">{comments.length} COMMENTS</h2>
-                        <CommentSection comments={comments} onReplySubmit={onReplySubmit} onCommentSubmit={onCommentSubmit} />
+                        <CommentSection comments={comments} onReplySubmit={onReplySubmit} onCommentSubmit={onCommentSubmit} onDeleteComment={onDeleteComment} username={username}  />
                     </div>
                 </div>
                 <div className="movie-page-buttons-similars">
