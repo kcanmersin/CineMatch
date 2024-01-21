@@ -3,6 +3,8 @@ import { useParams, Link } from 'react-router-dom';
 import MovieCard from './SubComponents/MovieCard';
 import { BounceLoader } from 'react-spinners';
 import ProgramNavbar from './SubComponents/ProgramNavbar';
+import { Container } from 'react-bootstrap';
+
 import './FilterPage.css'
 
 function FilterPage() {
@@ -85,7 +87,7 @@ function FilterPage() {
     };
 
     const renderGenreOptions = () => (
-        <div>
+        <div className='genre-options-container'>
         <div className='genre-options'>
             {genreOptions.map(genre => (
                 <button
@@ -97,31 +99,30 @@ function FilterPage() {
               </button>
             ))}
         </div>
-            <button onClick={handleFilterMovies}>Apply Filters</button>
+            <button className= 'apply-filters-button' onClick={handleFilterMovies}>Apply Filters</button>
         </div>
     );
 
+
     const renderSortOptions = () => (
-        <div>
-            <h3>Sort by:</h3>
-            {sortOptions.map(option => (
-                <label key={option}>
-                    <input
-                        type="radio"
-                        name="sortMethod"
-                        value={option}
-                        checked={sortMethod === option}
-                        onChange={() => handleSortChange(option)}
-                    />
-                    {option}
-                </label>
-            ))}
+        <div className='genre-options sort-options'>
+          <div className='sorted-by-text'>Sorted by</div>
+          {sortOptions.map(option => (
+            <button
+              key={option}
+              className={sortMethod === option ? 'selected' : ''}
+              onClick={() => handleSortChange(option)}
+              style={{ margin: '0.5rem', cursor: 'pointer', backgroundColor: sortMethod === option ? '#28a745' : 'transparent', color: sortMethod === option ? '#cecece' : 'rgba(206,206,206,0.5);' }}
+            >
+              {option}
+            </button>
+          ))}
         </div>
-    );
+      );
 
     if (isLoading) {
         return (
-            <div>
+            <div className='main-page'>
                 <ProgramNavbar />
                 <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh' }}>
                     <BounceLoader color="#123abc" loading={true} />
@@ -135,20 +136,21 @@ function FilterPage() {
     return (
         <div className='main-page'>
             <ProgramNavbar />
-            <div className='filer-sort-container'>
-            {renderGenreOptions()}  {/* Render the genre filter options */}
-            {renderSortOptions()}   {/* Render the sorting options */}
+            <div className='page-content'>
+                <div className='filer-sort-container'>
+                {renderSortOptions()}   {/* Render the sorting options */}
+                {renderGenreOptions()}  {/* Render the genre filter options */}
+                </div>
+                <Container className='movie-container'>
+                    {moviesToDisplay.map(movie => (
+                      
+                            <Link to={`/moviepage/${movie.id}`}>
+                                <MovieCard {...movie} />
+                            </Link>
+                        
+                    ))}
+                </Container>
             </div>
-            <h1>Filtered Movies</h1>
-            <ul>
-                {moviesToDisplay.map(movie => (
-                    <li key={movie.id}>
-                        <Link to={`/moviepage/${movie.id}`}>
-                            <MovieCard {...movie} />
-                        </Link>
-                    </li>
-                ))}
-            </ul>
         </div>
     );
 }

@@ -1,9 +1,9 @@
 .genre-options{
     color: #cecece;
     background-color: #042856;
-    margin-top: 2rem;
-    margin-left: 5rem;
-    margin-right: 5rem;
+    
+    margin-bottom: 1rem;
+    
     padding-left: 3rem;
     padding-right: 3rem;
     padding-top: 0.5rem;
@@ -12,6 +12,37 @@
     display: flex;
     justify-content: space-between;
 }
+
+.page-content{
+    display: grid;
+    justify-content: center;
+}
+
+.sort-options{
+    margin-top: 2rem;
+    margin-left: 5rem;
+    margin-right: 5rem;
+    color: rgba(206,206,206,0.5);
+}
+
+.sorted-by-text{
+    margin-top: 1rem;
+}
+
+.genre-options-container{
+    margin-top: 2rem;
+    margin-left: 5rem;
+    margin-right: 5rem;
+}
+
+.apply-filters-button{
+    float: right;
+    background-color: #010b18;
+    border-color: solid 1px #cecece;
+    color: #cecece;
+    border-radius: 10%;
+    padding: 0.3rem;
+}
   
 .genre-options button {
     background-color: inherit;
@@ -19,9 +50,25 @@
     padding: 8px;
     cursor: pointer;
     color: rgba(206,206,206,0.5);
+    border-radius: 25%;
 }
   
-  .genre-options button.selected {
-    background-color: #4caf50; /* Change this color to your desired highlight color */
-    color: #fff;
-  }
+.genre-options button.selected {
+    background-color: #010b18;
+    border: solid 1px #00FF38;
+    color: #00FF38;
+}
+
+
+.movie-container{
+    display: flex;
+    margin-top: 6rem;
+    margin-left: 8rem;
+    flex-wrap: wrap;
+}
+
+
+.filter-page-movie-card{
+    color: black;
+}
+
