@@ -13,6 +13,11 @@
     justify-content: space-between;
 }
 
+.page-content{
+    display: grid;
+    justify-content: center;
+}
+
 .sort-options{
     margin-top: 2rem;
     margin-left: 5rem;
@@ -48,13 +53,22 @@
     border-radius: 25%;
 }
   
-  .genre-options button.selected {
+.genre-options button.selected {
     background-color: #010b18;
     border: solid 1px #00FF38;
     color: #00FF38;
-  }
+}
 
 
-   .movie-container{
+.movie-container{
     display: flex;
-   }
+    margin-top: 6rem;
+    margin-left: 8rem;
+    flex-wrap: wrap;
+}
+
+
+.filter-page-movie-card{
+    color: black;
+}
+
