@@ -127,13 +127,12 @@ export default function MyProfilePage(){
         );
     }
       
-
     return(
         <div className="main-page">
             <ProgramNavbar />
             <div className="profile-page-content"
               style={{
-              backgroundImage: `linear-gradient(0deg, rgba(10, 20, 33, 0.4) 0%, rgba(10, 20, 33, 0.4) 100%), linear-gradient(0deg, #0A1421 0%, rgba(0, 0, 0, 0.00) 100%), url(${profileData.bestMatchMoviePoster})`,
+              backgroundImage: `linear-gradient(0deg, rgba(10, 20, 33, 0.4) 0%, rgba(10, 20, 33, 0.4) 100%), linear-gradient(0deg, #0A1421 0%, rgba(0, 0, 0, 0.00) 100%), url(${"https://image.tmdb.org/t/p/original" + profileData.bestMatchMoviePoster})`,
               backgroundPosition: 'center center',
               backgroundSize: 'cover',
               backgroundRepeat: 'no-repeat',

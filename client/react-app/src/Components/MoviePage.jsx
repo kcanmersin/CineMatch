@@ -1,4 +1,4 @@
-import React, { useContext, useState, useEffect } from 'react';
+import { useContext, useState, useEffect } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import { Button, Modal } from 'react-bootstrap';
 import { UserContext } from './UserContext';
@@ -22,7 +22,6 @@ export default function MoviePage() {
     const [isLoading, setIsLoading] = useState(true);
     const [userRating, setUserRating] = useState(0);
     const jwtAccess = localStorage.getItem('jwtAccess');
-    const [lastUpdate, setLastUpdate] = useState(Date.now());
     const [showRatingModal, setShowRatingModal] = useState(false);
     const [all_comment_link, set_all_comment_link] = useState(null);
         
@@ -62,7 +61,7 @@ export default function MoviePage() {
 
     useEffect(() => {
         fetchMovieData();
-    }, [movieId, lastUpdate]);
+    }, [movieId]);
 
     useEffect(() => {
         const fetchUserData = async () => {

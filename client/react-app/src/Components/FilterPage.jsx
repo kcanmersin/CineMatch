@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import MovieCard from './SubComponents/MovieCard';
 import { BounceLoader } from 'react-spinners';
@@ -14,7 +14,7 @@ function FilterPage() {
     const [sortMethod, setSortMethod] = useState('popularity'); // State to manage sorting method
     const jwtAccess = localStorage.getItem('jwtAccess');
 
-    const genreOptions = ["Action", "Drama", "Comedy", "Thriller", "Romance"];
+    const genreOptions = ["Action", "Drama", "Comedy", "Thriller", "Romance", "Science Fiction", "Animation", "War", "Crime", "Horror", "Fantasy"];
     const sortOptions = ['popularity', 'alphabetic', 'rating', 'user_rating', 'length', 'release_date']; // Sorting options
 
     useEffect(() => {
