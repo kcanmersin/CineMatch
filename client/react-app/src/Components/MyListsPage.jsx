@@ -145,12 +145,14 @@ export default function MyListsPage() {
               displayTitle = 'Watched Movies';
             }
 
+            const isSingleMovie = list.movies.length === 1;
+
             return (
               <li className="movie-lists" key={list.id}>
                 <div className="poster-info-container">
                   <div className="movie-lists-posters-container">
                     {list.movies.slice(0, 2).map((movie, movieIndex) => (
-                      <div className="container-for-shift" key={movieIndex}>
+                      <div className={`container-for-shift${isSingleMovie ? ' single-movie' : ''}`} key={movieIndex}>
                         <img src={"https://image.tmdb.org/t/p/original" + movie.poster_path} alt={movie.title} className="movie-image" />
                       </div>
                     ))}

@@ -1,0 +1,27 @@
+.genre-options{
+    color: #cecece;
+    background-color: #042856;
+    margin-top: 2rem;
+    margin-left: 5rem;
+    margin-right: 5rem;
+    padding-left: 3rem;
+    padding-right: 3rem;
+    padding-top: 0.5rem;
+    padding-bottom: 0.5rem;
+    border-radius: 5%;
+    display: flex;
+    justify-content: space-between;
+}
+  
+.genre-options button {
+    background-color: inherit;
+    border: none;
+    padding: 8px;
+    cursor: pointer;
+    color: rgba(206,206,206,0.5);
+}
+  
+  .genre-options button.selected {
+    background-color: #4caf50; /* Change this color to your desired highlight color */
+    color: #fff;
+  }

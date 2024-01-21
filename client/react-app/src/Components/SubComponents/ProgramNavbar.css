@@ -3,6 +3,10 @@
     height: 3rem;
 }
 
+.navbar-container{
+    position: sticky;
+}
+
 .navbar-search-bar{
     border-radius: var(--bs-border-radius) 0rem 0rem var(--bs-border-radius);
     border: var(--bs-border-width) solid #CECECE;

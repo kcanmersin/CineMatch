@@ -140,7 +140,7 @@ export default function ProgramNavbar() {
   };
 
   return (
-    <div>
+    <div className="navbar-container">
       <Navbar expand="lg" sticky="top" className="main-navbar flex-nowrap">
         <Navbar.Brand className= "mx-3 navbar-logo" style={{ color: '#CECECE' }}>
           <Link to="/mainpage" className="mx-3 navbar-logo" style={{ color: '#CECECE' }}>

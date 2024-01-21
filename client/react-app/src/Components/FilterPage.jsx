@@ -3,6 +3,7 @@ import { useParams, Link } from 'react-router-dom';
 import MovieCard from './SubComponents/MovieCard';
 import { BounceLoader } from 'react-spinners';
 import ProgramNavbar from './SubComponents/ProgramNavbar';
+import './FilterPage.css'
 
 function FilterPage() {
     const { listId } = useParams();
@@ -42,6 +43,8 @@ function FilterPage() {
     };
 
     const handleFilterMovies = () => {
+
+        
         const filterCriteria = {
             list_id: listId,
             start_date: "1900",
@@ -83,16 +86,17 @@ function FilterPage() {
 
     const renderGenreOptions = () => (
         <div>
+        <div className='genre-options'>
             {genreOptions.map(genre => (
-                <label key={genre}>
-                    <input
-                        type="checkbox"
-                        checked={selectedGenres.includes(genre)}
-                        onChange={() => handleGenreChange(genre)}
-                    />
-                    {genre}
-                </label>
+                <button
+                key={genre}
+                className={selectedGenres.includes(genre) ? 'selected' : ''}
+                onClick={() => handleGenreChange(genre)}
+              >
+                {genre}
+              </button>
             ))}
+        </div>
             <button onClick={handleFilterMovies}>Apply Filters</button>
         </div>
     );
@@ -129,10 +133,12 @@ function FilterPage() {
     const moviesToDisplay = Array.isArray(filteredMovies) ? filteredMovies : movies;
 
     return (
-        <div>
+        <div className='main-page'>
             <ProgramNavbar />
+            <div className='filer-sort-container'>
             {renderGenreOptions()}  {/* Render the genre filter options */}
             {renderSortOptions()}   {/* Render the sorting options */}
+            </div>
             <h1>Filtered Movies</h1>
             <ul>
                 {moviesToDisplay.map(movie => (

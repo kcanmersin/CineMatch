@@ -22,7 +22,12 @@ li.movie-lists{
 
 .list-info{
     padding-left: 1rem;
+    
 }
+
+.list-info a {
+    color: inherit; /* or specify the color you want for visited links */
+  }
 
 .delete-button{
     height: 2.5rem;
@@ -72,6 +77,10 @@ li.movie-lists{
 
 .container-for-shift:last-child{
     left: -1.5rem;
+}
+
+.container-for-shift.single-movie:first-child{
+    left: 0; /* Adjust the margin as needed */
 }
 
 .movie-lists-posters-container{
