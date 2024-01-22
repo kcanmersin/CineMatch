@@ -7,6 +7,8 @@ import Container from "react-bootstrap/Container";
 import FormGroup from "react-bootstrap/esm/FormGroup"
 import { AuthContext } from "../auth/AuthContext";
 import  { useContext } from 'react';
+import ResetPassword from "./ResetPassword";
+import { Link } from "react-router-dom";
 
 export default function SigninPage() {
 
@@ -141,7 +143,7 @@ export default function SigninPage() {
               </Button>
           </Form.Group>
           <Form.Group className="mt-3 forgot-password">
-            Forgot your password? <a href="#" onClick={handleForgotPasswordClick}> Click here</a>
+            Forgot your password? <a href="/resetpassword">Reset Password</a>
           </Form.Group>
           <Form.Group className="mt-3 forgot-password">
             New to CineMatch? <a href="/signup"> Create an Account</a>

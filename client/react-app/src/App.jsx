@@ -22,6 +22,7 @@ import MyFollowingsPage from './Components/MyFollowingsPage';
 import UserFollowersPage from './Components/UserFollowersPage';
 import UserFollowingsPage from './Components/UserFollowingsPage';
 import { UserProvider } from './Components/UserContext';
+import ResetPassword from './Components/ResetPassword';
 
 
 export default function App() {
@@ -48,6 +49,7 @@ export default function App() {
                 <Route path="/myfollowings" element={<PrivateRoute isAuthenticated={isAuthenticated}><MyFollowingsPage /></PrivateRoute>} />
                 <Route path="/user/:username/followers" element={<PrivateRoute isAuthenticated={isAuthenticated}><UserFollowersPage /></PrivateRoute>} />
                 <Route path="/user/:username/followings" element={<PrivateRoute isAuthenticated={isAuthenticated}><UserFollowingsPage /></PrivateRoute>} />
+                <Route path="/resetpassword" element={<ResetPassword />} />
             </Routes>
         </UserProvider>
       
