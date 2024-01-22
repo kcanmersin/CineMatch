@@ -72,3 +72,33 @@
     color: black;
 }
 
+.movie-card-image{
+    transition: filter 0.3s ease; 
+}
+
+.garbage-icon{
+    position: absolute;
+    top: 0;
+    border-radius: 50%;
+    right: 1.8rem;
+    width: 1.5rem;
+    height: 1.5rem;
+    z-index: 1;
+    background-color: red;
+    opacity: 0;  /* Initially hide the garbage icon */
+    transition: opacity 0.3s ease;  /* Add a transition effect for smooth visibility changes */
+}
+
+.movie-card-container:hover .movie-card-image {
+    filter: brightness(70%);  /* Darken the image on hover */
+}
+
+
+.movie-card-container {
+    position: relative;
+    width: fit-content;
+}
+
+.movie-card-container:hover .garbage-icon {
+    opacity: 1;  /* Show the garbage icon on hover */
+}

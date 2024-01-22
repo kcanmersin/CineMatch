@@ -77,11 +77,13 @@ function FilterPage() {
     };
 
     const renderGarbageIcon = () => (
+        
         <img
           src={GarbageIcon}
           alt="Delete"
           className="garbage-icon"
         />
+        
       );
 
     const handleSortChange = (method) => {
@@ -162,7 +164,7 @@ function FilterPage() {
                 <Container className='movie-container'>
                     {moviesToDisplay.map((movie) => (
                       
-                            <Link to={`/moviepage/${movie.id}`} key={movie.id}>
+                            <Link to={`/moviepage/${movie.id}`} key={movie.id} className="movie-card-container">
                                 <MovieCard {...movie} />
                                 {renderGarbageIcon()}
                             </Link>
