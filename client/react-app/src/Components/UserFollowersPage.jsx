@@ -1,10 +1,12 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useContext } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { BounceLoader } from 'react-spinners';
 import ProgramNavbar from "./SubComponents/ProgramNavbar";
+import { UserContext } from './UserContext';
 
 export default function UserFollowersPage() {
-    const { username } = useParams();
+    const { username } = useContext(UserContext);
+    const { username: profileUsername } = useParams();
     const [followers, setFollowers] = useState([]);
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState(null);
@@ -13,7 +15,7 @@ export default function UserFollowersPage() {
     useEffect(() => {
         const fetchProfile = async () => {
             try {
-                const profileResponse = await fetch(`${import.meta.env.VITE_BASE_URL}accounts/profile/${username}/`, {
+                const profileResponse = await fetch(`${import.meta.env.VITE_BASE_URL}accounts/profile/${profileUsername}/`, {
                     method: 'GET',
                     headers: {
                         'Authorization': `JWT ${jwtAccess}`,
@@ -57,7 +59,7 @@ export default function UserFollowersPage() {
             }
         };
         fetchProfile();
-    }, [username, jwtAccess]);
+    }, [profileUsername, jwtAccess]);
 
     return (
         <div className="main-page">
@@ -70,15 +72,24 @@ export default function UserFollowersPage() {
                 <p>Error: {error}</p>
             ) : ( 
                 <div>
-                    <div className='list-page-username'>{username + "'s Followers"}</div>
+                    <div className='list-page-username'>{profileUsername + "'s Followers"}</div>
                     {Array.isArray(followers) && followers.length > 0 ? (
                          <ul className='movie-lists-container'>
-                            {followers.map(person => (
-                                <li className="movie-lists" key={person.user.id}>
-                                    <Link to={`/user/${person.is_followed_by.username}`} className="user-link">
-                                        <img className="user-profile-image-list" src={person.is_followed_by.profile_picture} alt={`${person.is_followed_by.username}'s profile`} />
-                                        <p style={{color: '#cecece'}}>Username: {person.is_followed_by.username}</p>
-                                    </Link>
+
+                            {followers.map((person, index) => (
+                                <li className="movie-lists" key={person.user.id + "_" + index}>
+                                    {/* Check if the follower is the current user */}
+                                    {person.is_followed_by.username === username ? (
+                                        <Link to="/myprofile" className="user-link">
+                                            <img className="user-profile-image-list" src={person.is_followed_by.profile_picture} alt={`${person.is_followed_by.username}'s profile`} />
+                                            <p style={{color: '#cecece'}}>Username: {person.is_followed_by.username}</p>
+                                        </Link>
+                                    ) : (
+                                        <Link to={`/user/${person.is_followed_by.username}`} className="user-link">
+                                            <img className="user-profile-image-list" src={person.is_followed_by.profile_picture} alt={`${person.is_followed_by.username}'s profile`} />
+                                            <p style={{color: '#cecece'}}>Username: {person.is_followed_by.username}</p>
+                                        </Link>
+                                    )}
                                 </li>
                             ))}
                         </ul>
