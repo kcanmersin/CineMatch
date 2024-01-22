@@ -119,7 +119,7 @@ export default function SignupPage() {
       <div className= "sign-up-form-container">
         <Form className= "sign-up-form"onSubmit={handleSubmit}> 
           <FormGroup className="mb-5">
-            Logo
+            <img className="sign-in"></img>
           </FormGroup>
           <FormGroup className="mb-4 mx-5" /*controlId="formEmail"*/>
             <Form.Control

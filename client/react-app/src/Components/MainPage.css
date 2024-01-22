@@ -39,7 +39,8 @@
     margin-left: 3%;
     color: #cecece;
     text-align: left;
-    width: 60%;  
+    width: 60%;
+    z-index: 1;
 }
 
 .best-match-text{

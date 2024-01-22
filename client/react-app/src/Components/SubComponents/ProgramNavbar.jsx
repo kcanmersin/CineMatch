@@ -144,7 +144,7 @@ export default function ProgramNavbar() {
       <Navbar expand="lg" sticky="top" className="main-navbar flex-nowrap">
         <Navbar.Brand className= "mx-3 navbar-logo" style={{ color: '#CECECE' }}>
           <Link to="/mainpage" className="mx-3 navbar-logo" style={{ color: '#CECECE' }}>
-            <img src="hal900.jpg"></img>
+            <img className="logo"></img>
           </Link>
         </Navbar.Brand>
         <Form className="d-flex flex-grow-1 mx-4" inline>

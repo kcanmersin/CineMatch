@@ -12,6 +12,13 @@
     overflow-y: auto; /* Enable vertical scrolling if the content overflows */
 }
 
+.sign-in{
+    content: url("./SubComponents/hal900.jpg");
+    width: 2.5rem;
+    height: 2.5rem;
+    border-radius: 50%;
+}
+
 .container-sm{
     padding-right: calc(var(--bs-gutter-x) * 2);
     padding-left: calc(var(--bs-gutter-x) * 2);

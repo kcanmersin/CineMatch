@@ -107,7 +107,7 @@ export default function SigninPage() {
       <Container fluid= "sm" className="signin-container">
         <Form className="signin-form" onSubmit={handleSubmit}>
           <FormGroup className="mb-5"> 
-            Logo
+            <img className="sign-in"></img>
             {backendError && (
               <div className="text-danger mt-4">{backendError}</div>
             )}
@@ -140,8 +140,11 @@ export default function SigninPage() {
                 Sign In
               </Button>
           </Form.Group>
-          <Form.Group className="mt-5 forgot-password">
+          <Form.Group className="mt-3 forgot-password">
             Forgot your password? <a href="#" onClick={handleForgotPasswordClick}> Click here</a>
+          </Form.Group>
+          <Form.Group className="mt-3 forgot-password">
+            New to CineMatch? <a href="/signup"> Create an Account</a>
           </Form.Group>
         </Form>
       </Container>

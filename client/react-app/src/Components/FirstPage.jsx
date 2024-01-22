@@ -7,7 +7,7 @@ export default function FirstPage(){
     return (
         <div className = "background-firstpage">
             <Navbar bg="transparent" expand="sm">
-                <div className="mx-3 firstpage-color">Logo</div>
+                <div className="mx-3 firstpage-color sign-in">Logo</div>
                 <Navbar.Toggle aria-controls="basic-navbar-nav"/>
                 <Navbar.Collapse id="basic-navbar-nav" className="justify-content-end">
                     <Nav>
