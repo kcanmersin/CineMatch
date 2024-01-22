@@ -189,4 +189,15 @@
     .movie-page-movie-details{
         width: 100vw;
     }
+    .movie-page-desc-comments{
+        width: 100vw;
+    }
+    
+    .add-to-a-list-button{
+        width: 5rem;
+    }
+
+    .similar-movies{
+        margin-left: 1.5rem;
+    }
 }
