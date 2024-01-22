@@ -179,3 +179,14 @@
 .modal-footer{
     border-top: 0;
 }
+
+@media (max-width: 800px) {
+
+    .rest-of-the-movie-page{
+        flex-direction: column;
+    }
+
+    .movie-page-movie-details{
+        width: 100vw;
+    }
+}
