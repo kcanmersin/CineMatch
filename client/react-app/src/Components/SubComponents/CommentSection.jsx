@@ -88,10 +88,11 @@ const Comment = ({ comment, replies, showReplyButton, onReplySubmit, onDeleteCom
                 {/* Uncomment and use the following line if images are available */}
                 {/*<img src={comment.user.profile.profile_picture} alt={comment.user.username} className="comment-profile-picture" />*/}
                 <div className="comment-info">
-                    <p className="comment-username">{comment.user.username}</p>
+                    <p className="comment-username">{comment.user.username}
                     {comment.user_rate && comment.user_rate.rate_point && (
-                        <p className="comment-rating">Rating: {comment.user_rate.rate_point}</p>
+                        <span className="comment-rating">{comment.user_rate.rate_point}<span className="faint-text">/10</span></span>
                     )}
+                    </p>
 
                 </div>
             </div>
