@@ -201,3 +201,9 @@
         margin-left: 1.5rem;
     }
 }
+
+
+.success-message {
+    color: green;
+    margin-top: 10px;
+}

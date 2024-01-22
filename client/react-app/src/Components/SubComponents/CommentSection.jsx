@@ -65,7 +65,7 @@ const NewCommentForm = ({ onSubmit }) => {
     );
 };
 
-const Comment = ({ comment, replies, showReplyButton, onReplySubmit, onDeleteComment, username}) => {
+const Comment = ({ comment, replies, showReplyButton, onReplySubmit, onDeleteComment, isTopLevel, username}) => {
     const isUserComment = comment.user.username === username;
     const [showReplyForm, setShowReplyForm] = useState(false);
 
@@ -84,6 +84,7 @@ const Comment = ({ comment, replies, showReplyButton, onReplySubmit, onDeleteCom
 
     return (
         <div className="comment">
+
             <div className="comment-header">
                 {/* Uncomment and use the following line if images are available */}
                 {/*<img src={comment.user.profile.profile_picture} alt={comment.user.username} className="comment-profile-picture" />*/}
@@ -96,7 +97,7 @@ const Comment = ({ comment, replies, showReplyButton, onReplySubmit, onDeleteCom
                 </div>
             </div>
             <p className="comment-text">{comment.text}</p>
-            {showReplyButton && (
+            {isTopLevel && showReplyButton && (
                 <Button variant="success" onClick={handleReplyClick} className="reply-button">
                     Reply
                 </Button>
@@ -122,6 +123,7 @@ const Comment = ({ comment, replies, showReplyButton, onReplySubmit, onDeleteCom
                             onReplySubmit={onReplySubmit}
                             onDeleteComment={onDeleteComment}
                             username={username}
+                            isTopLevel={false}
                         />
                     ))}
                 </div>
@@ -145,7 +147,7 @@ const CommentSection = ({ comments, onReplySubmit, onCommentSubmit, onDeleteComm
     return (
         <div className="comment-section">
             {topLevelComments.map((comment) => (
-                <Comment key={comment.id} comment={comment} replies={repliesMap[comment.id]} showReplyButton={true} onReplySubmit={onReplySubmit} onDeleteComment={onDeleteComment}  username={username} />
+                <Comment key={comment.id} comment={comment} replies={repliesMap[comment.id]} showReplyButton={true} onReplySubmit={onReplySubmit} onDeleteComment={onDeleteComment} isTopLevel={true} username={username} />
             ))}
             <NewCommentForm onSubmit={onCommentSubmit} />
         </div>
