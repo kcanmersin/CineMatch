@@ -6,6 +6,8 @@ import ProgramNavbar from './SubComponents/ProgramNavbar';
 import { Container } from 'react-bootstrap';
 
 import './FilterPage.css'
+import GarbageIcon from '../assets/garbage-svgrepo-com.svg';
+
 
 function FilterPage() {
     const { listId } = useParams();
@@ -73,6 +75,14 @@ function FilterPage() {
             setIsLoading(false);
         });
     };
+
+    const renderGarbageIcon = () => (
+        <img
+          src={GarbageIcon}
+          alt="Delete"
+          className="garbage-icon"
+        />
+      );
 
     const handleSortChange = (method) => {
         setSortMethod(method); // Update the sort method and re-fetch & filter movies
@@ -154,7 +164,9 @@ function FilterPage() {
                       
                             <Link to={`/moviepage/${movie.id}`} key={movie.id}>
                                 <MovieCard {...movie} />
+                                {renderGarbageIcon()}
                             </Link>
+                            
                     ))}
                 </Container>
             </div>
