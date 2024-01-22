@@ -120,7 +120,7 @@ function FilterPage() {
               key={option}
               className={sortMethod === option ? 'selected' : ''}
               onClick={() => handleSortChange(option)}
-              style={{ margin: '0.5rem', cursor: 'pointer', backgroundColor: sortMethod === option ? '#28a745' : 'transparent', color: sortMethod === option ? '#cecece' : 'rgba(206,206,206,0.5);' }}
+              style={{ margin: '0.5rem', cursor: 'pointer', backgroundColor: sortMethod === option ? '#28a745' : 'transparent', color: sortMethod === option ? '#cecece' : 'rgba(206,206,206,0.5)' }}
             >
               {formatSortOption(option)}
             </button>

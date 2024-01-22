@@ -24,6 +24,8 @@ export default function MoviePage() {
     const jwtAccess = localStorage.getItem('jwtAccess');
     const [showRatingModal, setShowRatingModal] = useState(false);
     const [all_comment_link, set_all_comment_link] = useState(null);
+    const [ratingError, setRatingError] = useState('');
+
         
 
     const fetchMovieData = async () => {
@@ -95,6 +97,13 @@ export default function MoviePage() {
     
 
     const handleRatingSubmit = async (rating) => {
+        if (parseFloat(rating) > 10) {
+            setRatingError("Rating cannot be more than 10.");
+            return;
+        }
+        setRatingError('');
+
+
         try {
             const response = await fetch(`${import.meta.env.VITE_BASE_URL}movie/rate_list/${movieId}/rates/`, {
                 method: 'POST',
@@ -131,6 +140,12 @@ export default function MoviePage() {
 
     const handleUpdateRating = async (newRating) => {
         if (!rateId) return;
+
+        if (parseFloat(newRating) > 10) {
+            setRatingError("Rating cannot be more than 10.");
+            return;
+        }
+        setRatingError('');
 
         try {
             const response = await fetch(`${import.meta.env.VITE_BASE_URL}movie/rate_list/${movieId}/rates/${rateId}/`, {
@@ -441,9 +456,19 @@ export default function MoviePage() {
                                 max="10"
                                 step="0.1"
                                 value={userRating}
-                                onChange={(e) => setUserRating(e.target.value)}
+                                onChange={(e) => {
+                                    const value = parseFloat(e.target.value);
+                                    setUserRating(e.target.value); // Always update the input value
+                                    
+                                    if (value > 10) {
+                                        setRatingError("Rating cannot be more than 10."); // Show error if value exceeds 10
+                                    } else {
+                                        setRatingError(''); // Clear the error for valid values
+                                    }
+                                }}
                             />
                         </Form.Group>
+                        {ratingError && <div className="rating-error">{ratingError}</div>}
                         <Modal.Footer className= "modal-footer">
                             {hasRated ? (
                                 <>
