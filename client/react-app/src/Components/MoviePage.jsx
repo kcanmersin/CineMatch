@@ -460,8 +460,8 @@ export default function MoviePage() {
                                     const value = parseFloat(e.target.value);
                                     setUserRating(e.target.value); // Always update the input value
                                     
-                                    if (value > 10) {
-                                        setRatingError("Rating cannot be more than 10."); // Show error if value exceeds 10
+                                    if (value > 10 || value < 0) {
+                                        setRatingError("Invalid rating."); // Show error if value exceeds 10
                                     } else {
                                         setRatingError(''); // Clear the error for valid values
                                     }
