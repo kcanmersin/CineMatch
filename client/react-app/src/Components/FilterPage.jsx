@@ -103,6 +103,14 @@ function FilterPage() {
         </div>
     );
 
+    const formatSortOption = (option) => {
+        return option
+            .split('_')
+            .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+            .join(' ');
+    };
+    
+
 
     const renderSortOptions = () => (
         <div className='genre-options sort-options'>
@@ -114,7 +122,7 @@ function FilterPage() {
               onClick={() => handleSortChange(option)}
               style={{ margin: '0.5rem', cursor: 'pointer', backgroundColor: sortMethod === option ? '#28a745' : 'transparent', color: sortMethod === option ? '#cecece' : 'rgba(206,206,206,0.5);' }}
             >
-              {option}
+              {formatSortOption(option)}
             </button>
           ))}
         </div>
@@ -142,12 +150,11 @@ function FilterPage() {
                 {renderGenreOptions()}  {/* Render the genre filter options */}
                 </div>
                 <Container className='movie-container'>
-                    {moviesToDisplay.map(movie => (
+                    {moviesToDisplay.map((movie) => (
                       
-                            <Link to={`/moviepage/${movie.id}`}>
+                            <Link to={`/moviepage/${movie.id}`} key={movie.id}>
                                 <MovieCard {...movie} />
                             </Link>
-                        
                     ))}
                 </Container>
             </div>

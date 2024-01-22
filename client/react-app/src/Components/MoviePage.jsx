@@ -111,6 +111,16 @@ export default function MoviePage() {
                 setRateId(data.id);
                 setHasRated(true);
                 setShowRatingModal(false);
+
+                // Automatically add to 'Watched Movies' list
+                const watchedMoviesList = lists.find(list => list.title === 'watched_movies');
+                if (watchedMoviesList) {
+                    handleAddToList(watchedMoviesList.id);
+
+                    // Remove 'watched_movies' from the lists to prevent showing in modal
+                    const updatedLists = lists.filter(list => list.title !== 'watched_movies');
+                    setLists(updatedLists);
+                }
             } else {
                 throw new Error(`HTTP error! Status: ${response.status}`);
             }
@@ -463,9 +473,12 @@ export default function MoviePage() {
                                     let displayTitle;
                                     if (list.title === 'watchlist') {
                                         displayTitle = 'WatchList';
-                                    } else if (list.title === 'watched_movies') {
-                                        displayTitle = 'Watched Movies';
-                                    } else {
+                                    } 
+                                    else if(list.title == 'watched_movies') 
+                                    {
+                                        displayTitle = "Watched Movies";
+                                    }
+                                    else {
                                         displayTitle = list.title; // Default to the original title
                                     }
 
