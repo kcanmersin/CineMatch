@@ -20,8 +20,10 @@
     "react-dom": "^18.2.0",
     "react-router-dom": "^6.18.0",
     "react-sidebar": "^3.0.2",
+    "react-slick": "^0.29.0",
     "react-spinner": "^0.2.7",
-    "react-spinners": "^0.13.8"
+    "react-spinners": "^0.13.8",
+    "slick-carousel": "^1.8.1"
   },
   "devDependencies": {
     "@types/react": "^18.2.15",

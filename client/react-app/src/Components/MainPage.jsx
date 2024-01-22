@@ -8,6 +8,44 @@ import Col from "react-bootstrap/Col";
 import SVGStar from "./SubComponents/SVGStar";
 import MovieCard from "./SubComponents/MovieCard";
 import UserCard from "./SubComponents/UserCard";
+import Slider from "react-slick";
+import "slick-carousel/slick/slick.css";
+import "slick-carousel/slick/slick-theme.css";
+
+const sliderSettings = {
+    dots: true, // Shows dot indicators at the bottom of the slider
+    infinite: false, // Infinite looping
+    speed: 500, // Transition speed
+    slidesToShow: 4, // Number of slides to show at a time
+    slidesToScroll: 4, // Number of slides to scroll at a time
+    responsive: [
+      {
+        breakpoint: 1024,
+        settings: {
+          slidesToShow: 3,
+          slidesToScroll: 3,
+          infinite: true,
+          dots: true
+        }
+      },
+      {
+        breakpoint: 600,
+        settings: {
+          slidesToShow: 2,
+          slidesToScroll: 2,
+          initialSlide: 2
+        }
+      },
+      {
+        breakpoint: 480,
+        settings: {
+          slidesToShow: 1,
+          slidesToScroll: 1
+        }
+      }
+    ]
+  };
+  
 
 
 export default function MainPage(){ 
@@ -182,14 +220,14 @@ export default function MainPage(){
                         Most Popular
                     </div>
                     <Container className="movie-cards-container">
-                            <div className="movie-cards">
+                            <Slider {...sliderSettings}>
                                 {Array.isArray(mostPopular) && mostPopular.map(movie => (
                                     // Your render logic here
                                     <Link to={`/moviepage/${movie.id}`} key={movie.id} className="movie-card-link">
                                         <MovieCard {...movie} />
                                     </Link>
                                 ))}       
-                            </div>
+                            </Slider>
                     </Container>
                 </Row>
                 <Row className="main-page-list">
@@ -197,13 +235,15 @@ export default function MainPage(){
                         Best Rated
                     </div>
                     <Container className="movie-cards-container">
-                            <div className="movie-cards">
-                                {Array.isArray(bestRated) && bestRated.map(movie => (
-                                    <Link to={`/moviepage/${movie.id}`} key={movie.id} className="movie-card-link">
+                        <Slider {...sliderSettings}>
+                            {Array.isArray(bestRated) && bestRated.map(movie => (
+                                <div key={movie.id} className="movie-card-slide">
+                                    <Link to={`/moviepage/${movie.id}`} className="movie-card-link">
                                         <MovieCard {...movie} />
                                     </Link>
-                                ))}
-                            </div>
+                                </div>
+                            ))}
+                      </Slider>
                     </Container>
                 </Row>
                 <Row className="main-page-list">
@@ -211,13 +251,13 @@ export default function MainPage(){
                         For You
                     </div>
                     <Container className="movie-cards-container">
-                            <div className="movie-cards">
+                            <Slider {...sliderSettings}>
                                 {forYou.map(movie => (
                                     <Link to={`/moviepage/${movie.id}`} key={movie.id} className="movie-card-link">
                                         <MovieCard {...movie} />
                                     </Link>
                                 ))}
-                            </div>
+                            </Slider>
                     </Container>
                 </Row>
                 <Row className="main-page-list">
@@ -228,13 +268,13 @@ export default function MainPage(){
                     </div>
                     
                     <Container className="movie-cards-container">
-                        <div className="movie-cards">
+                        <Slider {...sliderSettings}>
                             {matchedPeople.map((user, index) => (
                             <Link to={`/user/${user.username}`} key={`${user.id}-${index}`} className="movie-card-link">
                                 <UserCard {...user} />
                             </Link>
                             ))}
-                            </div> 
+                        </Slider>
                     </Container>
 
                 </Row>
