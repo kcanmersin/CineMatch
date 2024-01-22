@@ -120,7 +120,7 @@ export default function MyStatsPage() {
                 <div className='stats-page-user-info'><span className='faint-text'>Total Hours Watched</span><span className='right-aligned'>   {formatHoursToHoursMinutes(userData.total_hours_watched)}</span></div>
                 <div className='stats-page-user-info'><span className='faint-text'>Average Time per Movie</span><span className='right-aligned'>  {formatHoursToHoursMinutes(userData.average_time_per_movie)}</span></div>
                 <div className='stats-page-user-info'><span className='faint-text'>Favorite Genre</span><span className='right-aligned'>{userData.favorite_genre?.genre__genre_name}</span></div>
-                <div className='stats-page-user-info'><span className='faint-text'>Average Rating</span><span className='right-aligned'>{userData.average_rating}</span></div>
+                <div className='stats-page-user-info'><span className='faint-text'>Average Rating</span><span className='right-aligned'>{userData.average_rating.toFixed(1)}</span></div>
             </div>
 
             <div className='graphs'>

@@ -1,15 +1,16 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useContext } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import MovieCard from './SubComponents/MovieCard';
 import { BounceLoader } from 'react-spinners';
 import ProgramNavbar from './SubComponents/ProgramNavbar';
 import { Container } from 'react-bootstrap';
-
+import { UserContext } from './UserContext';
 import './FilterPage.css'
 import GarbageIcon from '../assets/garbage-svgrepo-com.svg';
 
 
 function FilterPage() {
+    const { userId } = useContext(UserContext);
     const { listId } = useParams();
     const [movies, setMovies] = useState([]);
     const [filteredMovies, setFilteredMovies] = useState(null);
@@ -17,6 +18,8 @@ function FilterPage() {
     const [selectedGenres, setSelectedGenres] = useState([]); // State to manage selected genres
     const [sortMethod, setSortMethod] = useState('popularity'); // State to manage sorting method
     const jwtAccess = localStorage.getItem('jwtAccess');
+    const [showGarbageIcon, setShowGarbageIcon] = useState(null);
+
 
     const genreOptions = ["Action", "Drama", "Comedy", "Thriller", "Romance", "Science Fiction", "Animation", "War", "Crime", "Horror", "Fantasy"];
     const sortOptions = ['popularity', 'alphabetic', 'rating', 'user_rating', 'length', 'release_date']; // Sorting options
@@ -37,6 +40,15 @@ function FilterPage() {
         })
         .then(response => response.json())
         .then(data => {
+            console.log(data);
+            if(data.user === userId) 
+            {
+                setShowGarbageIcon(true);
+            }
+            else
+            {
+                setShowGarbageIcon(false);
+            }
             setMovies(data.movies);  // Update the state with the movies from the list
             handleFilterMovies();    // Immediately apply filters and sorting once movies are fetched
         })
@@ -76,12 +88,13 @@ function FilterPage() {
         });
     };
 
-    const renderGarbageIcon = () => (
+    const renderGarbageIcon = (movieId) => (
         
         <img
           src={GarbageIcon}
           alt="Delete"
           className="garbage-icon"
+          onClick={() => deleteMovie(movieId)}
         />
         
       );
@@ -138,7 +151,41 @@ function FilterPage() {
             </button>
           ))}
         </div>
-      );
+    );
+
+
+    const deleteMovie = (movieId) => {
+
+        const url = `${import.meta.env.VITE_BASE_URL}movie/movie-lists/`;
+
+        const requestData = {
+            movie_list_id: listId,
+            movie_id: movieId,
+        };
+
+        fetch(url, {
+            method: 'POST',
+            headers: {
+                'Authorization': `JWT ${jwtAccess}`,
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(requestData)
+        })
+        .then(response => {
+            if (response.ok) {
+                // Filter out the deleted movie from the movies state
+                setMovies(movies.filter(movie => movie.id !== movieId));
+                if (filteredMovies) {
+                    setFilteredMovies(filteredMovies.filter(movie => movie.id !== movieId));
+                }
+            } else {
+                // Handle error
+                console.error('Error deleting movie');
+            }
+        })
+        .catch(error => console.error('Error:', error));
+    };
+    
 
     if (isLoading) {
         return (
@@ -166,7 +213,7 @@ function FilterPage() {
                       
                             <Link to={`/moviepage/${movie.id}`} key={movie.id} className="movie-card-container">
                                 <MovieCard {...movie} />
-                                {renderGarbageIcon()}
+                                <Link>{showGarbageIcon && renderGarbageIcon(movie.id)}</Link>
                             </Link>
                             
                     ))}

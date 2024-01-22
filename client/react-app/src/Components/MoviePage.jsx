@@ -97,8 +97,8 @@ export default function MoviePage() {
     
 
     const handleRatingSubmit = async (rating) => {
-        if (parseFloat(rating) > 10) {
-            setRatingError("Rating cannot be more than 10.");
+        if (parseFloat(rating) > 10 || parseFloat(rating) < 0) {
+            setRatingError("Invalid rating.");
             return;
         }
         setRatingError('');
@@ -141,8 +141,8 @@ export default function MoviePage() {
     const handleUpdateRating = async (newRating) => {
         if (!rateId) return;
 
-        if (parseFloat(newRating) > 10) {
-            setRatingError("Rating cannot be more than 10.");
+        if (parseFloat(newRating) > 10 || parseFloat(newRating) < 0) {
+            setRatingError("Invalid rating.");
             return;
         }
         setRatingError('');
