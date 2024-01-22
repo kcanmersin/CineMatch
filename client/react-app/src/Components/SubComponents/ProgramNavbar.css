@@ -10,8 +10,6 @@
     border-radius: 50%;
 }
 
-
-
 .navbar-search-bar{
     border-radius: var(--bs-border-radius) 0rem 0rem var(--bs-border-radius);
     border: var(--bs-border-width) solid #CECECE;
@@ -128,6 +126,18 @@
 @media(max-width: 690px){
     .navbar-username{
         display: none;
+    }
+
+    .search-movie-result{
+        height: 6rem;
+    }
+
+    .search-movie-result-text{
+        font-size: 1rem;
+    }
+
+    .search-movie-date{
+        font-size: 1rem;
     }
 }
 

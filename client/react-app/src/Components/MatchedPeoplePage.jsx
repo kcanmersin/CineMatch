@@ -1,6 +1,8 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { BounceLoader } from 'react-spinners';
+import "./MyFollowingsPage.css"
+import ProgramNavbar from "./SubComponents/ProgramNavbar";
 
 export default function MatchedPeoplePage() {
   const [matchedPeople, setMatchedPeople] = useState([]);
@@ -31,7 +33,7 @@ export default function MatchedPeoplePage() {
 
   if (isLoading) {
     return (
-      <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh' }}>
+      <div className="main-page" style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh' }}>
         <BounceLoader color="#123abc" loading={isLoading} />
       </div>
     );
@@ -44,18 +46,15 @@ export default function MatchedPeoplePage() {
   }
 
   return (
-    <div>
-      <h1>Matched People</h1>
-      <ul>
+    <div className="main-page">
+      <ProgramNavbar/>
+      <div className='list-page-username'>Matched People</div>
+      <ul className='movie-lists-container'>
         {matchedPeople.map(person => (
-          <li key={person.username}>
+          <li className="movie-lists" key={person.username}>
             <Link to={`/user/${person.username}`} className="user-link">
-              <img src={person.profile_picture} alt={`${person.username}'s profile`} />
-              <p>Username: {person.username}</p>
-              <p>Rate Ratio: {person.rate_ratio}%</p>
-              <p>Movie Count: {person.movie_count}</p>
-              <p>Follower Count: {person.follower_count}</p>
-              <p>Following Count: {person.following_count}</p>
+              <img className="user-profile-image-list" src={person.profile_picture} alt={`${person.username}'s profile`} />
+              <p>Username: {person.username}            <span style={{color: "#00FF38"}}>{person.rate_ratio}%</span></p>
             </Link>
           </li>
         ))}

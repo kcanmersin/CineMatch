@@ -4,6 +4,10 @@
     padding-left: 1rem;
 }
 
+.comment-rating{
+    float: right;
+}
+
 .replies > .comment{
     border-bottom: 0;
 }
