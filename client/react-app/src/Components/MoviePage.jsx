@@ -25,6 +25,8 @@ export default function MoviePage() {
     const [showRatingModal, setShowRatingModal] = useState(false);
     const [all_comment_link, set_all_comment_link] = useState(null);
     const [ratingError, setRatingError] = useState('');
+    const [addToListSuccessMessage, setAddToListSuccessMessage] = useState('');
+
 
         
 
@@ -311,8 +313,8 @@ export default function MoviePage() {
             }
         })
         .then(data => {
-            console.log('Movie added to list:', data);
-            // Here, handle any updates to the state or UI after successful addition
+            setAddToListSuccessMessage(`Movie added to list successfully!`);
+            setTimeout(() => setAddToListSuccessMessage(''), 3000);
             handleCloseModal();
         })
         .catch(error => {
@@ -405,7 +407,7 @@ export default function MoviePage() {
                     </div>
                     <p style={{color: "#cecece", marginBottom: "5rem"}}>{overview}</p>
                     <div className="comments-section">
-                        <h2 className="comment-amount">{comments.length} COMMENTS</h2>
+                        <h2 className="comment-amount">COMMENTS</h2>
                         <CommentSection comments={comments} onReplySubmit={onReplySubmit} onCommentSubmit={onCommentSubmit} onDeleteComment={onDeleteComment} username={username}  />
                     </div>
                 </div>
@@ -416,6 +418,9 @@ export default function MoviePage() {
                         className="add-to-a-list-button">
                         Add to a List
                     </Button>
+                    {addToListSuccessMessage && (
+                            <p className="success-message">{addToListSuccessMessage}</p>
+            )}
                     <Button variant="success" onClick={() => setShowRatingModal(true)} className="add-to-a-list-button rate-button">
                         {hasRated ? 'Rated' : 'Rate'}
                     </Button>
