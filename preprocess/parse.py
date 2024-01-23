@@ -8,6 +8,7 @@ It includes functions to parse genres, keywords, characters, and crew informatio
 from a string representation and a main function to orchestrate the overall process.
 """
 
+
 # Function to parse genres data
 def parse_genres(genres_str):
     """
@@ -146,13 +147,9 @@ def main():
     keywords.to_csv("abc/keyword.csv", index=False)
 
     # Extract and process characters data
-    if "cast" in movies.columns:
-        characters = (
-            movies["cast"].apply(parse_characters).explode().reset_index(drop=True)
-        )
-        characters.to_csv("abc/cast.csv", index=False)
-    else:
-        print("Error: 'cast' column not found in DataFrame.")
+
+    characters = movies["cast"].apply(parse_characters).explode().reset_index(drop=True)
+    characters.to_csv("abc/cast.csv", index=False)
 
     # Extract and process crew data
     crew = movies["crew"].apply(parse_crew).explode().reset_index(drop=True)
