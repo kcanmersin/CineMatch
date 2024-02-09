@@ -29,7 +29,12 @@ Our approach uses hybrid models to deliver unique movie recommendations:
 - **Cosine Similarity**: We employ cosine similarity to identify users with similar movie rating profiles, enabling us to recommend movies based on user similarities.
 - **Dynamic Updates**: Our system integrates with a PostgreSQL database for real-time data retrieval, ensuring that recommendations are always current and relevant.
 - **Personalized Matching**: By identifying top-N similar users, we offer personalized movie suggestions, enhancing the user experience through tailored recommendations.
+ 
+![Example Image2](/images/mainpage.png "main page")
+
 
 ### Movie to Movie Recommendations (Content-Based Filtering with BERT)
 
 - **Semantic Analysis**: Utilizing a precomputed cosine similarity matrix with BERT natural language processing model, our system identifies movies with closely related genres, overview, director etc... offering recommendations that truly resonate with your preferences.
+
+![Example Image3](/images/moviepage.png "movie page")
