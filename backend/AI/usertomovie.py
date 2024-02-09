@@ -104,8 +104,8 @@ def user_to_movie(user_ratings):
   
     ratings, movies = load_movielens_data(str(BASE_DIR / 'AI' / 'ratings.csv'), str(BASE_DIR / 'AI' / 'movies_out.csv'))
     
-    # Load the cosine similarity matrix
-    cosine_sim = np.load(str(BASE_DIR / 'AI' / 'pickle_files' / 'cosine_sim.npy'))
+    # Load the cosine similarity matrix pkl file
+    cosine_sim = pd.read_pickle(str(BASE_DIR / 'AI' / 'pickle_files' / 'cosine_sim.pkl'))
 
     # Load the SVD model
     svd_model = collaborative_filtering(ratings)
