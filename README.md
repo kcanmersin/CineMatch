@@ -1,5 +1,8 @@
 # CineMatch 
 
+![Example Image](/images/login.png "This is an example image")
+
+
 CineMatch is a dynamic movie recommendation platform tailored for movie enthusiasts seeking to explore new films, engage with a community of like-minded individuals, and enjoy a personalized movie-watching experience. Our platform not only simplifies the discovery of movies but also fosters community engagement through user interactions, comments, and filmbuddy matchmaking.
 
 ## Key Features
