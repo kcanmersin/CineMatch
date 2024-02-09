@@ -1,12 +1,7 @@
-#%%
-import pandas as pd 
-import numpy as np
-#from surprise import Dataset, Reader, SVD
-# %%
 import pandas as pd
 import numpy as np
 from sklearn.metrics.pairwise import cosine_similarity
-
+#from surprise import Dataset, Reader, SVD
 import psycopg2 
 import os
 
@@ -25,15 +20,10 @@ def calculate_cosine_similarity(user_item_matrix):
 
 def read_ratings_from_database():
     
-    #db_host = os.environ.get('DB_HOST')
-    #db_name = os.environ.get('DB_NAME')
-    #db_user = os.environ.get('DB_USER')
-    #db_password = os.environ.get('DB_PASSWORD')
-
-    db_host = 'dpg-cmdfeuo21fec73d33khg-a.frankfurt-postgres.render.com'
-    db_name = 'cinematchfr'
-    db_user = 'cinematchfr_user'
-    db_password = 'KVKMAal90pm4OIde4IcqbUsIBYfvrAoP'
+    db_host = os.environ.get('DB_HOST')
+    db_name = os.environ.get('DB_NAME')
+    db_user = os.environ.get('DB_USER')
+    db_password = os.environ.get('DB_PASSWORD')
 
     # Connect to the PostgreSQL database server
     with psycopg2.connect(host=db_host, database=db_name, user=db_user, password=db_password) as conn:
@@ -80,7 +70,10 @@ def find_similar_users(user_id, top_n=10):
 
     return top_users
 
-
+def user_to_user_fun(id):
+    user_id = id  # Example user ID
+    similar_users_scores = find_similar_users(user_id)
+    return similar_users_scores
 #%%
 #ratings = read_ratings_from_database()
 #user_item_matrix = create_user_item_matrix(ratings)
@@ -105,12 +98,7 @@ def find_similar_users(user_id, top_n=10):
 #    print('---------------------')
 
 
-# %%
 
-def user_to_user_fun(id):
-    user_id = id  # Example user ID
-    similar_users_scores = find_similar_users(user_id)
-    return similar_users_scores
 
 
 ''''''''' below  code is takes long to run
